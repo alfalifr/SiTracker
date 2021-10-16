@@ -1,12 +1,12 @@
 package sidev.app.android.sitracker.ui.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,7 +15,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import sidev.app.android.sitracker.ui.component.TaskItem
 
 
 enum class TaskIconMode {
@@ -38,6 +41,39 @@ enum class TaskIconMode {
 }
 
 
+@Preview
+@Composable
+private fun TaskItem_preview() {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(15.dp),
+  ) {
+    val iconSize = 200.dp
+
+    TaskItem(
+      icon = Icons.Rounded.Star,
+      iconSize = iconSize,
+      color = Color.Green,
+      name = "Star boy",
+    )
+
+    TaskItem(
+      icon = Icons.Rounded.Star,
+      iconSize = iconSize,
+      color = Color.Green,
+      name = "Star boy",
+      iconMode = TaskIconMode.COLORED_ICON,
+    )
+
+    TaskItem(
+      icon = Icons.Rounded.Star,
+      iconSize = iconSize,
+      color = Color.Green,
+      name = "Star boy",
+      iconMode = TaskIconMode.NO_BG,
+    )
+  }
+}
+
 /**
  * Component that shows task item as icon and its color.
  *
@@ -50,13 +86,14 @@ fun TaskItem(
   color: Color,
   monoColor: Color = Color.White,
   name: String,
-  iconPadding: PaddingValues = PaddingValues(15.dp),
+  iconSize: Dp = 50.dp,
+  iconPadding: PaddingValues = PaddingValues(iconSize / 20),
   iconMode: TaskIconMode = TaskIconMode.COLORED_BG,
   bgShape: Shape = CircleShape,
   progress: Double? = null, //TODO: add progress to this view
 ) {
   Box(
-    modifier = modifier,
+    modifier = modifier.size(iconSize),
     contentAlignment = Alignment.Center,
   ) {
 
@@ -81,7 +118,9 @@ fun TaskItem(
       imageVector = icon,
       contentDescription = name,
       tint = iconColor,
-      modifier = Modifier.padding(iconPadding)
+      modifier = Modifier
+        .size(iconSize * 95 / 100)
+        .padding(iconPadding),
     )
   }
 }
