@@ -6,7 +6,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -78,9 +77,9 @@ fun TaskItem(
       ),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    IconItem(
+    IconProgressionPic(
       icon = icon,
-      color = color,
+      mainColor = color,
       name = null,
     )
     Spacer(Modifier.size(width = 15.dp, height = 0.dp))
@@ -106,9 +105,9 @@ fun TaskItem(
     //TODO: Change 'icon' with text of `progress`
     Layout(
       content = {
-         IconItem(
+         IconProgressionPic(
            icon = icon,
-           color = color,
+           mainColor = color,
            name = null,
            progress = progress,
          )
