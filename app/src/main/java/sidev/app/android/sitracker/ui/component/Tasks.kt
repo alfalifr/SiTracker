@@ -28,7 +28,7 @@ private fun TaskItem_preview() {
     color = Color.Green,
     title = "Calling someone",
     contentText = "5 hours",
-    progress = 64 / 100f,
+    progress = 74 / 100f,
   )
 }
 
@@ -84,6 +84,7 @@ fun TaskItem(
     )
     Spacer(Modifier.size(width = 15.dp, height = 0.dp))
 
+    //TODO: Place this column to `Layout` so that its max width won't overlap progress icon.
     Column(
       modifier = Modifier.fillMaxHeight(),
       verticalArrangement = Arrangement.SpaceBetween,
@@ -102,27 +103,27 @@ fun TaskItem(
       }
     }
 
-    //TODO: Change 'icon' with text of `progress`
-    Layout(
-      content = {
-         IconProgressionPic(
-           icon = icon,
-           mainColor = color,
-           name = null,
-           progress = progress,
-         )
-      },
-      measurePolicy = { measurables, constraints ->
-        with(constraints) {
-          layout(maxWidth, maxHeight) {
-            val progressPlacable = measurables
-              .first()
-              .measure(constraints)
-            val x = maxWidth - progressPlacable.width
-            progressPlacable.place(x, 0)
+    if(progress != null) {
+      Layout(
+        content = {
+          IconProgressionText(
+            text = "${String.format("%.0f", progress * 100)} %",
+            mainColor = color,
+            progress = progress,
+          )
+        },
+        measurePolicy = { measurables, constraints ->
+          with(constraints) {
+            layout(maxWidth, maxHeight) {
+              val progressPlacable = measurables
+                .first()
+                .measure(constraints)
+              val x = maxWidth - progressPlacable.width
+              progressPlacable.place(x, 0)
+            }
           }
         }
-      }
-    )
+      )
+    }
   }
 }

@@ -221,7 +221,7 @@ private fun IconItem_preview() {
   }
 }
 
-//TODO: Make the text version of it (instead of icon) and the clickable version too.
+
 /**
  * Component that shows task item as icon and its color.
  *
