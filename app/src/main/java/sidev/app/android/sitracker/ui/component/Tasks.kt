@@ -1,126 +1,129 @@
 package sidev.app.android.sitracker.ui.component
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.semantics.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import sidev.app.android.sitracker.ui.component.TaskItem
 
 
-enum class TaskIconMode {
-  /**
-   * Task icon with background. Background is colored
-   * with chosen color and the icon color is black or white.
-   */
-  COLORED_BG,
-
-  /**
-   * Task icon with background. Icon is colored
-   * with chosen color and the background color is black or white.
-   */
-  COLORED_ICON,
-
-  /**
-   * Task icon with no bacground.
-   */
-  NO_BG,
-}
-
-
-@Preview
 @Composable
+@Preview
 private fun TaskItem_preview() {
-  Column(
-    verticalArrangement = Arrangement.spacedBy(15.dp),
-  ) {
-    val iconSize = 200.dp
-
-    TaskItem(
-      icon = Icons.Rounded.Star,
-      iconSize = iconSize,
-      color = Color.Green,
-      name = "Star boy",
-    )
-
-    TaskItem(
-      icon = Icons.Rounded.Star,
-      iconSize = iconSize,
-      color = Color.Green,
-      name = "Star boy",
-      iconMode = TaskIconMode.COLORED_ICON,
-    )
-
-    TaskItem(
-      icon = Icons.Rounded.Star,
-      iconSize = iconSize,
-      color = Color.Green,
-      name = "Star boy",
-      iconMode = TaskIconMode.NO_BG,
-    )
-  }
+  TaskItem(
+    icon = Icons.Rounded.Phone,
+    color = Color.Green,
+    title = "Calling someone",
+    contentText = "5 hours",
+    progress = 64 / 100f,
+  )
 }
 
-/**
- * Component that shows task item as icon and its color.
- *
- * [monoColor] should be white or black, but doesn't throw exception if it isn't either of them.
- */
 @Composable
 fun TaskItem(
-  modifier: Modifier = Modifier,
   icon: ImageVector,
   color: Color,
-  monoColor: Color = Color.White,
-  name: String,
-  iconSize: Dp = 50.dp,
-  iconPadding: PaddingValues = PaddingValues(iconSize / 20),
-  iconMode: TaskIconMode = TaskIconMode.COLORED_BG,
-  bgShape: Shape = CircleShape,
-  progress: Double? = null, //TODO: add progress to this view
+  title: String,
+  modifier: Modifier = Modifier,
+  contentText: String? = null,
+  progress: Float? = null,
+  onClick: (() -> Unit)? = null,
 ) {
-  Box(
-    modifier = modifier.size(iconSize),
-    contentAlignment = Alignment.Center,
-  ) {
+  val bgShape = RoundedCornerShape(15.dp)
+  val containerHeight = 70.dp
 
-    var iconColor = color
-
-    if(iconMode == TaskIconMode.COLORED_BG
-      || iconMode == TaskIconMode.COLORED_ICON) {
-
-      var bgColor = monoColor
-
-      if(iconMode == TaskIconMode.COLORED_BG) {
-        iconColor = monoColor
-        bgColor = color
-      }
-      Image(
-        painter = ColorPainter(bgColor),
-        contentDescription = null,
-        modifier = Modifier.clip(bgShape),
+  Row(
+    modifier = modifier
+      .size(
+        height = containerHeight,
+        width = Dp.Infinity,
       )
+      .semantics(mergeDescendants = true) {
+        contentDescription =
+          "$title. $contentText."
+        if(onClick != null) {
+          customActions = listOf(
+            CustomAccessibilityAction("Task Item Click") {
+              onClick()
+              true
+            }
+          )
+        }
+      }
+      .background(
+        color = MaterialTheme.colors.surface,
+        shape = bgShape,
+      )
+      .shadow(
+        elevation = 5.dp,
+        shape = bgShape,
+      )
+      .padding(
+        horizontal = 15.dp,
+        vertical = 10.dp,
+      ),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    IconItem(
+      icon = icon,
+      color = color,
+      name = null,
+    )
+    Spacer(Modifier.size(width = 15.dp, height = 0.dp))
+
+    Column(
+      modifier = Modifier.fillMaxHeight(),
+      verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+      Text(
+        text = title,
+        fontSize = MaterialTheme.typography.body1.fontSize,
+        modifier = Modifier.clearAndSetSemantics {  },
+      )
+      if(contentText != null) {
+        Text(
+          text = contentText,
+          fontSize = MaterialTheme.typography.body2.fontSize,
+          modifier = Modifier.clearAndSetSemantics {  },
+        )
+      }
     }
-    Icon(
-      imageVector = icon,
-      contentDescription = name,
-      tint = iconColor,
-      modifier = Modifier
-        .size(iconSize * 95 / 100)
-        .padding(iconPadding),
+
+    //TODO: Change 'icon' with text of `progress`
+    Layout(
+      content = {
+         IconItem(
+           icon = icon,
+           color = color,
+           name = null,
+           progress = progress,
+         )
+      },
+      measurePolicy = { measurables, constraints ->
+        with(constraints) {
+          layout(maxWidth, maxHeight) {
+            val progressPlacable = measurables
+              .first()
+              .measure(constraints)
+            val x = maxWidth - progressPlacable.width
+            progressPlacable.place(x, 0)
+          }
+        }
+      }
     )
   }
 }
