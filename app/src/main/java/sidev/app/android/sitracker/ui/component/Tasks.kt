@@ -15,21 +15,43 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstrainedLayoutReference
+import androidx.constraintlayout.compose.ConstraintLayout
+import sidev.app.android.sitracker.util.getStartCenterAligned
 
 
 @Composable
 @Preview
 private fun TaskItem_preview() {
-  TaskItem(
-    icon = Icons.Rounded.Phone,
-    color = Color.Green,
-    title = "Calling someone",
-    contentText = "5 hours",
-    progress = 74 / 100f,
-  )
+  Column(
+    verticalArrangement = Arrangement.spacedBy(15.dp),
+  ) {
+    TaskItem(
+      icon = Icons.Rounded.Phone,
+      color = Color.Green,
+      title = "Calling someone nahoi af afa af af  af af  af a agoaijgoiajg aijgiaifjaijfaofjoajfojafojaofoafjojafo aoifjo aofjoajfoajfafjafojaofoafjo ahfai aijf ajfiajf aoifiafjiajfiajfiajfijafijioajfijafi jaofj oajf",
+      contentText = "5 hours",
+      progress = 74 / 100f,
+    )
+    TaskItem(
+      icon = Icons.Rounded.Phone,
+      color = Color.Green,
+      title = "Calling someone nahoi af afa af af  af af  af a agoaijgoiajg ",
+      contentText = "5 hours",
+    )
+    TaskItem(
+      icon = Icons.Rounded.Phone,
+      color = Color.Green,
+      title = "Calling someone ",
+      contentText = "5 hours",
+      progress = 34 / 100f,
+    )
+  }
 }
 
 @Composable
@@ -43,20 +65,16 @@ fun TaskItem(
   onClick: (() -> Unit)? = null,
 ) {
   val bgShape = RoundedCornerShape(15.dp)
-  val containerHeight = 70.dp
+  //val containerHeight = 70.dp
 
-  Row(
+  Layout(
     modifier = modifier
-      .size(
-        height = containerHeight,
-        width = Dp.Infinity,
-      )
       .semantics(mergeDescendants = true) {
         contentDescription =
           "$title. $contentText."
         if(onClick != null) {
           customActions = listOf(
-            CustomAccessibilityAction("Task Item Click") {
+            CustomAccessibilityAction("Task Item Click: $title") {
               onClick()
               true
             }
@@ -75,55 +93,95 @@ fun TaskItem(
         horizontal = 15.dp,
         vertical = 10.dp,
       ),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    IconProgressionPic(
-      icon = icon,
-      mainColor = color,
-      name = null,
-    )
-    Spacer(Modifier.size(width = 15.dp, height = 0.dp))
-
-    //TODO: Place this column to `Layout` so that its max width won't overlap progress icon.
-    Column(
-      modifier = Modifier.fillMaxHeight(),
-      verticalArrangement = Arrangement.SpaceBetween,
-    ) {
-      Text(
-        text = title,
-        fontSize = MaterialTheme.typography.body1.fontSize,
-        modifier = Modifier.clearAndSetSemantics {  },
+    content = {
+      IconProgressionPic(
+        icon = icon,
+        mainColor = color,
+        name = null,
       )
-      if(contentText != null) {
+
+      Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.SpaceBetween,
+      ) {
         Text(
-          text = contentText,
-          fontSize = MaterialTheme.typography.body2.fontSize,
+          text = title,
+          fontSize = MaterialTheme.typography.body1.fontSize,
+          maxLines = 3,
+          overflow = TextOverflow.Ellipsis,
           modifier = Modifier.clearAndSetSemantics {  },
         )
-      }
-    }
-
-    if(progress != null) {
-      Layout(
-        content = {
-          IconProgressionText(
-            text = "${String.format("%.0f", progress * 100)} %",
-            mainColor = color,
-            progress = progress,
+        if(contentText != null) {
+          Spacer(Modifier.height(10.dp))
+          Text(
+            text = contentText,
+            fontSize = MaterialTheme.typography.body2.fontSize,
+            modifier = Modifier.clearAndSetSemantics {  },
           )
-        },
-        measurePolicy = { measurables, constraints ->
-          with(constraints) {
-            layout(maxWidth, maxHeight) {
-              val progressPlacable = measurables
-                .first()
-                .measure(constraints)
-              val x = maxWidth - progressPlacable.width
-              progressPlacable.place(x, 0)
-            }
-          }
         }
+      }
+
+      if(progress != null) {
+        IconProgressionText(
+          text = "${String.format("%.0f", progress * 100)} %",
+          mainColor = color,
+          progress = progress,
+        )
+      }
+    },
+  ) { measurables, constraints ->
+    with(constraints) {
+      // 1. Measure children
+      val iconPlaceable = measurables[0].measure(constraints)
+
+      val progressPlaceable = measurables
+        .getOrNull(2)
+        ?.measure(constraints)
+
+      val spacerWidth = 15.dp.roundToPx()
+
+      val textsMaxWidth = maxWidth -
+        iconPlaceable.width -
+        spacerWidth -
+        (progressPlaceable?.width ?: 0) -
+        spacerWidth
+
+      val textsPlaceable = measurables[1].measure(
+        Constraints(
+          maxHeight = maxHeight,
+          maxWidth = textsMaxWidth,
+        )
       )
+
+      // 2. Draw layout and place each child inside
+      val parentHeight = maxOf(
+        iconPlaceable.height,
+        progressPlaceable?.height ?: 0,
+        textsPlaceable.height,
+      )
+
+      layout(
+        width = maxWidth,
+        height = parentHeight,
+      ) {
+        iconPlaceable.apply {
+          place(
+            0, getStartCenterAligned(parentHeight, height)
+          )
+        }
+        progressPlaceable?.apply {
+          place(
+            maxWidth - width,
+            getStartCenterAligned(parentHeight, height)
+          )
+        }
+        textsPlaceable.apply {
+          place(
+            iconPlaceable.width + spacerWidth,
+            getStartCenterAligned(parentHeight, height)
+          )
+        }
+      }
     }
   }
 }

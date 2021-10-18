@@ -11,6 +11,13 @@ val Constraints.maxSquareSideLen: Int
   get() = if(maxWidth <= maxHeight) maxWidth else maxHeight
 
 
+fun getStartCenterAligned(
+  parentLen: Int,
+  childLen: Int,
+  offset: Int = 0,
+): Int = ((parentLen - childLen) / 2) + offset
+
+
 val Constraints.maxSquareConstraint: Constraints
   get() {
     val maxLen = maxSquareSideLen

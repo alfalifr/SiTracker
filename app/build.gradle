@@ -68,4 +68,8 @@ dependencies {
   implementation("androidx.compose.runtime:runtime-livedata:$compose_version")
   implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$compose_viewmodel_version")
   implementation("androidx.navigation:navigation-compose:$compose_nav_version")
+
+  implementation "androidx.constraintlayout:constraintlayout:2.1.1"
+  // To use constraintlayout in compose
+  implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
 }
