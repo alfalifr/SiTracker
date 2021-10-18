@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Icon
-import androidx.compose.material.ProgressIndicatorDefaults
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Star
@@ -87,6 +84,7 @@ private fun IconBackground(
   shape: Shape?,
   progress: Float?,
   modifier: Modifier = Modifier,
+  progressStrokeColor: Color = MaterialTheme.colors.primary,
   progressStrokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,
   contentPadding: PaddingValues? = null,
   content: @Composable BoxScope.() -> Unit,
@@ -124,6 +122,7 @@ private fun IconBackground(
         modifier = Modifier.size(maxSquareSideLen),
         progress = progress,
         strokeWidth = progressStrokeWidth,
+        color = progressStrokeColor,
       )
     }
 
@@ -170,6 +169,7 @@ fun IconProgression(
     shape = bgShape,
     progress = progress,
     progressStrokeWidth = progressStrokeWidth,
+    progressStrokeColor = contentColor,
     contentPadding = contentPadding,
   ) {
     content(contentColor)
@@ -195,6 +195,16 @@ private fun IconItem_preview() {
       mainColor = Color.Green,
       name = "Star boy",
       //progress = progress,
+    )
+
+    IconProgressionPic(
+      modifier = modifier,
+      icon = Icons.Rounded.Star,
+      //iconSize = iconSize,
+      mainColor = Color.Green,
+      name = "Star boy",
+      progress = progress,
+      progressStrokeWidth = progressWidth,
     )
 
     IconProgressionPic(

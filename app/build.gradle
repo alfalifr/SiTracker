@@ -72,4 +72,6 @@ dependencies {
   implementation "androidx.constraintlayout:constraintlayout:2.1.1"
   // To use constraintlayout in compose
   implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
+
+  implementation("com.google.accompanist:accompanist-pager:$accompanist_version")
 }
