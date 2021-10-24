@@ -74,4 +74,11 @@ dependencies {
   implementation "androidx.constraintlayout:constraintlayout-compose:1.0.0-rc01"
 
   implementation("com.google.accompanist:accompanist-pager:$accompanist_version")
+
+  implementation "androidx.room:room-runtime:$room_version"
+  annotationProcessor "androidx.room:room-compiler:$room_version"
+
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutine_version"
+
+  testImplementation "com.github.javafaker:javafaker:$java_faker_version"
 }

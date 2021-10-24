@@ -28,7 +28,7 @@ private fun HomeMainComp_preview() {
     title = "Code 20 Lines",
     duration = 400,
     startTime = "20.30",
-    priority = 1,
+    priority = 2,
   )
 }
 
@@ -38,6 +38,7 @@ private fun HomeMainComp(
   duration: Long,
   startTime: String,
   priority: Int,
+  //taskList: List<Task>
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -59,6 +60,17 @@ private fun HomeMainComp(
     )
 
     Spacer(Modifier.height(20.dp))
+    HomeLowerDetail(
+      HomeLowerDetailData(
+        duration = duration,
+        startTime = startTime,
+        priority = priority,
+      )
+    )
+
+
+
+    /*
     Row(
       horizontalArrangement = Arrangement.spacedBy(15.dp),
     ) {
@@ -75,6 +87,34 @@ private fun HomeMainComp(
     IconWithText(
       icon = Icons.Outlined.Call, //TODO: Change icon to bookmark
       text = "Priority #$priority", //TODO: Change the time format
+    )
+     */
+  }
+}
+
+@Composable
+private fun HomeLowerDetail(
+  data: HomeLowerDetailData,
+) {
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    Row(
+      horizontalArrangement = Arrangement.spacedBy(15.dp),
+    ) {
+      IconWithText(
+        icon = Icons.Outlined.Call, //TODO: Change icon to stopwatch
+        text = "${data.duration} millis", //TODO: Change the time format
+      )
+      IconWithText(
+        icon = Icons.Outlined.Call, //TODO: Change icon to clock
+        text = data.startTime, //TODO: Change the time format
+      )
+    }
+    Spacer(Modifier.height(15.dp))
+    IconWithText(
+      icon = Icons.Outlined.Call, //TODO: Change icon to bookmark
+      text = "Priority #${data.priority}", //TODO: Change the time format
     )
   }
 }
