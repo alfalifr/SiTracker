@@ -2,7 +2,6 @@ package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.core.data.local.model.Interval
-import kotlin.math.absoluteValue
 
 
 /**
@@ -82,6 +81,16 @@ data class ProgressImportanceFactors(
 
   val prFactor: Double
     get() = if(pr <= 0) 11.0 else 10.0 / pr
+
+  /**
+   * Preferred time and day factor.
+   * The relative position of now, start, and end in time
+   * doesn't really affect much. What does really
+   * matter is whether 'now' is in between 'start' and 'end'
+   * or not.
+   */
+  val prefFactor: Double
+    get() = TODO("Implement prefFactor")
 
 
   val tiDelta: Long

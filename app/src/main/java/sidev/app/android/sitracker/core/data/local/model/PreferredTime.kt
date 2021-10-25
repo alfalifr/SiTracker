@@ -15,7 +15,15 @@ import androidx.room.ForeignKey
   ],
 )
 data class PreferredTime(
+  /**
+   * In millis. This property shows time from 0 - 24 hours,
+   * but unnecessary to have upperbound up to 24 hours.
+   */
   val startTime: Long,
+  /**
+   * In millis. This property shows time from 0 - 24 hours,
+   * but unnecessary to have upperbound up to 24 hours.
+   */
   val endTime: Long,
   val scheduleId: Int,
 )

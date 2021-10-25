@@ -1,9 +1,12 @@
+@file:OptIn(ExperimentalPagerApi::class)
+
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
@@ -12,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.component.IconWithText
@@ -26,19 +30,26 @@ fun HomePage() {
 private fun HomeMainComp_preview() {
   HomeMainComp(
     title = "Code 20 Lines",
-    duration = 400,
-    startTime = "20.30",
-    priority = 2,
+    lowerDetailData = HomeLowerDetailData(
+      duration = 400,
+      startTime = "20.30",
+      priority = 2,
+    ),
+    iconList = listOf(
+      HomeTaskIconData(
+        image = Icons.Default.Call,
+        color = Color.Green,
+        progress = 78 / 100f,
+      )
+    )
   )
 }
 
 @Composable
 private fun HomeMainComp(
   title: String,
-  duration: Long,
-  startTime: String,
-  priority: Int,
-  //taskList: List<Task>
+  lowerDetailData: HomeLowerDetailData,
+  iconList: List<HomeTaskIconData>,
 ) {
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -50,23 +61,25 @@ private fun HomeMainComp(
     Spacer(Modifier.height(15.dp))
     //TODO: Change `IconProgressionPic` to `HorizontalPager` here
     //HorizontalPager() {} ...
-    IconProgressionPic(
-      icon = Icons.Outlined.Call,
-      mainColor = Color.Green,
-      name = title,
-      progress = 78 / 100f,
-      progressStrokeWidth = 7.dp,
-      modifier = Modifier.size(100.dp),
-    )
+
+
+    HorizontalPager(
+      count = iconList.size,
+      modifier = Modifier.height(100.dp),
+    ) {
+      val data = iconList[currentPage]
+      IconProgressionPic(
+        icon = data.image,
+        mainColor = data.color,
+        name = title,
+        progress = data.progress,
+        progressStrokeWidth = 7.dp,
+        modifier = Modifier.size(100.dp),
+      )
+    }
 
     Spacer(Modifier.height(20.dp))
-    HomeLowerDetail(
-      HomeLowerDetailData(
-        duration = duration,
-        startTime = startTime,
-        priority = priority,
-      )
-    )
+    HomeLowerDetail(lowerDetailData)
 
 
 
@@ -106,10 +119,12 @@ private fun HomeLowerDetail(
         icon = Icons.Outlined.Call, //TODO: Change icon to stopwatch
         text = "${data.duration} millis", //TODO: Change the time format
       )
-      IconWithText(
-        icon = Icons.Outlined.Call, //TODO: Change icon to clock
-        text = data.startTime, //TODO: Change the time format
-      )
+      if(data.startTime != null) {
+        IconWithText(
+          icon = Icons.Outlined.Call, //TODO: Change icon to clock
+          text = data.startTime, //TODO: Change the time format
+        )
+      }
     }
     Spacer(Modifier.height(15.dp))
     IconWithText(

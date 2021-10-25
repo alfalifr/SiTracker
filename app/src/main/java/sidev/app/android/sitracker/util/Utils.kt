@@ -26,3 +26,6 @@ val Constraints.maxSquareConstraint: Constraints
       maxWidth = maxLen,
     )
   }
+
+//TODO: implement time formatting algo
+fun formatTimeToShortest(time: Long): String = time.toString()
