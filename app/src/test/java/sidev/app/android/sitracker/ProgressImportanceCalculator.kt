@@ -2,6 +2,9 @@ package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.core.data.local.model.Interval
+import java.math.BigDecimal
+import java.util.*
+import kotlin.math.absoluteValue
 
 
 /**
@@ -14,8 +17,11 @@ import sidev.app.android.sitracker.core.data.local.model.Interval
  *    -- Actual progress (p)
  *    -- Total progress (pt)
  *  - Priority (pr): lower more important
+ *
+ *  Every time in this class is measured in millis,
+ *  except for the [tPrefDay].
  */
-data class ProgressImportanceFactors(
+data class ProgressImportanceCalculator(
   /**
    * Start of active date (td0): [ActiveDate.startDate].
    */
@@ -51,6 +57,19 @@ data class ProgressImportanceFactors(
    * Priority (pr): lower more important.
    */
   val pr: Int,
+
+  /**
+   * Preferred start time, 0-24 hours in millis.
+   */
+  val tPrefTime0: Long?,
+  /**
+   * Preferred end time, 0-24 hours in millis.
+   */
+  val tPrefTime1: Long?,
+  /**
+   * Preferred day, 0-6 day (Sunday-Saturday) in week.
+   */
+  val tPrefDay: Int?,
 ) {
   /**
    * Formula: (higher better / more important)
@@ -59,7 +78,8 @@ data class ProgressImportanceFactors(
     tiFactor +
       tdFactor +
       pFactor +
-      prFactor
+      prFactor +
+      prefFactor
 
 
   val tiFactor: Double
@@ -82,6 +102,7 @@ data class ProgressImportanceFactors(
   val prFactor: Double
     get() = if(pr <= 0) 11.0 else 10.0 / pr
 
+
   /**
    * Preferred time and day factor.
    * The relative position of now, start, and end in time
@@ -90,7 +111,50 @@ data class ProgressImportanceFactors(
    * or not.
    */
   val prefFactor: Double
-    get() = TODO("Implement prefFactor")
+    get() {
+      val cal = Calendar.getInstance()
+      cal.time = Date(t0)
+
+      var score = 0.0
+
+      if(tPrefDay != null) {
+        val dayNow = cal[Calendar.DAY_OF_WEEK]
+        if(tPrefDay == dayNow) {
+          score += 2
+        }
+      }
+
+      val t0Hour = cal[Calendar.HOUR_OF_DAY]
+      val t0Min = cal[Calendar.MINUTE]
+      val t0Sec = cal[Calendar.SECOND]
+      val t0Milli = cal[Calendar.MILLISECOND]
+
+      val t0InMillisInDay = t0Hour + t0Min + t0Sec + t0Milli
+
+      if(tPrefTime0 != null) {
+        if(t0InMillisInDay >= tPrefTime0) {
+          if(tPrefTime1 == null || t0InMillisInDay <= tPrefTime1) {
+            if(tPrefTime1 != null) {
+              val tPrefTimeTotal = (tPrefTime1 - tPrefTime0
+                / 2.0) /* Divided by 2 because
+                  it is not always more important if `t0`
+                  closer to end preferred time,
+                  but rather if `t0` is closer to middle
+                  of preffered time range.
+                */
+
+              // Closer to middle of perferred time range,
+              // the more important a schedule becomes.
+              val tPrefTimeNow = t0InMillisInDay - tPrefTime0
+              val tPrefTimeFactor = (1 - tPrefTimeNow.toDouble() / tPrefTimeTotal).absoluteValue
+              score += tPrefTimeFactor
+            }
+            score += 2
+          }
+        }
+      }
+      return score
+    }
 
 
   val tiDelta: Long

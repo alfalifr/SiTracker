@@ -3,9 +3,8 @@ package sidev.app.android.sitracker
 data class ProgressImportance(
   val progressId: Int,
   //val importance: Double,
-  val factors: ProgressImportanceFactors,
+  val factor: ProgressImportanceFactor,
 ) {
-  val importance: Double by lazy {
-    factors.calculateImportance()
-  }
+  fun getImportance(timeNow: Long, progress: Long): Double =
+    factor.calculateImportance(timeNow, progress)
 }

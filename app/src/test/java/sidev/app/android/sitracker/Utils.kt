@@ -13,5 +13,7 @@ fun <T> List<T>.joinToStringLongList(
   transform = transform,
 )
 
-fun ProgressImportanceFactors.isActive(): Boolean =
+fun ProgressImportanceCalculator.isActive(): Boolean =
   tiDelta > 0 && tdDelta > 0
+
+

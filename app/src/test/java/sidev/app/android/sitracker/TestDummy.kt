@@ -193,7 +193,9 @@ object TestDummy {
   }
 
 
-  //TODO: Test it
+  //TODO: Make method that filters active progress based on
+  // [ScheduleProgress.startTimestamp] and [ScheduleProgress.endTimestamp]
+  // and [ActiveDate].
   fun filterActiveProgress(
     progress: List<ScheduleProgress> = this.scheduleProgress,
     /*
@@ -232,15 +234,66 @@ object TestDummy {
   }
 
   /**
-   * Factors and formula see [ProgressImportanceFactors].
+   * Join [ScheduleProgress] and other related class
+   * so that the progress importance [ProgressImportanceFactor]
+   * can be produced.
+   *
    * This method doesn't filter for the active items.
    */
-  fun getProgressImportance(
-    progresses: List<ScheduleProgress>,
+  fun getProgressJoint(
     tasks: List<Task>,
     schedules: List<Schedule>,
     activeDates: List<ActiveDate>,
-    nowDateLong: Long = Date().time,
+    preferredTimes: List<PreferredTime>,
+    preferredDays: List<PreferredDay>,
+    progresses: List<ScheduleProgress>,
+    //nowDateLong: Long = Date().time,
+  ): List<ProgressJoint> {
+    val importanceList = mutableListOf<ProgressJoint>()
+
+    for(progress in progresses) {
+      val schedule = schedules.find { it.id == progress.scheduleId }
+        ?: continue
+
+      val task = tasks.find { it.id == schedule.taskId }
+        ?: continue
+
+      val progressActiveDates = activeDates.filter {
+        it.scheduleId == schedule.id
+      }
+
+      val prefTimes = preferredTimes.filter {
+        it.scheduleId == schedule.id
+      }
+
+      val prefDays = preferredDays.filter {
+        it.scheduleId == schedule.id
+      }
+
+      importanceList += ProgressJoint(
+        progress = progress,
+        schedule = schedule,
+        task = task,
+        activeDates = progressActiveDates,
+        preferredTimes = prefTimes,
+        preferredDays = prefDays,
+      )
+    }
+    return importanceList
+  }
+
+  /**
+   * Factors and formula see [ProgressImportanceCalculator].
+   * This method doesn't filter for the active items.
+   */
+  fun getProgressImportance(
+    tasks: List<Task>,
+    schedules: List<Schedule>,
+    activeDates: List<ActiveDate>,
+    preferredTimes: List<PreferredTime>,
+    preferredDays: List<PreferredDay>,
+    progresses: List<ScheduleProgress>,
+    //nowDateLong: Long = Date().time,
   ): List<ProgressImportance> {
     val importanceList = mutableListOf<ProgressImportance>()
 
@@ -254,27 +307,35 @@ object TestDummy {
       val ti0 = progress.startTimestamp
       val ti1 = progress.endTimestamp
 
-      val p = progress.actualProgress
       val pt = schedule.totalProgress
 
-      val activeDate = activeDates.find { it.scheduleId == schedule.id }
-        ?: continue
+      val tdRanges = activeDates.filterAndMap {
+        take(it.scheduleId == schedule.id)
+        UnclosedLongRange(it.startDate, it.endDate)
+      }
 
-      val td0 = activeDate.startDate
-      val td1 = activeDate.endDate ?: 0
+      val tPrefTimeRanges = preferredTimes.filterAndMap {
+        take(it.scheduleId == schedule.id)
+        UnclosedLongRange(it.startTime, it.endTime)
+      }
+
+      val tPrefDays = preferredDays.filterAndMap {
+        take(it.scheduleId == schedule.id)
+        it.dayInWeek
+      }
 
       importanceList +=
         ProgressImportance(
           progressId = progress.id,
-          factors = ProgressImportanceFactors(
-            td0 = td0,
-            td1 = td1,
+          factor = ProgressImportanceFactor(
+            tdRanges = tdRanges,
+            tPrefTimeRanges = tPrefTimeRanges,
+            tPrefDays = tPrefDays,
             ti0 = ti0,
             ti1 = ti1,
-            p = p,
             pt = pt,
             pr = pr,
-            t0 = nowDateLong,
+            //p = progress.actualProgress,
           )
         )
     }

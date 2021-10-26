@@ -15,6 +15,10 @@ import androidx.room.ForeignKey
   ],
 )
 data class PreferredDay(
+  /**
+   * Starts with 0 which corresponds to Sunday
+   * until 6 which corresponds to Saturday.
+   */
   val dayInWeek: Int,
   val scheduleId: Int,
 )

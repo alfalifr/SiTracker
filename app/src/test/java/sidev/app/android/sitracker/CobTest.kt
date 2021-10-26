@@ -2,10 +2,12 @@ package sidev.app.android.sitracker
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import sidev.app.android.sitracker.core.data.local.model.ActiveDate
-import sidev.app.android.sitracker.core.data.local.model.Schedule
-import sidev.app.android.sitracker.core.data.local.model.ScheduleProgress
-import sidev.app.android.sitracker.core.data.local.model.Task
+import sidev.app.android.sitracker.core.data.local.model.*
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -35,7 +37,7 @@ class CobTest {
   //fun getTimeLong(dateStr: String) = sdf.parse(dateStr.)
 
   val now = Date()
-  val nowLong = Date(1635097869874L)
+  val nowLong = Date() //1635097869874L
 
   fun getTimeLong(
     addDiff: Long = 0,
@@ -56,6 +58,19 @@ class CobTest {
     ScheduleProgress(1, activeDates[1].scheduleId, activeDates[1].startDate, activeDates[1].endDate ?: (now.time + 100), scheduleProgressNumber[1].first),
     ScheduleProgress(2, activeDates[2].scheduleId, activeDates[2].startDate, activeDates[2].endDate ?: (now.time + 100), scheduleProgressNumber[2].first),
     ScheduleProgress(3, activeDates[3].scheduleId, activeDates[3].startDate, activeDates[3].endDate ?: (now.time + 100), scheduleProgressNumber[2].first),
+  )
+
+  val preferredTimes = listOf<PreferredTime>(
+    PreferredTime(TimeUnit.HOURS.toMillis(9), null, schedules[0].id),
+    PreferredTime(TimeUnit.HOURS.toMillis(20), TimeUnit.HOURS.toMillis(23), schedules[0].id),
+    //PreferredTime(TimeUnit.MINUTES.toMillis(20), TimeUnit.HOURS.toMillis(1), schedules[0].id),
+    PreferredTime(TimeUnit.HOURS.toMillis(23), null, schedules[2].id),
+    PreferredTime(TimeUnit.HOURS.toMillis(0), TimeUnit.HOURS.toMillis(4), schedules[1].id),
+  )
+
+  val preferredDay = listOf<PreferredDay>(
+    PreferredDay(3, schedules[2].id),
+    PreferredDay(3, schedules[1].id),
   )
 
 
@@ -146,25 +161,30 @@ class CobTest {
 
   @Test
   fun progressImportanceTest() {
-    val importances = TestDummy.getProgressImportance(
-      scheduleProgress,
-      tasks,
-      schedules,
-      activeDates,
-      nowDateLong = nowLong.time,
+    val joins = TestDummy.getProgressJoint(
+      tasks = tasks,
+      schedules = schedules,
+      progresses = scheduleProgress,
+      activeDates = activeDates,
+      preferredTimes = preferredTimes,
+      preferredDays = preferredDay,
     )
+    val now = this.now.time
+
     println("importances = ${
-      importances.joinToStringLongList {
-        val default = it.toString()
+      joins.joinToStringLongList {
+        val importance = it.importance
+        val factor = importance.factor
+        val default = importance.toString()
+        // 
+        //          |isActive = ${importance.factor.isActive()}
         """$default 
-          |calculated = ${it.importance} 
-          |isActive = ${it.factors.isActive()} 
-          |tiDelta = ${it.factors.tiDelta} 
-          |tdDelta = ${it.factors.tdDelta}
-          |tiFactor = ${it.factors.tiFactor}
-          |tdFactor = ${it.factors.tdFactor}
-          |pFactor = ${it.factors.pFactor}
-          |prFactor = ${it.factors.prFactor}""".trimMargin()
+          |calculated = ${importance.getImportance(now, it.progress.actualProgress)}
+          |tiFactor = ${factor.tiFactor(now)}
+          |tdFactor = ${factor.tdFactor(now)}
+          |prefFactor = ${factor.prefFactor(now)}
+          |pFactor = ${factor.pFactor(it.progress.actualProgress)}
+          |prFactor = ${factor.prFactor}""".trimMargin()
       }
     }")
   }
@@ -188,5 +208,120 @@ class CobTest {
     println("startToEnd = $startToEnd")
     println("startToNow = $startToNow")
     println("fraction = $fraction")
+  }
+
+  @Test
+  fun timeTest() {
+    val locDate = LocalDateTime.now()
+      LocalDate.ofEpochDay(ChronoField.EPOCH_DAY.range().maximum)
+    locDate.dayOfMonth
+
+
+    val instant = Instant.now()
+
+/*
+    LocalDate.now().format()
+
+    println("locDate = $locDate locDate.year= ${locDate.year} locDate.dayOfMonth = ${locDate.dayOfMonth} locDate.monthValue= ${locDate.monthValue}")
+
+
+ */
+    //val date = Date(millis)
+
+    //println("date  = $date")
+/*
+    val formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+      .withLocale(Locale.ENGLISH)
+      .withZone(ZoneId.systemDefault())
+// */
+
+
+    val formatter = //DateTimeFormatter.ofPattern("yyyy-MM-dd hh.ss")
+      DateTimeFormatter.ISO_LOCAL_DATE_TIME
+    val str = formatter.format(locDate)
+
+    println("str = $str")
+
+    println(Date(Long.MAX_VALUE))
+    println(Date())
+    println(Long.MAX_VALUE)
+    println(Date().time)
+  }
+
+
+  @Test
+  fun filterAndMapTest() {
+    data class Person(
+      val id: Int,
+      val name: String,
+      val age: Int,
+    )
+
+    val people = listOf(
+      Person(0, "aku", 10),
+      Person(2, "ello", 11),
+      Person(3, "Bro", 21),
+      Person(4, "He", 31),
+    )
+
+    val above18Names = people.filterAndMap {
+      take(it.age >= 18)
+      it.name
+    }
+    val expectedAbove18Names = people
+      .filter { it.age >= 18 }
+      .map { it.name }
+
+    assertEquals(expectedAbove18Names, above18Names)
+
+
+    val underAgeAges = people.filterAndMap {
+      take(it.age < 18)
+      it.age
+    }
+    val expectedUnderAgeAges = people
+      .filter { it.age < 18 }
+      .map { it.age }
+
+    assertEquals(expectedUnderAgeAges, underAgeAges)
+
+
+    val underAgeNames = people.filterAndMap {
+      if(it.age < 18) {
+        take()
+      }
+      it.name
+    }
+    val expectedUnderAgeNames = people
+      .filter { it.age < 18 }
+      .map { it.name }
+
+    assertEquals(expectedUnderAgeNames, underAgeNames)
+
+    println("above18Names = $above18Names")
+    println("underAgeAges = $underAgeAges")
+    println("underAgeNames = $underAgeNames")
+  }
+
+
+  @Test
+  fun unclosedLongRangeTest() {
+    val range1 = UnclosedLongRange(10, 20)
+    val range2 = UnclosedLongRange(14, null)
+    val range3 = UnclosedLongRange(17, 20)
+
+
+    assert(14 in range1)
+    assert(9 !in range1)
+
+    assert(14 in range2)
+    assert(1100 in range2)
+    assert(11 !in range2)
+
+    assert(range3 in range1)
+    assert(range3 in range2)
+    assert(range2 !in range1)
+    assert(range1 !in range2)
+    assert(range1 !in range3)
   }
 }
