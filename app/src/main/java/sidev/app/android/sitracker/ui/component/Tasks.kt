@@ -13,7 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,20 +36,20 @@ private fun TaskItem_preview() {
     verticalArrangement = Arrangement.spacedBy(15.dp),
   ) {
     TaskItem(
-      icon = Icons.Rounded.Phone,
+      icon = rememberVectorPainter(Icons.Rounded.Phone),
       color = Color.Green,
       title = "Calling someone nahoi af afa af af  af af  af a agoaijgoiajg aijgiaifjaijfaofjoajfojafojaofoafjojafo aoifjo aofjoajfoajfafjafojaofoafjo ahfai aijf ajfiajf aoifiafjiajfiajfiajfijafijioajfijafi jaofj oajf",
       contentText = "5 hours",
       progress = 74 / 100f,
     )
     TaskItem(
-      icon = Icons.Rounded.Phone,
+      icon = rememberVectorPainter(Icons.Rounded.Phone),
       color = Color.Green,
       title = "Calling someone nahoi af afa af af  af af  af a agoaijgoiajg ",
       contentText = "5 hours",
     )
     TaskItem(
-      icon = Icons.Rounded.Phone,
+      icon = rememberVectorPainter(Icons.Rounded.Phone),
       color = Color.Green,
       title = "Calling someone ",
       contentText = "5 hours",
@@ -58,7 +60,7 @@ private fun TaskItem_preview() {
 
 @Composable
 fun TaskItem(
-  icon: ImageVector,
+  icon: Painter,
   color: Color,
   title: String,
   modifier: Modifier = Modifier,

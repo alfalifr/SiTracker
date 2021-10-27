@@ -15,7 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -190,7 +192,7 @@ private fun IconItem_preview() {
 
     IconProgressionPic(
       modifier = modifier,
-      icon = Icons.Rounded.Star,
+      icon = rememberVectorPainter(Icons.Rounded.Star),
       //iconSize = iconSize,
       mainColor = Color.Green,
       name = "Star boy",
@@ -199,7 +201,7 @@ private fun IconItem_preview() {
 
     IconProgressionPic(
       modifier = modifier,
-      icon = Icons.Rounded.Star,
+      icon = rememberVectorPainter(Icons.Rounded.Star),
       //iconSize = iconSize,
       mainColor = Color.Green,
       name = "Star boy",
@@ -209,7 +211,7 @@ private fun IconItem_preview() {
 
     IconProgressionPic(
       modifier = modifier,
-      icon = Icons.Rounded.Star,
+      icon = rememberVectorPainter(Icons.Rounded.Star),
       //iconSize = iconSize,
       mainColor = Color.Green,
       name = "Star boy",
@@ -220,7 +222,7 @@ private fun IconItem_preview() {
 
     IconProgressionPic(
       modifier = modifier,
-      icon = Icons.Rounded.Star,
+      icon = rememberVectorPainter(Icons.Rounded.Star),
       //iconSize = iconSize,
       mainColor = Color.Green,
       name = "Star boy",
@@ -241,7 +243,7 @@ private fun IconItem_preview() {
 @SuppressLint("ModifierParameter")
 @Composable
 fun IconProgressionPic(
-  icon: ImageVector,
+  icon: Painter,
   mainColor: Color,
   modifier: Modifier = Modifier.size(50.dp),
   monoColor: Color = Color.White,
@@ -263,7 +265,7 @@ fun IconProgressionPic(
     progressStrokeWidth = progressStrokeWidth,
   ) { contentColor ->
     Icon(
-      imageVector = icon,
+      painter = icon,
       contentDescription = name,
       tint = contentColor,
       modifier = Modifier.fillMaxSize(),

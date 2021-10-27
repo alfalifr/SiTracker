@@ -1,6 +1,7 @@
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import sidev.app.android.sitracker.core.data.local.model.PreferredTime
 import sidev.app.android.sitracker.core.data.local.model.Schedule
@@ -28,7 +29,7 @@ data class HomeLowerDetailData(
  * Composed of [Task] and [ScheduleProgress]
  */
 data class HomeTaskIconData(
-  val image: ImageVector,
+  val image: Painter,
   val color: Color,
   val progress: Float,
 )

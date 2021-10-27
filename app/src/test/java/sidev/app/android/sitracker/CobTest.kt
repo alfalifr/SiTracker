@@ -3,6 +3,7 @@ package sidev.app.android.sitracker
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -159,6 +160,7 @@ class CobTest {
     }")
   }
 
+/*
   @Test
   fun progressImportanceTest() {
     val joins = TestDummy.getProgressJoint(
@@ -188,6 +190,7 @@ class CobTest {
       }
     }")
   }
+ */
 
 
   @Test

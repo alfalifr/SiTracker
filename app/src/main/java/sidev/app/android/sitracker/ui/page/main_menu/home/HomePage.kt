@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -37,7 +38,7 @@ private fun HomeMainComp_preview() {
     ),
     iconList = listOf(
       HomeTaskIconData(
-        image = Icons.Default.Call,
+        image = rememberVectorPainter(Icons.Default.Call),
         color = Color.Green,
         progress = 78 / 100f,
       )
@@ -66,6 +67,7 @@ private fun HomeMainComp(
     HorizontalPager(
       count = iconList.size,
       modifier = Modifier.height(100.dp),
+      contentPadding = PaddingValues(horizontal = 20.dp),
     ) {
       val data = iconList[currentPage]
       IconProgressionPic(
