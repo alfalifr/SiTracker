@@ -1,38 +1,121 @@
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
+import androidx.annotation.DrawableRes
 import androidx.lifecycle.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.data.local.dao.*
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.core.domain.model.ProgressImportance
+import sidev.app.android.sitracker.core.domain.model.ProgressImportanceJoint
+import sidev.app.android.sitracker.core.domain.model.ProgressJoint
+import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
+import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCase
+import sidev.app.android.sitracker.util.RecommendationQuery
 import sidev.app.android.sitracker.util.formatTimeToShortest
 import java.util.*
 
 class HomeViewModel(
+  /*
   private val activeDateDao: ActiveDateDao,
   private val scheduleProgressDao: ScheduleProgressDao,
   private val preferredTimeDao: PreferredTimeDao,
   private val scheduleDao: ScheduleDao,
   private val taskDao: TaskDao,
+   */
+  private val recommendationUseCase: RecommendationUseCase,
+  private val iconUseCase: IconUseCase,
 ): ViewModel() {
+
   //private val _taskTitle = MutableLiveData<String>()
   //val taskTitle
-
+/*
   var now: Long = 0
     private set
+ */
 
-  private val _recommendedTasks = MutableStateFlow<List<Task>?>(null)
+  private var processingJob: Job? = null
 
-  val activeTaskIndex = MutableStateFlow(-1)
-  private val _validatedActiveTaskIndex = activeTaskIndex.onEach {
-    ensureStateValid()
+  private val _nowFlow = MutableSharedFlow<Long>()
+  val nowFlow: Flow<Long>
+    get() = _nowFlow
+
+  val activeTaskIndex = MutableStateFlow<Int?>(null)
+  private val _validatedActiveTaskIndex: Flow<Int?> by lazy {
+    combine(activeTaskIndex, sortedImportances) {
+      index, importances ->
+      if(index == null || importances.isEmpty()) {
+        return@combine null
+      }
+      if(index !in importances.indices) {
+        throw IllegalArgumentException(
+          "`activeTaskIndex` ($index) can't have value " +
+            "outside `sortedImportances` indices (${importances.indices})."
+        )
+      }
+      index
+    }
   }
 
-  val activeTaskTitle: Flow<String> = _validatedActiveTaskIndex.map {
-    _recommendedTasks.value?.get(it)?.name ?: "<null>"
+
+  private val recommendationQuery: Flow<RecommendationQuery> = _nowFlow.flatMapLatest {
+    recommendationUseCase.queryRecommendations(it)
+  }
+  private val rawProgressJoints: Flow<List<ProgressJoint>> = recommendationQuery.map {
+    recommendationUseCase.getProgressJoint(
+      tasks = it.tasks,
+      schedules = it.schedules,
+      activeDates = it.activeDates,
+      preferredTimes = it.preferredTimes,
+      preferredDays = it.preferredDays,
+      progresses = it.progresses,
+    )
+  }
+  val importances: Flow<List<ProgressImportanceJoint>> = rawProgressJoints.map {
+    recommendationUseCase.getProgressImportance(it)
+  }
+  val sortedImportances: Flow<List<ProgressImportanceJoint>> = combine(importances, nowFlow) {
+    importances, now ->
+    recommendationUseCase.getRecommendedList(importances, now = now)
   }
 
+
+//  private val _recommendedTasks = MutableStateFlow<List<Task>?>(null)
+
+  val iconResIds: Flow<List<Int>> = sortedImportances.map { importances ->
+    importances.map {
+      iconUseCase.getResId(it.joint.task.iconId)
+    }
+  }
+
+  val activeTaskTitle: Flow<String?> = combine(_validatedActiveTaskIndex, sortedImportances) {
+    index, importances ->
+    if(index == null) return@combine null
+    importances[index].joint.task.name
+  }
+
+  val activeLowerDetailData: Flow<HomeLowerDetailData?> =
+    combine(_validatedActiveTaskIndex, sortedImportances) {
+        index, importances ->
+      if(index == null) return@combine null
+
+      val importance = importances[index]
+
+      val schedule = importance.joint.schedule
+
+      val startTime = importance.joint.preferredTimes
+        .find { it.scheduleId == schedule.id }
+        ?.startTime
+
+      HomeLowerDetailData(
+        duration = schedule.totalProgress,
+        startTime = startTime?.let { formatTimeToShortest(it) },
+        priority = importance.joint.task.priority,
+      )
+    }
+
+/*
   private val _activeDates = MutableSharedFlow<List<ActiveDate>>()
   private var rawActiveDateQueryJob: Job? = null
   private var rawActiveDates: Flow<List<ActiveDate>>? = null
@@ -82,22 +165,7 @@ class HomeViewModel(
     val taskIds = it.map { it.taskId }.toSet()
     taskDao.getByIds(taskIds)
   }
-
-
-  val activeLowerDetailData: Flow<HomeLowerDetailData> =
-    combine(activeTaskIndex, scheduleProgresses, preferredTimes, schedules, tasks,) {
-        pageIndex, progresses, preferredTimes, schedules, tasks ->
-      val schedule = schedules[pageIndex]
-
-      val startTime = preferredTimes.find { it.scheduleId == schedule.id }
-        ?.startTime
-
-      HomeLowerDetailData(
-        duration = schedule.totalProgress,
-        startTime = startTime?.let { formatTimeToShortest(it) },
-        priority = tasks[pageIndex].priority,
-      )
-    }
+ */
 
 
 /*
@@ -110,6 +178,7 @@ class HomeViewModel(
   }
  */
 
+  /*
   private fun ensureStateValid() {
     assert(_recommendedTasks.value != null) {
       "`_recommendedTasks.value` == null"
@@ -122,15 +191,13 @@ class HomeViewModel(
       """.trimMargin()
     }
   }
+   */
 
   fun getActiveSchedules() {
-    val flow = flowOf(1)
-    val flow2 = MutableStateFlow(1)
-    val flow3: SharedFlow<Int> = MutableSharedFlow<Int>()
-
-    flow2.value = 3
-    //flow2.add
-    now = Date().time
-    rawActiveDates = activeDateDao.getActiveDateByTime(now)
+    processingJob?.cancel()
+    activeTaskIndex.value = null
+    processingJob = viewModelScope.launch {
+      _nowFlow.emit(Date().time)
+    }
   }
 }

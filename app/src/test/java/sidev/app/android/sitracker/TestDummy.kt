@@ -1,6 +1,9 @@
 package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.core.domain.model.ProgressImportance
+import sidev.app.android.sitracker.core.domain.model.ProgressImportanceFactor
+import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -11,10 +14,10 @@ object TestDummy {
   )
 
   val intervalTypes = listOf<Interval>(
-    Interval(0, "Daily"),
-    Interval(1, "Weekly"),
-    Interval(2, "Monthly"),
-    Interval(3, "Annually"),
+    Interval(0, "Daily", 1),
+    Interval(1, "Weekly", 7),
+    Interval(2, "Monthly", 30),
+    Interval(3, "Annually", 365),
   )
 
 
@@ -233,54 +236,6 @@ object TestDummy {
     }
   }
 
-  /**
-   * Join [ScheduleProgress] and other related class
-   * so that the progress importance [ProgressImportanceFactor]
-   * can be produced.
-   *
-   * This method doesn't filter for the active items.
-   */
-  fun getProgressJoint(
-    tasks: List<Task>,
-    schedules: List<Schedule>,
-    activeDates: List<ActiveDate>,
-    preferredTimes: List<PreferredTime>,
-    preferredDays: List<PreferredDay>,
-    progresses: List<ScheduleProgress>,
-    //nowDateLong: Long = Date().time,
-  ): List<ProgressJoint> {
-    val importanceList = mutableListOf<ProgressJoint>()
-
-    for(progress in progresses) {
-      val schedule = schedules.find { it.id == progress.scheduleId }
-        ?: continue
-
-      val task = tasks.find { it.id == schedule.taskId }
-        ?: continue
-
-      val progressActiveDates = activeDates.filter {
-        it.scheduleId == schedule.id
-      }
-
-      val prefTimes = preferredTimes.filter {
-        it.scheduleId == schedule.id
-      }
-
-      val prefDays = preferredDays.filter {
-        it.scheduleId == schedule.id
-      }
-
-      importanceList += ProgressJoint(
-        progress = progress,
-        schedule = schedule,
-        task = task,
-        activeDates = progressActiveDates,
-        preferredTimes = prefTimes,
-        preferredDays = prefDays,
-      )
-    }
-    return importanceList
-  }
 
   /**
    * Factors and formula see [ProgressImportanceCalculator].
