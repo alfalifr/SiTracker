@@ -1,6 +1,7 @@
 package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.util.getTimeMillisInDay
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
@@ -155,12 +156,14 @@ data class ProgressImportanceFactor(
       score += 2
     }
 
+    /*
     val t0Hour = TimeUnit.HOURS.toMillis(cal[Calendar.HOUR_OF_DAY].toLong())
     val t0Min = TimeUnit.MINUTES.toMillis(cal[Calendar.MINUTE].toLong())
     val t0Sec = TimeUnit.SECONDS.toMillis(cal[Calendar.SECOND].toLong())
     val t0Milli = cal[Calendar.MILLISECOND]
+     */
 
-    val t0InMillisInDay = t0Hour + t0Min + t0Sec + t0Milli
+    val t0InMillisInDay = getTimeMillisInDay(cal) //t0Hour + t0Min + t0Sec + t0Milli
 
     val closedTPrefTime = tPrefTimeRanges.find { it.end != null && t0InMillisInDay in it }
     val firstFoundTPrefTime = tPrefTimeRanges.find { t0InMillisInDay in it }

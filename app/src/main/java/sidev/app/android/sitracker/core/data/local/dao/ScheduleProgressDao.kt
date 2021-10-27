@@ -28,4 +28,13 @@ interface ScheduleProgressDao {
     timestamp: Long,
     scheduleIds: Set<Int>,
   ): Flow<List<ScheduleProgress>>
+
+  @Query("""
+    SELECT * FROM schedule_progress
+    WHERE startTimestamp <= :now
+    AND endTimestamp >= :now
+  """)
+  fun getActiveProgressListByTime(
+    now: Long,
+  ): Flow<List<ScheduleProgress>>
 }

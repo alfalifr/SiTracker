@@ -21,4 +21,20 @@ interface PreferredTimeDao {
   fun getTimeByScheduleIds(
     scheduleIds: Set<Int>,
   ): Flow<List<PreferredTime>>
+
+
+  /**
+   * [nowTimeInDay] is measured in millis and trimmed
+   * to just only show time in a day, not time since epoch.
+   */
+  @Query("""
+    SELECT * FROM preferred_times
+    WHERE :nowTimeInDay >= startTime
+    AND (endTime = NULL OR :nowTimeInDay <= endTime)
+    OR scheduleId IN (:scheduleIds)
+  """)
+  fun getTimeByNowOrScheduleIds(
+    nowTimeInDay: Long,
+    scheduleIds: Set<Int>,
+  ): Flow<List<PreferredTime>>
 }

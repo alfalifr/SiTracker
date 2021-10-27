@@ -20,6 +20,16 @@ interface TaskDao {
   """)
   fun getByIds(ids: Set<Int>): Flow<List<Task>>
 
+
+  @Query("""
+    SELECT * FROM tasks
+    ORDER BY priority DESC
+    LIMIT :limit
+  """)
+  fun getOrderedByPriority(
+    limit: Int = 10
+  ): Flow<List<Task>>
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun insert(task: Task): Flow<Int>
 
