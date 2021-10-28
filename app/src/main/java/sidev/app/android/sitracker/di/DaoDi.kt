@@ -10,24 +10,24 @@ import sidev.app.android.sitracker.core.data.local.model.PreferredTime
 
 
 interface DaoDi {
-  fun taskDao(context: Context): TaskDao
-  fun scheduleDao(context: Context): ScheduleDao
-  fun activeDateDao(context: Context): ActiveDateDao
-  fun preferredTimeDao(context: Context): PreferredTime
-  fun preferredDayDao(context: Context): PreferredDay
-  fun scheduleProgressDao(context: Context): ScheduleProgressDao
-  fun intervalDao(context: Context): IntervalDao
-  fun progressTypeDao(context: Context): ProgressTypeDao
+  fun taskDao(): TaskDao
+  fun scheduleDao(): ScheduleDao
+  fun activeDateDao(): ActiveDateDao
+  fun preferredTimeDao(): PreferredTimeDao
+  fun preferredDayDao(): PreferredDayDao
+  fun scheduleProgressDao(): ScheduleProgressDao
+  fun intervalDao(): IntervalDao
+  fun progressTypeDao(): ProgressTypeDao
 }
 
 
-object DaoDiImpl: DaoDi {
-  override fun taskDao(context: Context): TaskDao = AppDb.create(context).taskDao()
-  override fun scheduleDao(context: Context): ScheduleDao = AppDb.create(context).scheduleDao()
-  override fun activeDateDao(context: Context): ActiveDateDao = AppDb.create(context).activeDateDao()
-  override fun preferredTimeDao(context: Context): PreferredTime = AppDb.create(context).preferredTimeDao()
-  override fun preferredDayDao(context: Context): PreferredDay = AppDb.create(context).preferredDayDao()
-  override fun scheduleProgressDao(context: Context): ScheduleProgressDao = AppDb.create(context).scheduleProgressDao()
-  override fun intervalDao(context: Context): IntervalDao = AppDb.create(context).intervalDao()
-  override fun progressTypeDao(context: Context): ProgressTypeDao = AppDb.create(context).progressTypeDao()
+class DaoDiImpl(private val context: Context): DaoDi {
+  override fun taskDao(): TaskDao = AppDb.create(context).taskDao()
+  override fun scheduleDao(): ScheduleDao = AppDb.create(context).scheduleDao()
+  override fun activeDateDao(): ActiveDateDao = AppDb.create(context).activeDateDao()
+  override fun preferredTimeDao(): PreferredTimeDao = AppDb.create(context).preferredTimeDao()
+  override fun preferredDayDao(): PreferredDayDao = AppDb.create(context).preferredDayDao()
+  override fun scheduleProgressDao(): ScheduleProgressDao = AppDb.create(context).scheduleProgressDao()
+  override fun intervalDao(): IntervalDao = AppDb.create(context).intervalDao()
+  override fun progressTypeDao(): ProgressTypeDao = AppDb.create(context).progressTypeDao()
 }

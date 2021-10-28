@@ -10,5 +10,8 @@ data class Task(
   val name: String,
   val priority: Int,
   val iconId: Int,
+  /**
+   * Format #
+   */
   val color: String,
 )

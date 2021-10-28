@@ -11,4 +11,6 @@ sealed class Routes(val route: String) {
     navController.navigate(completeRoute)
   }
   // ========Child==========
+
+  object HomePage: Routes("HomePage")
 }

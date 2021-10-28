@@ -2,6 +2,7 @@ package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.*
 
+/*
 data class ScheduleUnion(
   val task: Task,
   val schedules: List<Schedule>,
@@ -41,3 +42,4 @@ data class ScheduleUnion(
     return list
   }
 }
+ */

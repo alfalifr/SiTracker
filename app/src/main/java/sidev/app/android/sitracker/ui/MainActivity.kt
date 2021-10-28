@@ -1,4 +1,4 @@
-package sidev.app.android.sitracker
+package sidev.app.android.sitracker.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,6 +8,8 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import sidev.app.android.sitracker.ui.nav.Navigation
+import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.theme.SiTrackerTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,10 +17,13 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       SiTrackerTheme {
+        Navigation()
+/*
         // A surface container using the 'background' color from the theme
         Surface(color = MaterialTheme.colors.background) {
           Greeting("Android")
         }
+ */
       }
     }
   }

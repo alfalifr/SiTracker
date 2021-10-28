@@ -81,6 +81,7 @@ dependencies {
   annotationProcessor "androidx.room:room-compiler:$room_version"
 
   implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutine_version"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutine_version"
 
   testImplementation "com.github.javafaker:javafaker:$java_faker_version"
 

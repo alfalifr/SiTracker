@@ -17,3 +17,11 @@ enum class AppIcon(
       values()[iconId]
   }
 }
+
+
+data class IconProgressionData(
+  @DrawableRes
+  val resId: Int,
+  val color: String,
+  val progressFraction: Float,
+)

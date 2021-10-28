@@ -1,5 +1,7 @@
 package sidev.app.android.sitracker
 
+import sidev.app.android.sitracker.util.SuppressLiteral
+
 interface ListModItrScope {
   fun take(bool: Boolean)
   fun take() = take(true)
@@ -20,7 +22,7 @@ fun <E, R> List<E>.filterAndMap(transform: ListModItrScope.(E) -> R): List<R> {
   val results = mutableListOf<R>()
 
   val scope = object: ListModItrScope {
-    @Suppress("UNCHECKED_CAST")
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     override fun take(bool: Boolean) {
       mustTake = bool
     }

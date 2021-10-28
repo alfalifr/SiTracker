@@ -1,17 +1,18 @@
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
-import androidx.annotation.DrawableRes
 import androidx.lifecycle.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.data.local.dao.*
 import sidev.app.android.sitracker.core.data.local.model.*
-import sidev.app.android.sitracker.core.domain.model.ProgressImportance
+import sidev.app.android.sitracker.core.domain.model.IconProgressionData
 import sidev.app.android.sitracker.core.domain.model.ProgressImportanceJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressJoint
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCase
+import sidev.app.android.sitracker.util.Color
 import sidev.app.android.sitracker.util.RecommendationQuery
 import sidev.app.android.sitracker.util.formatTimeToShortest
 import java.util.*
@@ -26,6 +27,7 @@ class HomeViewModel(
    */
   private val recommendationUseCase: RecommendationUseCase,
   private val iconUseCase: IconUseCase,
+  private val coroutineScope: CoroutineScope? = null
 ): ViewModel() {
 
   //private val _taskTitle = MutableLiveData<String>()
@@ -83,9 +85,9 @@ class HomeViewModel(
 
 //  private val _recommendedTasks = MutableStateFlow<List<Task>?>(null)
 
-  val iconResIds: Flow<List<Int>> = sortedImportances.map { importances ->
+  val iconResIds: Flow<List<IconProgressionData>> = sortedImportances.map { importances ->
     importances.map {
-      iconUseCase.getResId(it.joint.task.iconId)
+      iconUseCase.getIconProgressionData(it.joint)
     }
   }
 
@@ -196,7 +198,7 @@ class HomeViewModel(
   fun getActiveSchedules() {
     processingJob?.cancel()
     activeTaskIndex.value = null
-    processingJob = viewModelScope.launch {
+    processingJob = (coroutineScope ?: viewModelScope).launch {
       _nowFlow.emit(Date().time)
     }
   }

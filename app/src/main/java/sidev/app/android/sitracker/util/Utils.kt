@@ -1,16 +1,29 @@
 package sidev.app.android.sitracker.util
 
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import sidev.app.android.sitracker.di.DiCenter
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+@Composable
+inline fun <reified T: ViewModel> defaultViewModel(): T =
+  viewModel(factory = DiCenter.diGraph.vmDi())
 
 val BoxWithConstraintsScope.maxSquareSideLen: Dp
   get() = if(maxWidth <= maxHeight) maxWidth else maxHeight
 
 val Constraints.maxSquareSideLen: Int
   get() = if(maxWidth <= maxHeight) maxWidth else maxHeight
+
+
+fun Color(hexString: String): Color =
+  Color(android.graphics.Color.parseColor(hexString))
 
 
 fun getStartCenterAligned(

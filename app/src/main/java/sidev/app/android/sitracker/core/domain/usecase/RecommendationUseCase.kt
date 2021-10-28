@@ -17,6 +17,7 @@ import sidev.app.android.sitracker.core.domain.model.ProgressImportanceFactor
 import sidev.app.android.sitracker.core.domain.model.ProgressImportanceJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressJoint
 import sidev.app.android.sitracker.util.RecommendationQuery
+import sidev.app.android.sitracker.util.SuppressLiteral
 import sidev.app.android.sitracker.util.getTimeMillisInDay
 import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.*
@@ -206,7 +207,7 @@ class RecommendationUseCaseImpl(
       )
     }
 
-    @Suppress("UNCHECKED_CAST")
+    @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return combine(
       activeDateFlow, progressFlow,
       prefTimeFlow, prefDayFlow,
@@ -320,7 +321,8 @@ class RecommendationUseCaseImpl(
             comparator[progress.id] = it
           }
       }
-      .subList(0, (7..10).random())
+      .take((7..10).random())
+      //.subList(0, (7..10).random())
   }
 
 

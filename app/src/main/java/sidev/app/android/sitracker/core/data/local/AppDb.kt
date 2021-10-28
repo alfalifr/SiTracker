@@ -25,8 +25,8 @@ abstract class AppDb: RoomDatabase() {
   abstract fun taskDao(): TaskDao
   abstract fun scheduleDao(): ScheduleDao
   abstract fun activeDateDao(): ActiveDateDao
-  abstract fun preferredTimeDao(): PreferredTime
-  abstract fun preferredDayDao(): PreferredDay
+  abstract fun preferredTimeDao(): PreferredTimeDao
+  abstract fun preferredDayDao(): PreferredDayDao
   abstract fun scheduleProgressDao(): ScheduleProgressDao
   abstract fun intervalDao(): IntervalDao
   abstract fun progressTypeDao(): ProgressTypeDao
