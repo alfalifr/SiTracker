@@ -6,6 +6,19 @@ import java.util.concurrent.TimeUnit
 
 object Dummy {
 
+  val progressTypes = listOf<ProgressType>(
+    ProgressType(0, "Duration"),
+    ProgressType(1, "Times"),
+  )
+
+  val intervals = listOf<Interval>(
+    Interval(0, "Daily", 1),
+    Interval(1, "Weekly", 7),
+    Interval(2, "Monthly", 30),
+    Interval(3, "Annually", 365),
+  )
+
+
   val tasks = listOf(
     Task(0, "Code 20 Lines", 1, 0, "#FFF"),
     Task(1, "Read Life", 2, 0, "#FFF"),
