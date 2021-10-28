@@ -11,6 +11,14 @@ import sidev.app.android.sitracker.core.data.local.model.Task
 interface ScheduleDao {
   @Query("""
     SELECT * FROM schedules 
+    WHERE taskId = (:taskId)
+  """)
+  fun getByTaskId(
+    taskId: Int
+  ): Flow<List<Schedule>>
+
+  @Query("""
+    SELECT * FROM schedules 
     WHERE taskId IN (:taskIds)
   """)
   fun getByTaskIds(
@@ -37,14 +45,4 @@ interface ScheduleDao {
 
   @RawQuery //TODO: Make custom raw query for today's task
   fun getTodaysSchedules(sql: SupportSQLiteQuery): Flow<List<Schedule>>
-
-  fun getScheduleOfTasks(sql: SupportSQLiteQuery): Flow<List<Schedule>>
-/*
-  //TODO: continue
-  @Query("""
-    SELECT * FROM schedules 
-    WHERE
-    """)
-  fun getByDateRange(startDate: Long, endDate: Long): Flow<List<Schedule>>
- */
 }

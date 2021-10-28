@@ -16,7 +16,7 @@ interface ScheduleProgressDao {
   """)
   fun getLatestProgressOfSchedule(
     scheduleId: Int,
-  ): Flow<ScheduleProgress>
+  ): Flow<ScheduleProgress?>
 
   @Query("""
     SELECT * FROM schedule_progress
