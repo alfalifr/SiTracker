@@ -91,7 +91,8 @@ class VmTest {
       }
  */
 
-      while(title == null
+      while(
+        title == null
         || index == null
         || importancesVal == null
         || sortedImportancesVal == null

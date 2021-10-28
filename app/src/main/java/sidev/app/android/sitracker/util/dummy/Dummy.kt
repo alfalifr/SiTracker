@@ -1,6 +1,7 @@
 package sidev.app.android.sitracker.util.dummy
 
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.core.domain.model.AppIcon
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -20,9 +21,9 @@ object Dummy {
 
 
   val tasks = listOf(
-    Task(0, "Code 20 Lines", 1, 0, "#FFF"),
-    Task(1, "Read Life", 2, 0, "#FFF"),
-    Task(2, "Runaway", 3, 0, "#FFF"),
+    Task(0, "Code 20 Lines", 1, AppIcon.Coding.id, "#0e9612"),
+    Task(1, "Read Life", 2, AppIcon.Bin.id, "#17ebeb"),
+    Task(2, "Runaway", 3, AppIcon.Clip.id, "#eb1726"),
   )
 
   /**

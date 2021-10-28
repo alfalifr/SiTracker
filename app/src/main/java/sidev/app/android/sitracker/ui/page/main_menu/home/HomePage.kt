@@ -12,7 +12,9 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.Call
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -22,6 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.component.IconWithText
 import sidev.app.android.sitracker.ui.model.IconProgressionUiData
@@ -33,8 +37,12 @@ fun HomePage(
   viewModel: HomeViewModel = defaultViewModel()
 ) {
   ///*
-  viewModel.getActiveSchedules()
-  viewModel.activeTaskIndex.value = 1
+  LaunchedEffect(key1 = Unit) {
+    delay(1000)
+    viewModel.getActiveSchedules()
+    viewModel.activeTaskIndex.value = 0
+  }
+
 
   val title = viewModel.activeTaskTitle
     .collectAsState(initial = null)

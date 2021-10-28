@@ -8,13 +8,18 @@ enum class AppIcon(
   @DrawableRes
   val resId: Int,
 ) {
-  Coding(0, R.drawable.ic_coding)
+  Coding(0, R.drawable.ic_coding),
+  Clip(1, R.drawable.ic_clip),
+  Bin(2, R.drawable.ic_bin),
 
   ;
 
   companion object {
     operator fun get(iconId: Int): AppIcon =
-      values()[iconId]
+      values().find { it.id == iconId }
+        ?: throw IllegalArgumentException(
+          "Can't find `AppIcon` with `iconId` of '$iconId'"
+        )
   }
 }
 
