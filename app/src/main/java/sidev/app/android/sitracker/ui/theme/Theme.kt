@@ -1,21 +1,27 @@
 package sidev.app.android.sitracker.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.rememberInsetsPaddingValues
+import sidev.app.android.sitracker.ui.component.SystemOverlay
 
 private val DarkColorPalette = darkColors(
-  primary = Purple200,
-  primaryVariant = Purple700,
-  secondary = Teal200
+  primary = GreenLight,
+  primaryVariant = GreenDark,
+  secondary = Yellow
 )
 
 private val LightColorPalette = lightColors(
-  primary = Purple500,
-  primaryVariant = Purple700,
-  secondary = Teal200
+  primary = GreenLight,
+  primaryVariant = GreenDark,
+  secondary = Yellow
 
   /* Other default colors to override
     background = Color.White,
@@ -28,9 +34,11 @@ private val LightColorPalette = lightColors(
 )
 
 @Composable
-fun SiTrackerTheme(
+fun AppTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable () -> Unit
+  statusBarColor: Color = BlackTrans4,
+  navBarColor: Color = BlackTrans4,
+  content: @Composable (PaddingValues) -> Unit
 ) {
   val colors = if(darkTheme) {
     DarkColorPalette
@@ -45,6 +53,19 @@ fun SiTrackerTheme(
     colors = colors,
     typography = typography,
     shapes = Shapes,
-    content = content
-  )
+  ) {
+    ProvideWindowInsets {
+      SystemOverlay(
+        statusBarColor = statusBarColor,
+        navBarColor = navBarColor,
+        statusBarUseDarkIcon = false,
+        navBarUseDarkIcon = false,
+      )
+      content(
+        rememberInsetsPaddingValues(
+          insets = LocalWindowInsets.current.systemBars,
+        )
+      )
+    }
+  }
 }
