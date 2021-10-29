@@ -46,7 +46,7 @@ fun AppTheme(
     LightColorPalette
   }
 
-  val typography = if(darkTheme) darkTypography()
+  val typography = if(darkTheme) DarkTypography
   else LightTypography
 
   MaterialTheme(

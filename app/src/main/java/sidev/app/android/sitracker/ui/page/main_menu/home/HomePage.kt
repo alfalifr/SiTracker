@@ -26,6 +26,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.lerp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
@@ -46,7 +48,9 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun HomePage(
-  viewModel: HomeViewModel = defaultViewModel()
+  navController: NavController = rememberNavController(),
+  viewModel: HomeViewModel = defaultViewModel(),
+  onItemClick: ((progressId: Int) -> Unit)? = null, //TODO: pair `HomePage.onItemClick`
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500)

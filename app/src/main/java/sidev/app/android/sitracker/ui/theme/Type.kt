@@ -62,22 +62,24 @@ val DefaultDarkTextStyle = TextStyle(
 val TextStyle.dark: TextStyle
   get() = copy(color = Color.White)
 
-@Composable
-fun darkTypography(): Typography = Typography(
-  defaultFontFamily = Nunito,
-  /*
-  body1 = DefaultDarkTextStyle.copy(
-    //fontFamily = FontFamily.Default,
-    fontWeight = FontWeight.Normal,
-    fontSize = 16.sp,
-  ),
-   */
-  body1 = MaterialTheme.typography.body1.dark,
-  body2 = MaterialTheme.typography.body2.dark,
-  h1 = MaterialTheme.typography.h1.dark,
-  h2 = MaterialTheme.typography.h2.dark,
-  h3 = MaterialTheme.typography.h3.dark,
-  h4 = MaterialTheme.typography.h4.dark,
-  h5 = MaterialTheme.typography.h5.dark,
-  h6 = MaterialTheme.typography.h6.dark,
-)
+
+val DarkTypography: Typography
+  @Composable
+  get() = Typography(
+    defaultFontFamily = Nunito,
+    /*
+    body1 = DefaultDarkTextStyle.copy(
+      //fontFamily = FontFamily.Default,
+      fontWeight = FontWeight.Normal,
+      fontSize = 16.sp,
+    ),
+     */
+    body1 = MaterialTheme.typography.body1.dark,
+    body2 = MaterialTheme.typography.body2.dark,
+    h1 = MaterialTheme.typography.h1.dark,
+    h2 = MaterialTheme.typography.h2.dark,
+    h3 = MaterialTheme.typography.h3.dark,
+    h4 = MaterialTheme.typography.h4.dark,
+    h5 = MaterialTheme.typography.h5.dark,
+    h6 = MaterialTheme.typography.h6.dark,
+  )
