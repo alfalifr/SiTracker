@@ -96,14 +96,15 @@ private fun HomePageMainComp(
 
     if(iconList != null) {
       BoxWithConstraints {
-        val iconLen = maxSquareSideLen * .90f
+        val iconLen = maxSquareSideLen * .80f
+        val iconPadding = iconLen * .30f
 
         HorizontalPager(
           count = iconList.size,
           modifier = Modifier
             .height(iconLen)
             .fillMaxWidth(),
-          contentPadding = PaddingValues(horizontal = 85.dp),
+          contentPadding = PaddingValues(horizontal = iconPadding),
           state = pagerState,
         ) { page ->
           val data = iconList[page]
