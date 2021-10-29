@@ -2,6 +2,7 @@ package sidev.app.android.sitracker.ui.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -356,14 +358,14 @@ fun IconProgressionText(
 @Preview
 private fun IconWithText_preview() {
   IconWithText(
-    icon = Icons.Rounded.Person,
+    icon = rememberVectorPainter(Icons.Rounded.Person),
     text = "Hello",
   )
 }
 
 @Composable
 fun IconWithText(
-  icon: ImageVector,
+  icon: Painter,
   text: String,
   modifier: Modifier = Modifier,
   spaceBetween: Dp = 10.dp,
@@ -378,11 +380,15 @@ fun IconWithText(
       },
     verticalAlignment = Alignment.CenterVertically,
   ) {
+    val usedIconSize = iconSize
+      ?: with(LocalDensity.current) {
+        (MaterialTheme.typography.body1.fontSize * 1.5).toDp()
+      }
     Icon(
-      modifier =
-        if(iconSize != null) Modifier.size(iconSize)
-        else Modifier,
-      imageVector = icon,
+      modifier = Modifier.size(usedIconSize),
+        //.background(Color.Blue),
+      painter = icon,
+      tint = MaterialTheme.typography.body1.color,
       contentDescription = null,
     )
     Spacer(

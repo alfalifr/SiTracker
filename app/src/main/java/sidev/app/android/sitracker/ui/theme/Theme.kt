@@ -30,7 +30,7 @@ private val LightColorPalette = lightColors(
 @Composable
 fun SiTrackerTheme(
   darkTheme: Boolean = isSystemInDarkTheme(),
-  content: @Composable() () -> Unit
+  content: @Composable () -> Unit
 ) {
   val colors = if(darkTheme) {
     DarkColorPalette
@@ -38,9 +38,12 @@ fun SiTrackerTheme(
     LightColorPalette
   }
 
+  val typography = if(darkTheme) darkTypography()
+  else LightTypography
+
   MaterialTheme(
     colors = colors,
-    typography = Typography,
+    typography = typography,
     shapes = Shapes,
     content = content
   )

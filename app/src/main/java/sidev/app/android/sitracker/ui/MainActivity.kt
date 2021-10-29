@@ -3,13 +3,10 @@ package sidev.app.android.sitracker.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import sidev.app.android.sitracker.ui.nav.Navigation
-import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.theme.SiTrackerTheme
 
 class MainActivity : ComponentActivity() {

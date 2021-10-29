@@ -59,7 +59,7 @@ object Dummy {
 
   val activeDates = listOf<ActiveDate>(
     ActiveDate(schedules[0].id, getTimeLong(-500, now = nowLong), getTimeLong(1, now = nowLong)),
-    ActiveDate(schedules[1].id, getTimeLong(1, now = nowLong), getTimeLong(2, now = nowLong)),
+    ActiveDate(schedules[1].id, getTimeLong(0, now = nowLong), getTimeLong(2, now = nowLong)),
     ActiveDate(schedules[2].id, getTimeLong(-3, now = nowLong), getTimeLong(-1, now = nowLong)),
     ActiveDate(schedules[2].id, getTimeLong(-3, now = nowLong), getTimeLong(1, now = nowLong)),
   )

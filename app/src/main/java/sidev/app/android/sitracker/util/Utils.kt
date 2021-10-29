@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.util
 
+import android.util.Log
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -10,6 +11,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import sidev.app.android.sitracker.di.DiCenter
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+
+fun loge(
+  msg: String,
+  tag: String = "TAG",
+) = Log.e(tag, msg)
+
 
 @Composable
 inline fun <reified T: ViewModel> defaultViewModel(): T =
