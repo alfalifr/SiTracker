@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import sidev.app.android.sitracker.util.loge
 
 @Composable
 fun NavGraphComp(
@@ -22,13 +23,32 @@ fun NavGraphComp(
       composable(
         route = route.completeRoute,
       ) { navBackStackEntry ->
+        /*
+        loge(
+          """NavGraphCompNavGraphComp: 
+            |navBackStackEntry = $navBackStackEntry
+            |navController.currentBackStackEntry = ${navController.currentBackStackEntry}
+            |isSame = ${navBackStackEntry == navController.currentBackStackEntry}
+            |""".trimMargin()
+        )
+        loge(
+          """NavGraphCompNavGraphComp: 
+            |navBackStackEntry.destination.route = ${navBackStackEntry.destination.route}
+            |this.route = ${this.route}
+            |this.label = ${this.label}
+            |navController.previousBackStackEntry?.destination?.route = ${navController.previousBackStackEntry?.destination?.route}
+            |navController.currentBackStackEntry?.destination?.route = ${navController.currentBackStackEntry?.destination?.route}
+            |isSame = ${navBackStackEntry == navController.currentBackStackEntry}
+            |""".trimMargin()
+        )
+         */
         route.composable(
           this,
           NavComposableData(
             navController = navController,
             parentNavController = parentNavController,
             navBackStackEntry = navBackStackEntry,
-            prevNavBackStackEntry = navController.currentBackStackEntry,
+            prevNavBackStackEntry = navController.previousBackStackEntry,
           )
         )
       }
