@@ -56,17 +56,22 @@ val LightTypography = Typography(
     */
 )
 
-val DefaultDarkTextStyle = TextStyle(
-  color = Color.White,
-)
 val TextStyle.dark: TextStyle
-  get() = copy(color = Color.White)
+  get() = copy(
+    fontFamily = DefaultFontFamily,
+    color = Color.White,
+  )
+val TextStyle.light: TextStyle
+  get() = copy(
+    fontFamily = DefaultFontFamily,
+    color = Color.Black,
+  )
 
 
 val DarkTypography: Typography
   @Composable
   get() = Typography(
-    defaultFontFamily = Nunito,
+    defaultFontFamily = DefaultFontFamily,
     /*
     body1 = DefaultDarkTextStyle.copy(
       //fontFamily = FontFamily.Default,

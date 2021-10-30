@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 
 data class NavComposableData(
   val navBackStackEntry: NavBackStackEntry,
+  val prevNavBackStackEntry: NavBackStackEntry?,
   val navController: NavController,
   val parentNavController: NavController?,
 )

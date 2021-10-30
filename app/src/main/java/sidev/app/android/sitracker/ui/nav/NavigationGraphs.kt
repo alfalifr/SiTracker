@@ -28,6 +28,7 @@ fun NavGraphComp(
             navController = navController,
             parentNavController = parentNavController,
             navBackStackEntry = navBackStackEntry,
+            prevNavBackStackEntry = navController.currentBackStackEntry,
           )
         )
       }

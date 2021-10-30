@@ -103,6 +103,7 @@ private fun HomePageMainComp(
         val iconLen = maxSquareSideLen * .80f
         val iconPadding = iconLen * .30f
 
+        //TODO: Set pager height as high as screen height so that user can easily reach scrollable part.
         HorizontalPager(
           count = iconList.size,
           modifier = Modifier

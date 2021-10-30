@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
@@ -14,12 +15,23 @@ sealed class Routes(
   val composable: @Composable NavGraphBuilder.(NavComposableData) -> Unit,
 ) {
 
+  sealed class IndexedRoutes(
+    route: String,
+    val index: Int,
+    composable: @Composable NavGraphBuilder.(NavComposableData) -> Unit,
+  ): Routes(
+    route = route,
+    composable = composable,
+  ) {
+    
+  }
+
   // ===============
   companion object {
     fun getAppRoutes(): List<Routes> = listOf(
       MainMenuPage,
     )
-    fun getMainMenuContentRoutes(): List<Routes> = listOf(
+    fun getMainMenuContentRoutes(): List<IndexedRoutes> = listOf(
       HomePage, TodaysSchedulePage, CalendarPage,
     )
   }
@@ -37,16 +49,22 @@ sealed class Routes(
     MainMenuPage(navController = it.navController)
   })
 
-  object HomePage: Routes("HomePage", {
-    HomePage(navController = it.navController) {
-      TODO("Implement `Routes.HomePage.onItemClick`")
+  object HomePage: IndexedRoutes("HomePage", 0, {
+    MainMenuItemLayout(title = "What to do?") {
+      HomePage(navController = it.navController) {
+        TODO("Implement `Routes.HomePage.onItemClick`")
+      }
     }
   })
-  object TodaysSchedulePage: Routes("TodaysSchedulePage", {
-    TodaysSchedulePage(navController = it.navController)
+  object TodaysSchedulePage: IndexedRoutes("TodaysSchedulePage", 1, {
+    MainMenuItemLayout(title = "Today's schedule") {
+      TodaysSchedulePage(navController = it.navController)
+    }
   })
-  object CalendarPage: Routes("CalendarPage", {
-    CalendarPage(navController = it.navController)
+  object CalendarPage: IndexedRoutes("CalendarPage", 2, {
+    MainMenuItemLayout(title = "Your calendar") {
+      CalendarPage(navController = it.navController)
+    }
   })
 
 

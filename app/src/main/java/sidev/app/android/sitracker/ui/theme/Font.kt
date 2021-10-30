@@ -6,6 +6,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import sidev.app.android.sitracker.R
 
+val DefaultFontFamily: FontFamily
+  get() = Nunito
+
 val Nunito = FontFamily(
   Font(R.font.nunito_regular),
   Font(R.font.nunito_italic, style = FontStyle.Italic),
