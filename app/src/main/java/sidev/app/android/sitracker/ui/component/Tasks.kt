@@ -8,24 +8,25 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.lerp
-import androidx.constraintlayout.compose.ConstrainedLayoutReference
-import androidx.constraintlayout.compose.ConstraintLayout
+import sidev.app.android.sitracker.core.domain.model.IconProgressionData
+import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
+import sidev.app.android.sitracker.ui.model.IconProgressionPicUiData
+import sidev.app.android.sitracker.ui.model.IconProgressionFloatUiData
+import sidev.app.android.sitracker.ui.model.IconProgressionUiData
+import sidev.app.android.sitracker.util.Color
+import sidev.app.android.sitracker.util.Texts.formatProgress
 import sidev.app.android.sitracker.util.getStartCenterAligned
 
 
@@ -40,7 +41,10 @@ private fun TaskItem_preview() {
       color = Color.Green,
       title = "Calling someone nahoi af afa af af  af af  af a agoaijgoiajg aijgiaifjaijfaofjoajfojafojaofoafjojafo aoifjo aofjoajfoajfafjafojaofoafjo ahfai aijf ajfiajf aoifiafjiajfiajfiajfijafijioajfijafi jaofj oajf",
       contentText = "5 hours",
-      progress = 74 / 100f,
+      postfixIconData = IconProgressionFloatUiData(
+        color = Color.Blue,
+        progress = 74 / 100f,
+      ),
     )
     TaskItem(
       icon = rememberVectorPainter(Icons.Rounded.Phone),
@@ -53,7 +57,11 @@ private fun TaskItem_preview() {
       color = Color.Green,
       title = "Calling someone ",
       contentText = "5 hours",
-      progress = 34 / 100f,
+      postfixIconData = IconProgressionFloatUiData(
+        color = Color.Red,
+        progress = 34 / 100f,
+      ),
+      isPostfixIconDataColorSameAsMainColor = false,
     )
   }
 }
@@ -65,7 +73,8 @@ fun TaskItem(
   title: String,
   modifier: Modifier = Modifier,
   contentText: String? = null,
-  progress: Float? = null,
+  postfixIconData: IconProgressionUiData? = null,
+  isPostfixIconDataColorSameAsMainColor: Boolean = true,
   onClick: (() -> Unit)? = null,
 ) {
   val bgShape = RoundedCornerShape(15.dp)
@@ -125,11 +134,21 @@ fun TaskItem(
         }
       }
 
-      if(progress != null) {
-        IconProgressionText(
-          text = "${String.format("%.0f", progress * 100)} %",
-          mainColor = color,
-          progress = progress,
+      if(postfixIconData != null) {
+        var iconPainter: Painter? = null
+        val text = postfixIconData.progress?.let {
+          formatProgress(it)
+        }
+
+        if(postfixIconData is IconProgressionPicUiData) {
+          iconPainter = postfixIconData.image
+        }
+        IconProgressionAdapt(
+          icon = iconPainter,
+          text = text,
+          mainColor =
+            if(isPostfixIconDataColorSameAsMainColor) color
+            else postfixIconData.color,
         )
       }
     },

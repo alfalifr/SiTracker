@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import sidev.app.android.sitracker.util.SuppressLiteral
 import sidev.app.android.sitracker.util.maxSquareSideLen
 
 
@@ -137,7 +138,7 @@ private fun IconBackground(
 }
 
 
-@SuppressLint("ModifierParameter")
+@SuppressLint(SuppressLiteral.MODIFIER_PARAMETER)
 @Composable
 fun IconProgression(
   mainColor: Color,
@@ -148,6 +149,7 @@ fun IconProgression(
   bgShape: Shape = CircleShape,
   progress: Float? = null,
   progressStrokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,
+  progressStrokeColor: Color? = null,
   content: @Composable BoxScope.(
     //bgColor: Color?,
     contentColor: Color,
@@ -155,6 +157,7 @@ fun IconProgression(
 ) {
   var contentColor = mainColor
   var bgColor: Color? = null
+  var usedProgressStrokeColor = progressStrokeColor
 
   when(iconMode) {
     IconColorMode.COLORED_BG -> {
@@ -167,13 +170,17 @@ fun IconProgression(
     else -> { /* Nothing */ }
   }
 
+  if(usedProgressStrokeColor == null) {
+    usedProgressStrokeColor = contentColor
+  }
+
   IconBackground(
     modifier = modifier,
     color = bgColor,
     shape = bgShape,
     progress = progress,
     progressStrokeWidth = progressStrokeWidth,
-    progressStrokeColor = contentColor,
+    progressStrokeColor = usedProgressStrokeColor,
     contentPadding = contentPadding,
   ) {
     content(contentColor)
@@ -242,7 +249,7 @@ private fun IconItem_preview() {
  * [monoColor] should be white or black, but doesn't throw exception if it isn't either of them.
  * [name] can be null if this icon have a pure decorative mean, but doesn't throw exception not.
  */
-@SuppressLint("ModifierParameter")
+@SuppressLint(SuppressLiteral.MODIFIER_PARAMETER)
 @Composable
 fun IconProgressionPic(
   icon: Painter,
@@ -255,6 +262,7 @@ fun IconProgressionPic(
   bgShape: Shape = CircleShape,
   progress: Float? = null,
   progressStrokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,
+  progressStrokeColor: Color? = null,
 ) {
   IconProgression(
     mainColor = mainColor,
@@ -265,6 +273,7 @@ fun IconProgressionPic(
     bgShape = bgShape,
     progress = progress,
     progressStrokeWidth = progressStrokeWidth,
+    progressStrokeColor = progressStrokeColor,
   ) { contentColor ->
     Icon(
       painter = icon,
@@ -319,7 +328,7 @@ private fun IconProgressionText_preview() {
   }
 }
 
-@SuppressLint("ModifierParameter")
+@SuppressLint(SuppressLiteral.MODIFIER_PARAMETER)
 @Composable
 fun IconProgressionText(
   text: String,
@@ -332,6 +341,7 @@ fun IconProgressionText(
   bgShape: Shape = CircleShape,
   progress: Float? = null,
   progressStrokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,
+  progressStrokeColor: Color? = null,
 ) {
   IconProgression(
     mainColor = mainColor,
@@ -342,6 +352,7 @@ fun IconProgressionText(
     bgShape = bgShape,
     progress = progress,
     progressStrokeWidth = progressStrokeWidth,
+    progressStrokeColor = progressStrokeColor,
   ) { contentColor ->
     Text(
       text = text,
@@ -352,6 +363,58 @@ fun IconProgressionText(
     )
   }
 }
+
+
+@SuppressLint(SuppressLiteral.MODIFIER_PARAMETER)
+@Composable
+fun IconProgressionAdapt(
+  icon: Painter?,
+  text: String?,
+  mainColor: Color,
+  modifier: Modifier = Modifier.size(50.dp),
+  textSize: TextUnit = TextUnit.Unspecified,
+  monoColor: Color = Color.White,
+  contentPadding: PaddingValues? = null,
+  iconMode: IconColorMode = IconColorMode.COLORED_BG,
+  bgShape: Shape = CircleShape,
+  progress: Float? = null,
+  progressStrokeWidth: Dp = ProgressIndicatorDefaults.StrokeWidth,
+  progressStrokeColor: Color? = null,
+) {
+  when {
+    icon != null -> IconProgressionPic(
+      icon = icon,
+      name = text,
+      mainColor = mainColor,
+      monoColor = monoColor,
+      modifier = modifier,
+      iconPadding = contentPadding,
+      iconMode = iconMode,
+      bgShape = bgShape,
+      progress = progress,
+      progressStrokeWidth = progressStrokeWidth,
+      progressStrokeColor = progressStrokeColor,
+    )
+    text == null -> throw IllegalArgumentException(
+      "Parameter `icon` and `text` can't be both null"
+    )
+    else -> IconProgressionText(
+      text = text,
+      textSize = textSize,
+      mainColor = mainColor,
+      monoColor = monoColor,
+      modifier = modifier,
+      textPadding = contentPadding,
+      iconMode = iconMode,
+      bgShape = bgShape,
+      progress = progress,
+      progressStrokeWidth = progressStrokeWidth,
+      progressStrokeColor = progressStrokeColor,
+    )
+  }
+}
+
+
 
 
 @Composable

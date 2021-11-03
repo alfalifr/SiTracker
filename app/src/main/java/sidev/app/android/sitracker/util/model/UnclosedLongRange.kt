@@ -7,6 +7,14 @@ data class UnclosedLongRange(
    */
   val end: Long?,
 ) {
+  init {
+    if(end != null && end < start) {
+      throw IllegalArgumentException(
+        "`end` not null and must be greater than equal to `start` (end >= start)"
+      )
+    }
+  }
+
   operator fun contains(number: Long): Boolean =
     number >= start && (end == null || number <= end)
 
@@ -19,4 +27,7 @@ data class UnclosedLongRange(
       (end == null ||
         (other.end != null && other.end <= end)
         )
+
+  fun diff(): Long? = if(end == null) null
+    else end - start
 }

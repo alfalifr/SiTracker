@@ -30,6 +30,17 @@ interface TaskDao {
     limit: Int = 10
   ): Flow<List<Task>>
 
+  @Query("""
+    SELECT * FROM tasks
+    WHERE id NOT IN (:excludedIds)
+    ORDER BY priority DESC
+    LIMIT :limit
+  """)
+  fun getNotInIdsOrderedByPriority(
+    excludedIds: Set<Int>,
+    limit: Int = 10
+  ): Flow<List<Task>>
+
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun insert(task: Task): Flow<Int>
 

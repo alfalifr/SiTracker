@@ -44,5 +44,5 @@ interface ScheduleDao {
   fun delete(schedule: Schedule): Flow<Int>
 
   @RawQuery //TODO: Make custom raw query for today's task
-  fun getTodaysSchedules(sql: SupportSQLiteQuery): Flow<List<Schedule>>
+  fun getTodaySchedules(sql: SupportSQLiteQuery): Flow<List<Schedule>>
 }

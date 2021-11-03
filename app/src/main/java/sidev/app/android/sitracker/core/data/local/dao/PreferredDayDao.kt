@@ -37,4 +37,18 @@ interface PreferredDayDao {
     nowDay: Int,
     scheduleIds: Set<Int>,
   ): Flow<List<PreferredDay>>
+
+  /**
+   * [nowDay] is measured in day.
+   * It has value between 0-6 starts with Sunday.
+   */
+  @Query("""
+    SELECT * FROM preferred_days
+    WHERE dayInWeek = :nowDay
+    AND scheduleId IN (:scheduleIds)
+  """)
+  fun getDayByNowAndScheduleIds(
+    nowDay: Int,
+    scheduleIds: Set<Int>,
+  ): Flow<List<PreferredDay>>
 }

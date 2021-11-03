@@ -50,8 +50,6 @@ val Constraints.maxSquareConstraint: Constraints
     )
   }
 
-//TODO: implement time formatting algo
-fun formatTimeToShortest(time: Long): String = time.toString()
 
 
 fun getTimeMillisInDay(cal: Calendar): Long {
@@ -61,4 +59,14 @@ fun getTimeMillisInDay(cal: Calendar): Long {
   val t0Milli = cal[Calendar.MILLISECOND]
 
   return t0Hour + t0Min + t0Sec + t0Milli
+}
+
+fun getDateMillis(time: Long): Long {
+  val cal = Calendar.getInstance()
+  cal.timeInMillis = time
+  return getDateMillis(cal)
+}
+fun getDateMillis(cal: Calendar): Long {
+  val timeInDay = getTimeMillisInDay(cal)
+  return cal.timeInMillis - timeInDay
 }

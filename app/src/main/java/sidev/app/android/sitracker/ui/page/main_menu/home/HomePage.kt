@@ -2,48 +2,31 @@
 
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
-import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.lerp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.DefaultLoading
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.component.IconWithText
-import sidev.app.android.sitracker.ui.model.IconProgressionUiData
-import sidev.app.android.sitracker.util.DataMapper.toUiData
+import sidev.app.android.sitracker.util.DataMapper.toPicUiData
 import sidev.app.android.sitracker.util.defaultViewModel
 import sidev.app.android.sitracker.util.loge
 import sidev.app.android.sitracker.util.maxSquareSideLen
 import sidev.app.android.sitracker.util.pagerTransformation
-import kotlin.math.absoluteValue
 
 
 @Composable
@@ -73,9 +56,9 @@ private fun HomePageMainComp(
     .collectAsState(initial = null).value
   val lowerDetailData = viewModel.activeLowerDetailData
     .collectAsState(initial = null).value
-  val iconList = viewModel.iconResIds
+  val iconList = viewModel.iconResIdData
     .collectAsState(initial = null).value
-    ?.toUiData()
+    ?.toPicUiData()
 
   val pagerState = rememberPagerState()
 
@@ -153,19 +136,19 @@ private fun HomeLowerDetail(
     ) {
       IconWithText(
         icon = painterResource(id = R.drawable.ic_timer),
-        text = "${data.duration} millis", //TODO: Change the time format
+        text = data.duration,
       )
       if(data.startTime != null) {
         IconWithText(
           icon = painterResource(id = R.drawable.ic_clock),
-          text = data.startTime, //TODO: Change the time format
+          text = data.startTime,
         )
       }
     }
     Spacer(Modifier.height(15.dp))
     IconWithText(
       icon = painterResource(id = R.drawable.ic_bookmark),
-      text = "Priority #${data.priority}", //TODO: Change the time format
+      text = data.priority,
     )
   }
 }

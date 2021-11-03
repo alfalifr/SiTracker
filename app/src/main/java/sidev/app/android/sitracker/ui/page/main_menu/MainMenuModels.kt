@@ -13,7 +13,7 @@ sealed class NavItem(
 ) {
   companion object {
     fun allItems(): List<NavItem> = listOf(
-      Home, TodaysSchedule, Calendar,
+      Home, TodaySchedule, Calendar,
     )
   }
 
@@ -22,8 +22,8 @@ sealed class NavItem(
     iconSource = R.drawable.ic_bookmark,
     label = "Home"
   )
-  object TodaysSchedule: NavItem(
-    route = Routes.TodaysSchedulePage.completeRoute,
+  object TodaySchedule: NavItem(
+    route = Routes.TodaySchedulePage.completeRoute,
     iconSource = R.drawable.ic_bookmark,
     label = "Schedule"
   )

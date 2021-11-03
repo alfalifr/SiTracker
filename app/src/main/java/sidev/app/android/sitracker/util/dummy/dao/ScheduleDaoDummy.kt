@@ -32,7 +32,7 @@ object ScheduleDaoDummy: ScheduleDao {
 
   override fun delete(schedule: Schedule): Flow<Int> = flow { emit(1) }
 
-  override fun getTodaysSchedules(sql: SupportSQLiteQuery): Flow<List<Schedule>> = flow {
+  override fun getTodaySchedules(sql: SupportSQLiteQuery): Flow<List<Schedule>> = flow {
     emit(Dummy.schedules)
   }
 }

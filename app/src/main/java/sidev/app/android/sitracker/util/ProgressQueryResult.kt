@@ -1,8 +1,8 @@
 package sidev.app.android.sitracker.util
 
 import sidev.app.android.sitracker.core.data.local.model.*
-
-data class RecommendationQuery(
+/*
+data class ProgressQueryResult(
   val activeDates: List<ActiveDate>,
   val preferredTimes: List<PreferredTime>,
   val preferredDays: List<PreferredDay>,
@@ -10,3 +10,6 @@ data class RecommendationQuery(
   val schedules: List<Schedule>,
   val tasks: List<Task>,
 )
+
+
+ */

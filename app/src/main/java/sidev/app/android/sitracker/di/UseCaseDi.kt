@@ -1,17 +1,17 @@
 package sidev.app.android.sitracker.di
 
-import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
-import sidev.app.android.sitracker.core.domain.usecase.IconUseCaseImpl
-import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCase
-import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCaseImpl
+import sidev.app.android.sitracker.core.domain.usecase.*
 
 interface UseCaseDi {
-  fun recommendationUseCase(): RecommendationUseCase
+  fun queryUseCase(): QueryUseCase
+  fun queryJointUseCase(): QueryJointUseCase
   fun iconUseCase(): IconUseCase
+  fun recommendationUseCase(): RecommendationUseCase
+  fun taskItemScheduleUseCase(): TaskItemScheduleUseCase
 }
 
 class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
-  override fun recommendationUseCase(): RecommendationUseCase = RecommendationUseCaseImpl(
+  override fun queryUseCase(): QueryUseCase = QueryUseCaseImpl(
     activeDateDao = daoDi.activeDateDao(),
     preferredTimeDao = daoDi.preferredTimeDao(),
     preferredDayDao = daoDi.preferredDayDao(),
@@ -19,5 +19,11 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
     scheduleProgressDao = daoDi.scheduleProgressDao(),
     taskDao = daoDi.taskDao(),
   )
+
+  override fun queryJointUseCase(): QueryJointUseCase = QueryJointUseCaseImpl()
   override fun iconUseCase(): IconUseCase = IconUseCaseImpl()
+  override fun recommendationUseCase(): RecommendationUseCase = RecommendationUseCaseImpl()
+  override fun taskItemScheduleUseCase(): TaskItemScheduleUseCase = TaskItemScheduleUseCaseImpl(
+    iconUseCase = iconUseCase(),
+  )
 }

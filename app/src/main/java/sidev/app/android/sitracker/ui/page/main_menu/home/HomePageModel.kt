@@ -21,7 +21,7 @@ import sidev.app.android.sitracker.core.data.local.model.Task
  * Composed of [Task], [Schedule], and [PreferredTime]
  */
 data class HomeLowerDetailData(
-  val duration: Long,
+  val duration: String,
   val startTime: String?,
-  val priority: Int,
+  val priority: String,
 )

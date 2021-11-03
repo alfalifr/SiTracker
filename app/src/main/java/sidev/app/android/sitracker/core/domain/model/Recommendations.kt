@@ -6,20 +6,6 @@ import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.*
 import kotlin.math.absoluteValue
 
-
-/**
- * A join result of [ScheduleProgress] and other
- * related data so that [ProgressImportanceFactor]
- * can be produced.
- */
-data class ProgressJoint(
-  val progress: ScheduleProgress,
-  val schedule: Schedule,
-  val task: Task,
-  val activeDates: List<ActiveDate>,
-  val preferredTimes: List<PreferredTime>,
-  val preferredDays: List<PreferredDay>,
-)
 /*
 {
   val importanceFactor: ProgressImportanceFactor

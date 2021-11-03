@@ -7,14 +7,17 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.data.local.dao.*
 import sidev.app.android.sitracker.core.data.local.model.*
-import sidev.app.android.sitracker.core.domain.model.IconProgressionData
+import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
 import sidev.app.android.sitracker.core.domain.model.ProgressImportanceJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressJoint
+import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
+import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
+import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
 import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCase
-import sidev.app.android.sitracker.util.Color
-import sidev.app.android.sitracker.util.RecommendationQuery
-import sidev.app.android.sitracker.util.formatTimeToShortest
+import sidev.app.android.sitracker.util.Texts.formatDurationToShortest
+import sidev.app.android.sitracker.util.Texts.formatPriority
+import sidev.app.android.sitracker.util.Texts.formatTimeToShortest
 import java.util.*
 
 class HomeViewModel(
@@ -25,9 +28,11 @@ class HomeViewModel(
   private val scheduleDao: ScheduleDao,
   private val taskDao: TaskDao,
    */
+  private val queryUseCase: QueryUseCase,
+  private val queryJointUseCase: QueryJointUseCase,
   private val recommendationUseCase: RecommendationUseCase,
   private val iconUseCase: IconUseCase,
-  private val coroutineScope: CoroutineScope? = null
+  private val coroutineScope: CoroutineScope? = null,
 ): ViewModel() {
 
   //private val _taskTitle = MutableLiveData<String>()
@@ -61,11 +66,11 @@ class HomeViewModel(
   }
 
 
-  private val recommendationQuery: Flow<RecommendationQuery> = _nowFlow.flatMapLatest {
-    recommendationUseCase.queryRecommendations(it)
+  private val progressQuery: Flow<ProgressQueryResult> = _nowFlow.flatMapLatest {
+    queryUseCase.queryRecommendations(it)
   }
-  private val rawProgressJoints: Flow<List<ProgressJoint>> = recommendationQuery.map {
-    recommendationUseCase.getProgressJoint(
+  private val rawProgressJoints: Flow<List<ProgressJoint>> = progressQuery.map {
+    queryJointUseCase.getProgressJoint(
       tasks = it.tasks,
       schedules = it.schedules,
       activeDates = it.activeDates,
@@ -85,7 +90,7 @@ class HomeViewModel(
 
 //  private val _recommendedTasks = MutableStateFlow<List<Task>?>(null)
 
-  val iconResIds: Flow<List<IconProgressionData>> = sortedImportances.map { importances ->
+  val iconResIdData: Flow<List<IconProgressionPicData>> = sortedImportances.map { importances ->
     importances.map {
       iconUseCase.getIconProgressionData(it.joint)
     }
@@ -111,9 +116,9 @@ class HomeViewModel(
         ?.startTime
 
       HomeLowerDetailData(
-        duration = schedule.totalProgress,
+        duration = formatDurationToShortest(schedule.totalProgress),
         startTime = startTime?.let { formatTimeToShortest(it) },
-        priority = importance.joint.task.priority,
+        priority = formatPriority(importance.joint.task.priority),
       )
     }
 

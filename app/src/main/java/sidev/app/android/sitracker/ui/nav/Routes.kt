@@ -4,7 +4,6 @@ package sidev.app.android.sitracker.ui.nav
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import sidev.app.android.sitracker.ui.component.MainMenuContentTransition
@@ -12,7 +11,7 @@ import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
-import sidev.app.android.sitracker.ui.page.main_menu.todays_schedule.TodaysSchedulePage
+import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodaySchedulePage
 import sidev.app.android.sitracker.util.model.Direction
 
 sealed class Routes(
@@ -35,7 +34,7 @@ sealed class Routes(
       MainMenuPage,
     )
     fun getMainMenuContentRoutes(): List<IndexedRoutes> = listOf(
-      HomePage, TodaysSchedulePage, CalendarPage,
+      HomePage, TodaySchedulePage, CalendarPage,
     )
   }
 
@@ -60,11 +59,11 @@ sealed class Routes(
         TODO("Implement `Routes.HomePage.onItemClick`")
       }
   })
-  object TodaysSchedulePage: MainMenuItemRoute(
-    "TodaysSchedulePage",
+  object TodaySchedulePage: MainMenuItemRoute(
+    "TodaySchedulePage",
     1,
     "Today's schedule", {
-      TodaysSchedulePage(navController = it.navController)
+      TodaySchedulePage(navController = it.navController)
   })
   object CalendarPage: MainMenuItemRoute(
     "CalendarPage",
