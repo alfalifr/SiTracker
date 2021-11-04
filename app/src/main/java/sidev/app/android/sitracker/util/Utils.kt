@@ -11,6 +11,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import sidev.app.android.sitracker.di.DiCenter
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.math.log
+import kotlin.math.pow
 
 
 fun loge(
@@ -70,3 +72,55 @@ fun getDateMillis(cal: Calendar): Long {
   val timeInDay = getTimeMillisInDay(cal)
   return cal.timeInMillis - timeInDay
 }
+
+
+infix fun Int.hasMask(other: Int): Boolean = (this and other) == other
+infix fun Int.notHasMask(other: Int): Boolean = !hasMask(other)
+
+fun Int.hasMask(vararg other: Int): Boolean = other.all { this hasMask it }
+//fun Int.notHasMask(vararg other: Int): Boolean = !hasMask(*other)
+
+
+/**
+ * [indexIgnoreNulls] true it means an array / list
+ * doesn't contain null elements. Null element is represented
+ * by absent of [elementMask] in [allMask] (allMask and partMask != partMask).
+ */
+fun getIndexWithMask(
+  allMask: Int,
+  elementMask: Int,
+  indexIgnoreNulls: Boolean = true,
+): Int? {
+  if(allMask notHasMask elementMask) {
+    return null
+  }
+
+  //val bitShiftDouble = log(elementMask.toDouble(), 2.0) //elementMask.toDouble().pow(1/2.0)
+  val bitShift = log(elementMask.toDouble(), 2.0).toInt() //elementMask.toDouble().pow(1/2.0).toInt()
+
+  //println("allMask = $allMask elementMask = $elementMask bitShift = $bitShift bitShiftDouble = $bitShiftDouble")
+
+  if(!indexIgnoreNulls) {
+    return bitShift
+  }
+
+  var currentIndex = 0
+  for(i in 0 until bitShift) {
+    //println("i = $i allMask hasMask i => ${allMask hasMask i}")
+    if(allMask hasMask (1 shl i)) {
+      currentIndex++
+    }
+  }
+
+  //println("currentIndex = $currentIndex")
+
+  return currentIndex
+}
+
+fun <T> List<T>.getWithMask(
+  allMask: Int,
+  elementMask: Int,
+  indexIgnoreNulls: Boolean = true,
+): T? = getIndexWithMask(
+  allMask, elementMask, indexIgnoreNulls
+)?.let { this[it] }

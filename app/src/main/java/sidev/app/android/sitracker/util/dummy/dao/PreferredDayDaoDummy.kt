@@ -36,4 +36,20 @@ object PreferredDayDaoDummy: PreferredDayDao {
       }
     )
   }
+
+  /**
+   * [nowDay] is measured in day.
+   * It has value between 0-6 starts with Sunday.
+   */
+  override fun getDayByNowAndScheduleIds(
+    nowDay: Int,
+    scheduleIds: Set<Int>
+  ): Flow<List<PreferredDay>> = flow {
+    emit(
+      Dummy.preferredDay.filter {
+        it.dayInWeek == nowDay
+          && it.scheduleId in scheduleIds
+      }
+    )
+  }
 }

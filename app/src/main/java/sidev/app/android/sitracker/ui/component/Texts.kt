@@ -10,8 +10,9 @@ import androidx.compose.ui.Modifier
 @Composable
 fun DefaultText(
   text: String,
+  modifier: Modifier = Modifier.fillMaxSize(),
 ) {
-  Box(Modifier.fillMaxSize()) {
+  Box(modifier) {
     Text(
       text,
       Modifier.align(Alignment.Center),

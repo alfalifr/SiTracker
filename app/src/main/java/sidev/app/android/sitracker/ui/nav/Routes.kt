@@ -17,6 +17,7 @@ import sidev.app.android.sitracker.util.model.Direction
 sealed class Routes(
   val route: String,
   open val composable: @Composable NavGraphBuilder.(NavComposableData) -> Unit,
+  open val ignoreContentPadding: Boolean = false,
 ) {
 
   sealed class IndexedRoutes(
@@ -58,7 +59,9 @@ sealed class Routes(
       HomePage(navController = it.navController) {
         TODO("Implement `Routes.HomePage.onItemClick`")
       }
-  })
+  }) {
+    override val ignoreContentPadding: Boolean = true
+  }
   object TodaySchedulePage: MainMenuItemRoute(
     "TodaySchedulePage",
     1,
@@ -87,7 +90,10 @@ sealed class MainMenuItemRoute(
 ) {
   override val composable: @Composable NavGraphBuilder.(NavComposableData) -> Unit = {
     navComposableData ->
-    MainMenuItemLayout(title = title) {
+    MainMenuItemLayout(
+      title = title,
+      ignoreContentPadding = ignoreContentPadding,
+    ) {
       val navBuilder = this
       AnimatedEnter(navComposableData = navComposableData) {
         content(navBuilder, navComposableData)

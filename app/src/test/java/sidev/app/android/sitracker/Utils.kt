@@ -17,3 +17,11 @@ fun ProgressImportanceCalculator.isActive(): Boolean =
   tiDelta > 0 && tdDelta > 0
 
 
+
+fun <T> List<T>.randomSubset(): Set<T> {
+  val res = mutableSetOf<T>()
+  for(i in 0 .. indices.random()) {
+    res += this[indices.random()]
+  }
+  return res
+}

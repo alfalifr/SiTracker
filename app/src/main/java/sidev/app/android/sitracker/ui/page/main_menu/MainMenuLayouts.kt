@@ -7,13 +7,23 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import sidev.app.android.sitracker.ui.layout.TitleIconLayout
 
+//TODO: Extract logic to common function
 @Composable
 fun MainMenuItemLayout(
   title: String?,
-  content: @Composable (upperContentPadding: PaddingValues) -> Unit,
+  ignoreContentPadding: Boolean = false,
+  content: @Composable (contentPadding: Dp) -> Unit,
 ) {
+  TitleIconLayout(
+    title = title,
+    ignoreContentPadding = ignoreContentPadding,
+    content = content,
+  )
+  /*
   Box {
     content(
       PaddingValues(15.dp)
@@ -28,4 +38,5 @@ fun MainMenuItemLayout(
       //Spacer(Modifier.height(15.dp))
     }
   }
+   */
 }

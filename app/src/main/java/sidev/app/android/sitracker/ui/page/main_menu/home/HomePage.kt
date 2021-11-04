@@ -24,7 +24,6 @@ import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.component.IconWithText
 import sidev.app.android.sitracker.util.DataMapper.toPicUiData
 import sidev.app.android.sitracker.util.defaultViewModel
-import sidev.app.android.sitracker.util.loge
 import sidev.app.android.sitracker.util.maxSquareSideLen
 import sidev.app.android.sitracker.util.pagerTransformation
 
@@ -96,7 +95,7 @@ private fun HomePageMainComp(
           state = pagerState,
         ) { page ->
           val data = iconList[page]
-          loge("HomePage: HorizontalPage Item currentPage = $currentPage currentPageOffset = $currentPageOffset it = $page this = $this data= $data")
+          //loge("HomePage: HorizontalPage Item currentPage = $currentPage currentPageOffset = $currentPageOffset it = $page this = $this data= $data")
           IconProgressionPic(
             icon = data.image,
             mainColor = data.color,

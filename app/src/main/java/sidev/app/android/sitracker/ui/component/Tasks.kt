@@ -80,6 +80,81 @@ fun TaskItem(
   val bgShape = RoundedCornerShape(15.dp)
   //val containerHeight = 70.dp
 
+  PrefixPostfixLayout(
+    modifier = modifier
+      .semantics(mergeDescendants = true) {
+        contentDescription =
+          "$title. $contentText."
+        if(onClick != null) {
+          customActions = listOf(
+            CustomAccessibilityAction("Task Item Click: $title") {
+              onClick()
+              true
+            }
+          )
+        }
+      }
+      .background(
+        color = MaterialTheme.colors.surface,
+        shape = bgShape,
+      )
+      .shadow(
+        elevation = 5.dp,
+        shape = bgShape,
+      )
+      .padding(
+        horizontal = 15.dp,
+        vertical = 10.dp,
+      ),
+    prefix = {
+      IconProgressionPic(
+        icon = icon,
+        mainColor = color,
+        name = null,
+      )
+    },
+    postfix = if(postfixIconData != null) {
+      {
+        var iconPainter: Painter? = null
+        val text = postfixIconData.progress?.let {
+          formatProgress(it)
+        }
+
+        if(postfixIconData is IconProgressionPicUiData) {
+          iconPainter = postfixIconData.image
+        }
+        IconProgressionAdapt(
+          icon = iconPainter,
+          text = text,
+          mainColor =
+            if(isPostfixIconDataColorSameAsMainColor) color
+            else postfixIconData.color,
+        )
+      }
+    } else null
+  ) {
+    Column(
+      modifier = Modifier.fillMaxWidth(),
+      verticalArrangement = Arrangement.SpaceBetween,
+    ) {
+      Text(
+        text = title,
+        fontSize = MaterialTheme.typography.body1.fontSize,
+        maxLines = 3,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier.clearAndSetSemantics {  },
+      )
+      if(contentText != null) {
+        Spacer(Modifier.height(10.dp))
+        Text(
+          text = contentText,
+          fontSize = MaterialTheme.typography.body2.fontSize,
+          modifier = Modifier.clearAndSetSemantics {  },
+        )
+      }
+    }
+  }
+/*
   Layout(
     modifier = modifier
       .semantics(mergeDescendants = true) {
@@ -207,4 +282,5 @@ fun TaskItem(
       }
     }
   }
+ */
 }

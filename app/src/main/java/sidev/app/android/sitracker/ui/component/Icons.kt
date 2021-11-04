@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.SuppressLiteral
 import sidev.app.android.sitracker.util.maxSquareSideLen
 
@@ -142,7 +143,7 @@ private fun IconBackground(
 @Composable
 fun IconProgression(
   mainColor: Color,
-  modifier: Modifier = Modifier.size(50.dp),
+  modifier: Modifier = Modifier.size(Const.iconSizeDp),
   monoColor: Color = Color.White,
   contentPadding: PaddingValues? = null,
   iconMode: IconColorMode = IconColorMode.COLORED_BG,
@@ -254,7 +255,7 @@ private fun IconItem_preview() {
 fun IconProgressionPic(
   icon: Painter,
   mainColor: Color,
-  modifier: Modifier = Modifier.size(50.dp),
+  modifier: Modifier = Modifier.size(Const.iconSizeDp),
   monoColor: Color = Color.White,
   name: String?,
   iconPadding: PaddingValues? = null,
@@ -333,7 +334,7 @@ private fun IconProgressionText_preview() {
 fun IconProgressionText(
   text: String,
   mainColor: Color,
-  modifier: Modifier = Modifier.size(50.dp),
+  modifier: Modifier = Modifier.size(Const.iconSizeDp),
   monoColor: Color = Color.White,
   textSize: TextUnit = TextUnit.Unspecified,
   textPadding: PaddingValues? = null,
@@ -371,7 +372,7 @@ fun IconProgressionAdapt(
   icon: Painter?,
   text: String?,
   mainColor: Color,
-  modifier: Modifier = Modifier.size(50.dp),
+  modifier: Modifier = Modifier.size(Const.iconSizeDp),
   textSize: TextUnit = TextUnit.Unspecified,
   monoColor: Color = Color.White,
   contentPadding: PaddingValues? = null,
