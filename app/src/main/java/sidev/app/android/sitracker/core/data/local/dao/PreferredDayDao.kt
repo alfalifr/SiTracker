@@ -26,7 +26,7 @@ interface PreferredDayDao {
 
   /**
    * [nowDay] is measured in day.
-   * It has value between 0-6 starts with Sunday.
+   * It has value between 1-7 starts with Sunday.
    */
   @Query("""
     SELECT * FROM preferred_days
@@ -40,7 +40,7 @@ interface PreferredDayDao {
 
   /**
    * [nowDay] is measured in day.
-   * It has value between 0-6 starts with Sunday.
+   * It has value between 1-7 starts with Sunday.
    */
   @Query("""
     SELECT * FROM preferred_days

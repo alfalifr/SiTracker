@@ -9,5 +9,5 @@ object Texts {
 
   fun formatPriority(priority: Int): String = "Priority #$priority"
 
-  fun formatProgress(progress: Float): String = "${String.format("%.0f", progress * 100)} %"
+  fun formatProgress(progress: Float): String = "${String.format("%.0f", progress * 100)}%"
 }

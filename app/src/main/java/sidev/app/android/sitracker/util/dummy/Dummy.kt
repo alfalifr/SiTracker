@@ -30,7 +30,9 @@ object Dummy {
    * Pair of actual progress and total progress.
    */
   val scheduleProgressNumber = listOf<Pair<Long, Long>>(
-    100L to 2500L, 30L to 88L, 10L to 50L,
+    100L to 2500L,
+    30L to 88L,
+    10L to 50L,
   )
 
   val schedules = tasks.mapIndexed { i, task ->
@@ -82,5 +84,28 @@ object Dummy {
   val preferredDay = listOf<PreferredDay>(
     PreferredDay(3, schedules[2].id),
     PreferredDay(3, schedules[1].id),
+
+    PreferredDay(6, schedules[1].id),
+    PreferredDay(6, schedules[2].id),
+    // Code 20 Lines
+    ///*
+    PreferredDay(0, schedules[0].id),
+    PreferredDay(1, schedules[0].id),
+    PreferredDay(2, schedules[0].id),
+    PreferredDay(3, schedules[0].id),
+    PreferredDay(4, schedules[0].id),
+    PreferredDay(5, schedules[0].id),
+    PreferredDay(6, schedules[0].id),
+     // */
+    // Runaway
+    ///*
+    PreferredDay(0, schedules[2].id),
+    PreferredDay(1, schedules[2].id),
+    PreferredDay(2, schedules[2].id),
+    PreferredDay(3, schedules[2].id),
+    PreferredDay(4, schedules[2].id),
+    PreferredDay(5, schedules[2].id),
+    PreferredDay(6, schedules[2].id),
+     // */
   )
 }

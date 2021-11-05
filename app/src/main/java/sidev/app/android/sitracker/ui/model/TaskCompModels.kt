@@ -7,8 +7,11 @@ import sidev.app.android.sitracker.ui.component.TaskItem
 
 /**
  * Data model for [TaskItem].
+ * [id] is for this component identifier,
+ * often is schedule id.
  */
 data class TaskCompData(
+  val id: Int,
   val icon: IconProgressionPicData,
   val title: String,
   val desc: String?,

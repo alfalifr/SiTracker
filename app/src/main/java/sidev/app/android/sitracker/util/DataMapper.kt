@@ -1,11 +1,13 @@
 package sidev.app.android.sitracker.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.core.domain.model.*
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.ui.model.*
+import sidev.app.android.sitracker.ui.theme.GreenLight
 
 object DataMapper {
   @Composable
@@ -51,24 +53,31 @@ object DataMapper {
     val postfixIconData: IconProgressionData = when {
       progressFraction < 1f -> IconProgressionTextData(
         text = Texts.formatProgress(progressFraction),
-        color = task.color,
+        color = getHexString(
+          getScoreColor(progressFraction, 1).toArgb()
+        )
+          .also { println("TaskItemSchedule.toUiData color = $it") }
+        ,
         progressFraction = progressFraction,
       )
       else -> IconProgressionPicData(
         resId = R.drawable.ic_check,
-        color = task.color,
-        progressFraction = progressFraction,
+        color = getHexString(GreenLight.toArgb())
+          .also { println("TaskItemSchedule.toUiData check color = $it") }
+        ,
+        progressFraction = null,
       )
     }
 
     TaskCompData(
+      id = schedule.id,
       icon = prefixIcon,
       title = task.name,
       desc = timeRange?.diff()?.let {
         Texts.formatDurationToShortest(it)
       },
       postfixIconData = postfixIconData,
-      isPostfixIconDataColorSameAsMainColor = true,
+      isPostfixIconDataColorSameAsMainColor = false,
     )
   }
 

@@ -82,7 +82,7 @@ interface QueryUseCase {
    *      - set of 'scheduleId' from queried `PreferredDay`:
    *        This is for showing the preferred time in that preferred day of a `Schedule`.
    *
-   *   4. Query `ScheduleProgress` based on:
+   *   4. Query `ScheduleProgress` based on (AND condition):
    *      - set of 'scheduleId' from queried `PreferredDay`:
    *        The queried `ScheduleProgress` will only be the preferred ones in that day.
    *        Of course this is for the context of 'Today' Schedule (which is based on `PreferredDay`).
@@ -93,6 +93,9 @@ interface QueryUseCase {
    *      - Preferred days (point 2),
    *
    *   6. Query `Task` based on set of `taskId` from queried `Schedule` (point 5).
+   *
+   * NOTE: this method doesn't check or convert [nowDateTime] to millis
+   *  that only represents millis of that date without any hour or other smaller time unit in that date.
    */
   fun queryTodaySchedule(
     nowDateTime: Long,
@@ -195,28 +198,35 @@ class QueryUseCaseImpl(
   }
 
   override fun queryTodaySchedule(nowDateTime: Long): Flow<ProgressQueryResult> {
-    val nowDateTime = getDateMillis(nowDateTime) //TODO: Consider to delete this line to optimize run time.
+    //val nowDateTime = getDateMillis(nowDateTime) //TODO: Consider to delete this line to optimize run time.
 
     val cal = Calendar.getInstance().apply {
       timeInMillis = nowDateTime
     }
+    val day = cal[Calendar.DAY_OF_WEEK]
+    println("queryTodaySchedule day = $day nowDateTime = $nowDateTime")
 
     val activeDateFlow = activeDateDao.getActiveDateByTime(nowDateTime)
 
     val preferredDayFlow = activeDateFlow.flatMapLatest { activeDates ->
+
+      println("queryTodaySchedule activeDates = $activeDates")
+
       preferredDayDao.getDayByNowAndScheduleIds(
         scheduleIds = activeDates.map { it.scheduleId }.toSet(),
-        nowDay = cal[Calendar.DAY_OF_WEEK],
+        nowDay = day,
       )
     }
 
     val preferredTimeFlow = preferredDayFlow.flatMapLatest { preferredDays ->
+      println("queryTodaySchedule preferredDays = $preferredDays")
       preferredTimeDao.getTimeByScheduleIds(
         preferredDays.map { it.scheduleId }.toSet(),
       )
     }
 
     val scheduleProgressFlow = preferredDayFlow.flatMapLatest { preferredDays ->
+      println("queryTodaySchedule preferredDays = $preferredDays")
       scheduleProgressDao.getActiveProgressListByScheduleIds(
         timestamp = nowDateTime,
         scheduleIds = preferredDays.map { it.scheduleId }.toSet(),
@@ -230,6 +240,7 @@ class QueryUseCaseImpl(
     }
 
     val taskFlow = scheduleFlow.flatMapLatest { schedules ->
+      println("queryTodaySchedule schedules = $schedules")
       taskDao.getByIds(
         schedules.map { it.taskId }.toSet()
       )

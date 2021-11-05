@@ -49,6 +49,7 @@ open class VmDiImpl(
   @Suppress(SuppressLiteral.UNCHECKED_CAST)
   override fun <T : ViewModel?> create(modelClass: Class<T>): T = when {
     modelClass.isAssignableFrom(HomeViewModel::class.java) -> homeViewModel()
+    modelClass.isAssignableFrom(TodayScheduleViewModel::class.java) -> todayScheduleViewModel()
     else -> throw IllegalArgumentException("Unknown `modelClass` ($modelClass)")
   } as T
 }

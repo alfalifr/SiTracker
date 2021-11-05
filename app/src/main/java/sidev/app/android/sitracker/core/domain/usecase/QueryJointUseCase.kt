@@ -145,9 +145,11 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     preferredDays: List<PreferredDay>,
     progresses: List<ScheduleProgress>
   ): List<ScheduleJoint> {
+    println("getScheduleJoint AWAL schedules = $schedules")
     val scheduleJoints = mutableListOf<ScheduleJoint>()
 
     for(schedule in schedules) {
+      println("getScheduleJoint schedule = $schedule tasks.find { it.id == schedule.taskId } => ${tasks.find { it.id == schedule.taskId }}")
       val task = tasks.find { it.id == schedule.taskId }
         ?: continue
 

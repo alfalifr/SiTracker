@@ -67,7 +67,7 @@ data class ProgressImportanceCalculator(
    */
   val tPrefTime1: Long?,
   /**
-   * Preferred day, 0-6 day (Sunday-Saturday) in week.
+   * Preferred day, 1-7 day (Sunday-Saturday) in week.
    */
   val tPrefDay: Int?,
 ) {

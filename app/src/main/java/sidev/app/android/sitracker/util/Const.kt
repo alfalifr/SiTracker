@@ -8,4 +8,9 @@ object Const {
 
   const val contentPadding = 15
   val contentPaddingDp = contentPadding.dp
+
+  const val defaultLoadingText = "Loading..."
+
+
+  const val scoreScale = 10 //100
 }

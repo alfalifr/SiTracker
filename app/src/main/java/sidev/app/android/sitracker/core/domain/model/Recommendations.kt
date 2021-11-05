@@ -88,7 +88,7 @@ data class ProgressImportanceFactor(
   val tPrefTimeRanges: List<UnclosedLongRange>,
 
   /**
-   * Preferred days, 0-6 day (Sunday-Saturday) in week.
+   * Preferred days, 1-7 day (Sunday-Saturday) in week.
    */
   val tPrefDays: List<Int>,
 ) {

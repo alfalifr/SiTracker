@@ -2,12 +2,16 @@ package sidev.app.android.sitracker.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -16,17 +20,22 @@ import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.*
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
+import sidev.app.android.sitracker.core.data.local.model.Task
 import sidev.app.android.sitracker.core.domain.model.IconProgressionData
 import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
 import sidev.app.android.sitracker.ui.model.IconProgressionPicUiData
 import sidev.app.android.sitracker.ui.model.IconProgressionFloatUiData
 import sidev.app.android.sitracker.ui.model.IconProgressionUiData
+import sidev.app.android.sitracker.ui.model.TaskCompData
 import sidev.app.android.sitracker.util.Color
+import sidev.app.android.sitracker.util.DataMapper.toUiData
 import sidev.app.android.sitracker.util.Texts.formatProgress
+import sidev.app.android.sitracker.util.disableScroll
 import sidev.app.android.sitracker.util.getStartCenterAligned
 
 
@@ -78,6 +87,7 @@ fun TaskItem(
   onClick: (() -> Unit)? = null,
 ) {
   val bgShape = RoundedCornerShape(15.dp)
+  val spaceWidth = 15.dp
   //val containerHeight = 70.dp
 
   PrefixPostfixLayout(
@@ -106,6 +116,7 @@ fun TaskItem(
         horizontal = 15.dp,
         vertical = 10.dp,
       ),
+    spaceWidth = spaceWidth,
     prefix = {
       IconProgressionPic(
         icon = icon,
@@ -129,6 +140,7 @@ fun TaskItem(
           mainColor =
             if(isPostfixIconDataColorSameAsMainColor) color
             else postfixIconData.color,
+          progress = postfixIconData.progress,
         )
       }
     } else null
@@ -283,4 +295,75 @@ fun TaskItem(
     }
   }
  */
+}
+
+/*
+@Composable
+@Preview
+fun TaskGroup_preview() {
+  TaskGroup(
+    header = "header bro",
+  )
+}
+ */
+
+@Composable
+fun TaskGroup(
+  header: String,
+  taskData: List<TaskCompData>,
+  modifier: Modifier = Modifier,
+  itemModifier: (TaskCompData) -> Modifier = { Modifier },
+  itemContentText: (TaskCompData) -> String? = { it.desc },
+  //isPostfixIconDataColorSameAsMainColor: (TaskCompData) -> Boolean = { true },
+  disableScroll: Boolean = true,
+  itemOnClick: ((TaskCompData) -> Unit)? = null,
+) {
+  Column(
+    modifier = modifier,
+  ) {
+    Text(
+      text = header,
+      style = MaterialTheme.typography.body2,
+      fontWeight = FontWeight.Bold,
+    )
+    Spacer(Modifier.height(10.dp))
+/*
+    val scrollState = rememberLazyListState()
+    if(disableScroll) {
+      scrollState.disableScroll(
+        rememberCoroutineScope()
+      )
+    }
+ */
+
+    @Composable
+    fun InnerTaskItem(task: TaskCompData) {
+      TaskItem(
+        icon = painterResource(id = task.icon.resId),
+        color = Color(task.icon.color),
+        title = task.title,
+        modifier = itemModifier(task),
+        contentText = itemContentText(task),
+        postfixIconData = task.postfixIconData?.toUiData(),
+        isPostfixIconDataColorSameAsMainColor = task.isPostfixIconDataColorSameAsMainColor,
+        onClick = if(itemOnClick != null) {
+          { itemOnClick(task) }
+        } else null,
+      )
+    }
+
+    if(disableScroll) {
+      Column {
+        for(task in taskData) {
+          InnerTaskItem(task = task)
+        }
+      }
+    } else {
+      LazyColumn {
+        items(taskData.size) { i ->
+          InnerTaskItem(task = taskData[i])
+        }
+      }
+    }
+  }
 }

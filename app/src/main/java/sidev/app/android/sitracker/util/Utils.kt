@@ -9,10 +9,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import sidev.app.android.sitracker.di.DiCenter
+import sidev.app.android.sitracker.ui.theme.GreenLight
+import sidev.app.android.sitracker.ui.theme.Red
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.log
-import kotlin.math.pow
 
 
 fun loge(
@@ -124,3 +125,57 @@ fun <T> List<T>.getWithMask(
 ): T? = getIndexWithMask(
   allMask, elementMask, indexIgnoreNulls
 )?.let { this[it] }
+
+
+
+
+/**
+ * Get a single color in certain [point] in color gradient between [first] and [last] color.
+ *
+ * [point] should have range between 0.0 - 1.0.
+ * If [point] is less or greater then the range, then [point] will be
+ * rounded up / down to the nearest value.
+ */
+fun getColorPointFromLinearGradient(
+  first: Color,
+  last: Color,
+  point: Double, // from 0.0 - 1.0
+): Color {
+  if(point <= 0.0) return first
+  if(point >= 1.0) return last
+
+  //first.
+  //val firstARGB = ARGBColor.fromColor(first);
+  //final lastARGB = ARGBColor.fromColor(last);
+
+  val aDiff = last.alpha - first.alpha
+  val rDiff = last.red - first.red
+  val gDiff = last.green - first.green
+  val bDiff = last.blue - first.blue
+
+  val aRes = (aDiff * point).toFloat() + first.alpha
+  val rRes = (rDiff * point).toFloat() + first.red
+  val gRes = (gDiff * point).toFloat() + first.green
+  val bRes = (bDiff * point).toFloat() + first.blue
+
+  return Color(
+    alpha = aRes,
+    red = rRes,
+    green = gRes,
+    blue = bRes,
+  )
+}
+
+fun getScoreColor(
+  score: Number,
+  scale: Int = Const.scoreScale,
+): Color = getColorPointFromLinearGradient(
+  first = Red,
+  last = GreenLight,
+  point = score.toDouble() / scale,
+)
+
+//Source: https://stackoverflow.com/a/6540378
+fun getHexString(colorValue: Int) =
+  "#" + Integer.toHexString(colorValue)
+  //String.format("#%08X", (0xFFFFFFFF and colorValue))

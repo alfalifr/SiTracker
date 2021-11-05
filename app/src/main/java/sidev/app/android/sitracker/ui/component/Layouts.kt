@@ -1,13 +1,12 @@
 package sidev.app.android.sitracker.ui.component
 
-import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import sidev.app.android.sitracker.ui.model.PrefixPostfixPlaceables
 import sidev.app.android.sitracker.util.getStartCenterAligned
@@ -16,6 +15,7 @@ import sidev.app.android.sitracker.util.getStartCenterAligned
 @Composable
 fun PrefixPostfixLayout(
   modifier: Modifier = Modifier,
+  spaceWidth: Dp = 15.dp,
   prefix: @Composable (() -> Unit)? = null,
   postfix: @Composable (() -> Unit)? = null,
   //verticalAlignment: Alignment.Vertical = Alignment.CenterVertically,
@@ -92,6 +92,7 @@ fun PrefixPostfixLayout(
         postfixMeasurable = postfixMeasurable,
         contentMeasurable = contentMeasurable,
         constraints = constraints,
+        spaceWidth = spaceWidth,
       ) ?: return@with layout(
         0, 0,
       ) {} // Impossibly returns null because this `PrefixPostfixLayout` method return di the beginning when all composable null.
@@ -129,7 +130,7 @@ fun PrefixPostfixLayout(
 
         contentPlaceable?.apply {
           place(
-            x = prefixWidth,
+            x = prefixWidth + spaceWidth.roundToPx(),
             y = getStartCenterAligned(
               parentLen = parentHeight,
               childLen = height,
@@ -148,6 +149,7 @@ fun MeasureScope.measurePrefixPostfixComponents(
   postfixMeasurable: Measurable?,
   contentMeasurable: Measurable?,
   constraints: Constraints,
+  spaceWidth: Dp = 15.dp,
 ): PrefixPostfixPlaceables? = with(constraints) {
   if(
     contentMeasurable == null
@@ -160,10 +162,10 @@ fun MeasureScope.measurePrefixPostfixComponents(
   val prefixPlaceable = prefixMeasurable?.measure(constraints)
   val postfixPlaceable = postfixMeasurable?.measure(constraints)
 
-  val spaceWidth = 15.dp.roundToPx()
+  val spaceWidthInPx = spaceWidth.roundToPx()
 
-  val prefixWidth = prefixPlaceable?.width?.plus(spaceWidth) ?: 0
-  val postfixWidth = postfixPlaceable?.width?.plus(spaceWidth) ?: 0
+  val prefixWidth = prefixPlaceable?.width?.plus(spaceWidthInPx) ?: 0
+  val postfixWidth = postfixPlaceable?.width?.plus(spaceWidthInPx) ?: 0
 
   val contentMaxWidth = maxWidth -
     prefixWidth -
