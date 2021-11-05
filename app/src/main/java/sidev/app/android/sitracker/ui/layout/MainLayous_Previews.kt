@@ -39,7 +39,7 @@ fun TitleIconLayout_preview() {
     ignoreContentPadding = false,
   ) {
     BoxWithConstraints {
-      val contentHeight = maxHeight * 2f
+      //val contentHeight = maxHeight * 2f
       //println("Preview maxHeight = $maxHeight contentHeight = $contentHeight")
       DefaultText(
         text = "This is the content",

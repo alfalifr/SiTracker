@@ -6,11 +6,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import sidev.app.android.sitracker.util.loge
 
 @Composable
 fun NavGraphComp(
-  navRoutes: List<Routes>,
+  navRoutes: List<Route>,
   startDestination: String,
   navController: NavHostController = rememberNavController(),
   parentNavController: NavController? = null,
@@ -44,7 +43,7 @@ fun NavGraphComp(
          */
         route.composable(
           this,
-          NavComposableData(
+          ComposableNavData(
             navController = navController,
             parentNavController = parentNavController,
             navBackStackEntry = navBackStackEntry,
@@ -64,10 +63,10 @@ fun MainMenuNavGraph(
   parentNavController: NavController? = null,
 ) {
   NavGraphComp(
-    navRoutes = Routes.getMainMenuContentRoutes(),
+    navRoutes = Route.getMainMenuContentRoutes(),
     navController = navController,
     parentNavController = parentNavController,
-    startDestination = Routes.HomePage.completeRoute,
+    startDestination = Route.HomePage.completeRoute,
   )
 }
 
@@ -77,9 +76,9 @@ fun AppNavGraph(
   parentNavController: NavController? = null,
 ) {
   NavGraphComp(
-    navRoutes = Routes.getAppRoutes(),
+    navRoutes = Route.getAppRoutes(),
     navController = navController,
     parentNavController = parentNavController,
-    startDestination = Routes.MainMenuPage.completeRoute,
+    startDestination = Route.MainMenuPage.completeRoute,
   )
 }

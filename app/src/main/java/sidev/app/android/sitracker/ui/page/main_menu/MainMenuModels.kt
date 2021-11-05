@@ -2,7 +2,7 @@ package sidev.app.android.sitracker.ui.page.main_menu
 
 import androidx.annotation.DrawableRes
 import sidev.app.android.sitracker.R
-import sidev.app.android.sitracker.ui.nav.Routes
+import sidev.app.android.sitracker.ui.nav.Route
 
 //TODO: change `label` of each `NavItem` to string resource.
 sealed class NavItem(
@@ -18,17 +18,17 @@ sealed class NavItem(
   }
 
   object Home: NavItem(
-    route = Routes.HomePage.completeRoute,
+    route = Route.HomePage.completeRoute,
     iconSource = R.drawable.ic_bookmark,
     label = "Home"
   )
   object TodaySchedule: NavItem(
-    route = Routes.TodaySchedulePage.completeRoute,
+    route = Route.TodaySchedulePage.completeRoute,
     iconSource = R.drawable.ic_bookmark,
     label = "Schedule"
   )
   object Calendar: NavItem(
-    route = Routes.CalendarPage.completeRoute,
+    route = Route.CalendarPage.completeRoute,
     iconSource = R.drawable.ic_bookmark,
     label = "Calendar"
   )
