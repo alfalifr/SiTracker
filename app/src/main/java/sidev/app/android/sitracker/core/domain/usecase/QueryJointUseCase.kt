@@ -4,6 +4,7 @@ import sidev.app.android.sitracker.core.data.local.model.*
 import sidev.app.android.sitracker.core.domain.model.ProgressJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
 import sidev.app.android.sitracker.core.domain.model.ScheduleJoint
+import sidev.app.android.sitracker.core.domain.model.TaskJoint
 
 
 interface QueryJointUseCase {
@@ -67,6 +68,32 @@ interface QueryJointUseCase {
     queryResults: ProgressQueryResult
   ): List<ScheduleJoint> = with(queryResults) {
     getScheduleJoint(
+      tasks = tasks,
+      schedules = schedules,
+      activeDates = activeDates,
+      preferredTimes = preferredTimes,
+      preferredDays = preferredDays,
+      progresses = progresses,
+    )
+  }
+
+
+  fun getTaskJoint(
+    tasks: List<Task>,
+    schedules: List<Schedule>,
+    activeDates: List<ActiveDate>,
+    preferredTimes: List<PreferredTime>,
+    preferredDays: List<PreferredDay>,
+    progresses: List<ScheduleProgress>,
+  ): List<TaskJoint>
+
+  /**
+   * Same as [getScheduleJoint] with convenient way.
+   */
+  fun getTaskJoint(
+    queryResults: ProgressQueryResult
+  ): List<TaskJoint> = with(queryResults) {
+    getTaskJoint(
       tasks = tasks,
       schedules = schedules,
       activeDates = activeDates,
@@ -177,5 +204,23 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
       )
     }
     return scheduleJoints
+  }
+
+  override fun getTaskJoint(
+    tasks: List<Task>,
+    schedules: List<Schedule>,
+    activeDates: List<ActiveDate>,
+    preferredTimes: List<PreferredTime>,
+    preferredDays: List<PreferredDay>,
+    progresses: List<ScheduleProgress>
+  ): List<TaskJoint> = getScheduleJoint(
+    tasks, schedules, activeDates, preferredTimes, preferredDays, progresses
+  ).groupBy {
+    it.task
+  }.map { (task, scheduleJoints) ->
+    TaskJoint(
+      task = task,
+      scheduleJoints = scheduleJoints,
+    )
   }
 }

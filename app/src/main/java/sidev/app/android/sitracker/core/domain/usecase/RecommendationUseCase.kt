@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.flattenConcat
 import sidev.app.android.sitracker.core.data.local.dao.*
 import sidev.app.android.sitracker.core.data.local.model.*
 import sidev.app.android.sitracker.core.domain.model.*
+import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.SuppressLiteral
 import sidev.app.android.sitracker.util.getTimeMillisInDay
 import sidev.app.android.sitracker.util.model.UnclosedLongRange
@@ -145,6 +146,7 @@ class RecommendationUseCaseImpl: RecommendationUseCase {
             comparator[progress.id] = it
           }
       }
+      .filter { comparator[it.joint.progress.id]!! > Const.importanceScoreLowerLimit  }
       .take((7..10).random())
       //.subList(0, (7..10).random())
   }

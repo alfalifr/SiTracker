@@ -100,6 +100,16 @@ interface QueryUseCase {
   fun queryTodaySchedule(
     nowDateTime: Long,
   ): Flow<ProgressQueryResult>
+
+  /**
+   * Query every data related to a [Task] with [taskId].
+   * This method guarantees the resulting list of [ActiveDate] and [ScheduleProgress]
+   * are ordered by the most recent ones defined by the biggest
+   * [ActiveDate.startDate] and [ScheduleProgress.startTimestamp].
+   */
+  fun queryTaskDetail(
+    taskId: Int,
+  ): Flow<ProgressQueryResult>
 }
 
 
@@ -266,6 +276,61 @@ class QueryUseCaseImpl(
     }
   }
 
+  /**
+   * Query every data related to a [Task] with [taskId].
+   * This method guarantees the resulting list of [ActiveDate] and [ScheduleProgress]
+   * are ordered by the most recent ones defined by the biggest
+   * [ActiveDate.startDate] and [ScheduleProgress.startTimestamp].
+   */
+  override fun queryTaskDetail(taskId: Int): Flow<ProgressQueryResult> {
+    val taskFlow = taskDao.getById(taskId).map { task ->
+      task?.let { listOf(it) } ?: emptyList()
+    }
+
+    val scheduleFlow = scheduleDao.getByTaskId(taskId)
+
+    val scheduleProgressFlow = scheduleFlow.flatMapLatest { schedules ->
+      scheduleProgressDao.getRecentByScheduleIds(
+        schedules.map { it.id }.toSet()
+      )
+    }
+
+    val activeDateFlow = scheduleFlow.flatMapLatest { schedules ->
+      activeDateDao.getRecentByScheduleIds(
+        schedules.map { it.id }.toSet()
+      )
+    }
+
+    val preferredDayFlow = scheduleFlow.flatMapLatest { schedules ->
+      preferredDayDao.getDayByScheduleIds(
+        schedules.map { it.id }.toSet()
+      )
+    }
+    val preferredTimeFlow = scheduleFlow.flatMapLatest { schedules ->
+      preferredTimeDao.getTimeByScheduleIds(
+        schedules.map { it.id }.toSet()
+      )
+    }
+
+    return combine(
+      taskFlow,
+      scheduleFlow,
+      scheduleProgressFlow,
+      activeDateFlow,
+      preferredDayFlow,
+      preferredTimeFlow,
+    ) { results ->
+      @Suppress(SuppressLiteral.UNCHECKED_CAST)
+      ProgressQueryResult(
+        tasks = results[0] as List<Task>,
+        schedules = results[1] as List<Schedule>,
+        progresses = results[2] as List<ScheduleProgress>,
+        activeDates = results[3] as List<ActiveDate>,
+        preferredDays = results[4] as List<PreferredDay>,
+        preferredTimes = results[5] as List<PreferredTime>,
+      )
+    }
+  }
 
   private fun calculateNecessaryRandomScheduleCount(prevScheduleCount: Int): Int = when {
     prevScheduleCount >= 8 -> 0 //max item 10

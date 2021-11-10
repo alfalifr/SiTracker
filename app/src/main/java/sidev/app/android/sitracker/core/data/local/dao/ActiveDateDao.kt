@@ -16,4 +16,13 @@ interface ActiveDateDao {
   fun getActiveDateByTime(
     now: Long,
   ): Flow<List<ActiveDate>>
+
+  @Query("""
+    SELECT * FROM active_dates
+    WHERE scheduleId IN (:scheduleIds)
+    ORDER BY startDate DESC
+  """)
+  fun getRecentByScheduleIds(
+    scheduleIds: Set<Int>
+  ): Flow<List<ActiveDate>>
 }

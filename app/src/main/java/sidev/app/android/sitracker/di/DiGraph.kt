@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 interface DiGraph {
   fun daoDi(): DaoDi
   fun useCaseDi(): UseCaseDi
+  fun uiUseCaseDi(): UiUseCaseDi
   fun vmDi(): AndroidVmDi
 }
 
@@ -15,5 +16,10 @@ class DiGraphImpl(
 ): DiGraph {
   override fun daoDi(): DaoDi = DaoDiImpl(context)
   override fun useCaseDi(): UseCaseDi = UseCaseDiImpl(daoDi())
-  override fun vmDi(): AndroidVmDi = VmDiImpl(useCaseDi(), coroutineScope)
+  override fun uiUseCaseDi(): UiUseCaseDi = UiUseCaseDiImpl()
+  override fun vmDi(): AndroidVmDi = VmDiImpl(
+    useCaseDi = useCaseDi(),
+    uiUseCaseDi = uiUseCaseDi(),
+    coroutineScope = coroutineScope,
+  )
 }

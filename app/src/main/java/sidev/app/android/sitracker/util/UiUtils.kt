@@ -5,7 +5,10 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.*
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.util.lerp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerScope
@@ -65,3 +68,46 @@ fun LazyListState.reenableScrolling(scope: CoroutineScope): LazyListState {
   }
   return this
 }
+
+
+/**
+ * This modifier gives [receiver] the calculated
+ * size of wrapped composable.
+ */
+fun Modifier.getSize(receiver: MeasureScope.(Size) -> Unit) = this.then(
+  object: LayoutModifier {
+    /**
+     * The function used to measure the modifier. The [measurable] corresponds to the
+     * wrapped content, and it can be measured with the desired constraints according
+     * to the logic of the [LayoutModifier]. The modifier needs to choose its own
+     * size, which can depend on the size chosen by the wrapped content (the obtained
+     * [Placeable]), if the wrapped content was measured. The size needs to be returned
+     * as part of a [MeasureResult], alongside the placement logic of the
+     * [Placeable], which defines how the wrapped content should be positioned inside
+     * the [LayoutModifier]. A convenient way to create the [MeasureResult]
+     * is to use the [MeasureScope.layout] factory function.
+     *
+     * A [LayoutModifier] uses the same measurement and layout concepts and principles as a
+     * [Layout], the only difference is that they apply to exactly one child. For a more detailed
+     * explanation of measurement and layout, see [MeasurePolicy].
+     */
+    override fun MeasureScope.measure(
+      measurable: Measurable,
+      constraints: Constraints
+    ): MeasureResult {
+      val placeable = measurable.measure(constraints)
+      receiver(
+        Size(
+          width = placeable.width.toFloat(),
+          height = placeable.height.toFloat(),
+        )
+      )
+      return layout(
+        width = placeable.width,
+        height = placeable.height,
+      ) {
+        placeable.place(0,0)
+      }
+    }
+  }
+)

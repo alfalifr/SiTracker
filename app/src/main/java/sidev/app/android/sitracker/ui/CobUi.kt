@@ -11,15 +11,18 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.*
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import sidev.app.android.sitracker.util.getSize
 
 
 @Composable
@@ -158,4 +161,30 @@ fun ExceededColumnWithLayout_preview() {
       }
     }
   )
+}
+
+
+@Composable
+@Preview
+fun LayoutMod_preview() {
+  var size by remember { mutableStateOf<Size?>(null) }
+  //var size: Size? = null
+  Column {
+    Text(
+      "Ello bro a a aawiao kopljm",
+      Modifier
+        .background(Color.Blue)
+        .getSize {
+          println("LayoutMod_preview getSize = $it")
+          size = it
+        }
+    )
+    Column {
+      Text(
+        "Size = $size height = ${size?.height}",
+        Modifier
+          .background(Color.Red)
+      )
+    }
+  }
 }

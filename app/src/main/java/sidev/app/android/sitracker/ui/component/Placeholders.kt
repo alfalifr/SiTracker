@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
-import sidev.app.android.sitracker.util.Const
+import sidev.app.android.sitracker.util.Texts
 
 /**
  * Function that replaces [content] with [placeholder]
@@ -29,7 +29,7 @@ fun <T> Placeholder(
 fun <T> LoadingPlaceholder(
   key: T?,
   loadingModifier: Modifier = Modifier,
-  loadingText: String? = Const.defaultLoadingText,
+  loadingText: String? = Texts.defaultLoadingText,
   loadingSpaceBetween: Dp? = null,
   content: @Composable (T) -> Unit,
 ) = Placeholder(

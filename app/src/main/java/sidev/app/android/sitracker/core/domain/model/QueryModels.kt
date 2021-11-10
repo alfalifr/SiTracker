@@ -44,3 +44,11 @@ data class ScheduleJoint(
   val preferredTimes: List<PreferredTime>,
   val preferredDays: List<PreferredDay>,
 )
+
+/**
+ * This a joint of [Task] and other related data.
+ */
+data class TaskJoint(
+  val task: Task,
+  val scheduleJoints: List<ScheduleJoint>,
+)

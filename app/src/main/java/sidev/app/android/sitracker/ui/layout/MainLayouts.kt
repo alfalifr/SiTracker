@@ -2,6 +2,8 @@ package sidev.app.android.sitracker.ui.layout
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -10,7 +12,8 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Star
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -27,16 +30,19 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import sidev.app.android.sitracker.ui.component.DefaultText
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
+import sidev.app.android.sitracker.ui.component.Placeholder
 import sidev.app.android.sitracker.ui.component.measurePrefixPostfixComponents
 import sidev.app.android.sitracker.ui.model.ActionData
 import sidev.app.android.sitracker.util.*
 import sidev.app.android.sitracker.util.Const.contentPaddingDp
 import sidev.app.android.sitracker.util.Const.iconSizeDp
+import sidev.app.android.sitracker.util.model.DpSize
+import sidev.app.android.sitracker.util.model.sizeToDp
 
 
 ///*
 /**
- * [ignoreContentPadding] means weather this method
+ * [ignoreContentPadding] means whether this method
  * draw with content padding or not. If [ignoreContentPadding] is true,
  * then this method draws each composable block without padding,
  * and passes the supposed content padding in to `contentPadding` parameter
@@ -48,7 +54,7 @@ fun MainScaffold(
   icon: @Composable ((contentPadding: Dp) -> Unit)? = null,
   actions: @Composable ((contentPadding: Dp) -> Unit)? = null,
   ignoreContentPadding: Boolean = false,
-  content: @Composable (contentPadding: Dp) -> Unit,
+  content: LazyListScope.(contentPadding: Dp) -> Unit,
 ) {
   //var measurablePointer = 0
 
@@ -66,8 +72,106 @@ fun MainScaffold(
     if(ignoreContentPadding) 0.dp
     else contentPaddingDp
 
+  val headerItemSpace = 15.dp
+
   //var headerPlaceables: PrefixPostfixPlaceables? = null
 
+  /*
+  //TODO: MainScaffold with robust vertical scroll
+
+  Placeholder(
+    key = headerContentMaxWidth,
+    placeholder = {
+
+    }) {
+
+  }
+   */
+
+
+  BoxWithConstraints {
+    //val screenWidth = maxWidth
+    //var headerContentMaxWidth by remember { mutableStateOf(maxWidth) }
+    var actionSize by remember { mutableStateOf<DpSize?>(null) }
+    var headerHeight by remember { mutableStateOf<Dp?>(null) }
+
+    LazyColumn(
+      modifier = Modifier.padding(
+        horizontal = drawnPadding,
+      ),
+    ) {
+      val lazyListScope = this
+      item {
+        Row(
+          modifier = Modifier
+            .wrapContentSize()
+            .padding(top = drawnPadding,)
+            .requiredWidthIn(
+              max = (maxWidth - (actionSize?.width ?: 0.dp)).also {
+                println("Row requiredWidthIn max = $it actionWidth = $actionSize maxWidth = $maxWidth")
+              },
+            ).getSize {
+               headerHeight = it.height.toDp()
+            },
+          horizontalArrangement = Arrangement.spacedBy(
+            headerItemSpace,
+          ),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          icon?.apply {
+            invoke(passedContentPadding)
+          }
+          header?.apply {
+            invoke(passedContentPadding)
+          }
+        }
+      }
+      content(passedContentPadding)
+
+      if(!ignoreContentPadding) {
+        item {
+          Spacer(Modifier.height(drawnPadding))
+        }
+      }
+      /*
+      item {
+        Box(
+          Modifier.padding(
+            start = drawnPadding,
+            end = drawnPadding,
+            top = (headerHeight ?: 0.dp),
+            bottom = drawnPadding,
+          )
+        ) {
+        }
+      }
+       */
+    }
+
+    actions?.apply {
+      Box(
+        modifier = Modifier
+          .align(Alignment.TopEnd)
+          .padding(
+            top = (
+              if(headerHeight == null || actionSize == null) 0
+              else getStartCenterAligned(
+                parentLen = headerHeight!!.value.toInt(),
+                childLen = actionSize!!.height.value.toInt(),
+              )
+            ).dp + drawnPadding,
+            end = drawnPadding,
+          )
+          //.wrapContentSize()
+          .getSize {
+            actionSize = sizeToDp(it)
+          },
+      ) {
+        invoke(passedContentPadding)
+      }
+    }
+  }
+/*
   BoxWithConstraints {
     //val screenHeight = maxHeight
     val scrollState = rememberScrollState()
@@ -104,7 +208,7 @@ fun MainScaffold(
         //println("allMask content = $allMask")
       },
       measurePolicy = { measurables, constraints ->
-
+        10.toDp()
         val layoutConstraints = if(ignoreContentPadding) constraints
           else constraints.copy(
             maxWidth = constraints.maxWidth -
@@ -210,6 +314,7 @@ fun MainScaffold(
       },
     )
   }
+ */
 }
 
 
@@ -222,7 +327,7 @@ fun TitleIconLayout(
   titleMaxLines: Int = 3,
   titleOverflow: TextOverflow = TextOverflow.Ellipsis,
   ignoreContentPadding: Boolean = false,
-  content: @Composable (contentPadding: Dp) -> Unit,
+  content: LazyListScope.(contentPadding: Dp) -> Unit,
 ) {
   MainScaffold(
     header = if(title != null) {
@@ -294,13 +399,10 @@ fun TitleIconLayout(
     } else null,
     ignoreContentPadding = ignoreContentPadding,
     content = {
-      Box(
-        Modifier.padding(
-          top = contentPaddingDp,
-        )
-      ) {
-        content(it)
+      item {
+        Spacer(Modifier.height(contentPaddingDp))
       }
+      content(it)
     },
   )
 }

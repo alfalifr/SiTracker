@@ -2,7 +2,6 @@ package sidev.app.android.sitracker.ui.page.main_menu.today_schedule
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -11,7 +10,7 @@ import sidev.app.android.sitracker.core.domain.model.*
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
-import sidev.app.android.sitracker.core.domain.usecase.TaskItemScheduleUseCase
+import sidev.app.android.sitracker.core.domain.usecase.ScheduleItemUseCase
 import sidev.app.android.sitracker.util.DataMapper.toUiData
 import sidev.app.android.sitracker.util.getDateMillis
 import java.util.*
@@ -20,7 +19,7 @@ class TodayScheduleViewModel(
   private val queryUseCase: QueryUseCase,
   private val queryJointUseCase: QueryJointUseCase,
   private val iconUseCase: IconUseCase,
-  private val taskItemScheduleUseCase: TaskItemScheduleUseCase,
+  private val scheduleItemUseCase: ScheduleItemUseCase,
   private val coroutineScope: CoroutineScope? = null,
 ): ViewModel() {
 
@@ -45,19 +44,19 @@ class TodayScheduleViewModel(
     println("scheduleJoints queryResult = $it")
     queryJointUseCase.getScheduleJoint(it)
   }
-  val taskItemSchedules: Flow<List<TaskItemSchedule>> = scheduleJoints.map {
+  val taskItemSchedules: Flow<List<ScheduleItemData>> = scheduleJoints.map {
     println("taskItemSchedules scheduleJoints = $it")
-    taskItemScheduleUseCase.getTaskItemSchedules(it)
+    scheduleItemUseCase.getTaskItemSchedules(it)
   }
 
-  val listOrder = MutableStateFlow(TaskItemScheduleGroupOrder.BY_TIME)
+  val listOrder = MutableStateFlow(ScheduleItemGroupOrder.BY_TIME)
 
-  private val taskItemScheduleGroups: Flow<List<TaskItemScheduleGroup>> = combine(
+  private val taskItemScheduleGroups: Flow<List<ScheduleItemGroupData>> = combine(
     listOrder, taskItemSchedules
   ) { order, taskItemSchedules ->
     println("order = $order taskItemSchedules = $taskItemSchedules")
-    taskItemScheduleUseCase.orderTaskItemScheduleBy(
-      taskItemSchedules = taskItemSchedules,
+    scheduleItemUseCase.orderTaskItemScheduleBy(
+      scheduleItems = taskItemSchedules,
       order = order,
     )
   }

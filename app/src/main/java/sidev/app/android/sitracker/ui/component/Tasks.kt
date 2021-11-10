@@ -3,15 +3,12 @@ package sidev.app.android.sitracker.ui.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -23,20 +20,14 @@ import androidx.compose.ui.semantics.*
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import sidev.app.android.sitracker.core.data.local.model.Task
-import sidev.app.android.sitracker.core.domain.model.IconProgressionData
-import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
 import sidev.app.android.sitracker.ui.model.IconProgressionPicUiData
 import sidev.app.android.sitracker.ui.model.IconProgressionFloatUiData
 import sidev.app.android.sitracker.ui.model.IconProgressionUiData
-import sidev.app.android.sitracker.ui.model.TaskCompData
+import sidev.app.android.sitracker.ui.model.ScheduleItemDataUi
 import sidev.app.android.sitracker.util.Color
 import sidev.app.android.sitracker.util.DataMapper.toUiData
 import sidev.app.android.sitracker.util.Texts.formatProgress
-import sidev.app.android.sitracker.util.disableScroll
-import sidev.app.android.sitracker.util.getStartCenterAligned
 
 
 @Composable
@@ -310,59 +301,86 @@ fun TaskGroup_preview() {
 @Composable
 fun TaskGroup(
   header: String,
-  taskData: List<TaskCompData>,
+  taskData: List<ScheduleItemDataUi>,
   modifier: Modifier = Modifier,
-  itemModifier: (TaskCompData) -> Modifier = { Modifier },
-  itemContentText: (TaskCompData) -> String? = { it.desc },
+  itemModifier: (ScheduleItemDataUi) -> Modifier = { Modifier },
+  itemContentText: (ScheduleItemDataUi) -> String? = { it.desc },
   //isPostfixIconDataColorSameAsMainColor: (TaskCompData) -> Boolean = { true },
   disableScroll: Boolean = true,
-  itemOnClick: ((TaskCompData) -> Unit)? = null,
+  itemOnClick: ((ScheduleItemDataUi) -> Unit)? = null,
 ) {
-  Column(
-    modifier = modifier,
-  ) {
-    Text(
-      text = header,
-      style = MaterialTheme.typography.body2,
-      fontWeight = FontWeight.Bold,
+  println("TaskGroup AWAL ====")
+  @Composable
+  fun InnerTaskItem(task: ScheduleItemDataUi) {
+    TaskItem(
+      icon = painterResource(id = task.icon.resId),
+      color = Color(task.icon.color),
+      title = task.title,
+      modifier = itemModifier(task),
+      contentText = itemContentText(task),
+      postfixIconData = task.postfixIconData?.toUiData(),
+      isPostfixIconDataColorSameAsMainColor = task.isPostfixIconDataColorSameAsMainColor,
+      onClick = if(itemOnClick != null) {
+        { itemOnClick(task) }
+      } else null,
     )
-    Spacer(Modifier.height(10.dp))
-/*
-    val scrollState = rememberLazyListState()
-    if(disableScroll) {
-      scrollState.disableScroll(
-        rememberCoroutineScope()
-      )
-    }
- */
+  }
+  val itemSpace = 10.dp
 
-    @Composable
-    fun InnerTaskItem(task: TaskCompData) {
-      TaskItem(
-        icon = painterResource(id = task.icon.resId),
-        color = Color(task.icon.color),
-        title = task.title,
-        modifier = itemModifier(task),
-        contentText = itemContentText(task),
-        postfixIconData = task.postfixIconData?.toUiData(),
-        isPostfixIconDataColorSameAsMainColor = task.isPostfixIconDataColorSameAsMainColor,
-        onClick = if(itemOnClick != null) {
-          { itemOnClick(task) }
-        } else null,
-      )
-    }
+  println("TaskGroup disableScroll = $disableScroll")
 
-    if(disableScroll) {
-      Column {
+  if(disableScroll) {
+    Layout(
+      content = {
+        Text(
+          text = header,
+          style = MaterialTheme.typography.body2,
+          fontWeight = FontWeight.Bold,
+        )
+        //Spacer(Modifier.height(10.dp))
+
         for(task in taskData) {
           InnerTaskItem(task = task)
         }
-      }
-    } else {
-      LazyColumn {
-        items(taskData.size) { i ->
-          InnerTaskItem(task = taskData[i])
+      },
+      measurePolicy = { measurables, constraints ->
+        //val measurablesItr = measurables.iterator()
+
+        //val textPlaceable = measurablesItr.next().measure(constraints)
+
+        val itemSpaceInPx = itemSpace.roundToPx()
+
+        val placeables = measurables.map {
+          it.measure(constraints)
         }
+        layout(
+          width = constraints.maxWidth,
+          height = placeables.fold(0) { acc, e ->
+            acc + e.height + itemSpaceInPx
+          }.let {
+            // to eliminate trailing space.
+            if(it > itemSpaceInPx) it - itemSpaceInPx
+            else it
+          }
+        ) {
+          var accHeight = 0
+          for(p in placeables) {
+            with(p) {
+              place(
+                x = 0,
+                y = accHeight.also {
+                  accHeight += height + itemSpaceInPx
+                },
+              )
+            }
+          }
+        }
+      },
+    )
+  } else {
+    LazyColumn {
+      items(taskData.size) { i ->
+        InnerTaskItem(task = taskData[i])
       }
     }
   }

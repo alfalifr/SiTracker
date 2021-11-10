@@ -3,7 +3,7 @@ package sidev.app.android.sitracker.core.domain.model
 import sidev.app.android.sitracker.util.model.UnclosedLongRange
 
 
-enum class TaskItemScheduleGroupOrder {
+enum class ScheduleItemGroupOrder {
   BY_TIME,
   BY_NAME,
   BY_PRIORITY,
@@ -11,7 +11,7 @@ enum class TaskItemScheduleGroupOrder {
 }
 
 
-data class TaskItemSchedule(
+data class ScheduleItemData(
   val scheduleJoint: ScheduleJoint,
   /**
    * null if the schedule doesn't have preferred time.
@@ -20,7 +20,7 @@ data class TaskItemSchedule(
 )
 
 
-data class TaskItemScheduleGroup(
-  val schedules: List<TaskItemSchedule>,
+data class ScheduleItemGroupData(
+  val schedules: List<ScheduleItemData>,
   val header: String,
 )

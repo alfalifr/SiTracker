@@ -3,6 +3,7 @@ package sidev.app.android.sitracker.ui.nav
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
@@ -10,14 +11,16 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import sidev.app.android.sitracker.ui.component.MainMenuContentTransition
+import sidev.app.android.sitracker.ui.layout.MainScaffoldScope
 import sidev.app.android.sitracker.ui.layout.TitleIconLayout
+import sidev.app.android.sitracker.ui.layout.toMainScaffoldScope
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodaySchedulePage
 import sidev.app.android.sitracker.util.model.Direction
-
+//TODO: Compiler error
 sealed class Route(
   val route: String,
   open val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit,
@@ -64,8 +67,10 @@ sealed class Route(
     "What to do?",
     ignoreContentPadding = true,
     content = {
-      HomePage(navController = it.navData.navController) {
-        TODO("Implement `Routes.HomePage.onItemClick`")
+      item {
+        HomePage(navController = it.navData.navController) {
+          TODO("Implement `Routes.HomePage.onItemClick`")
+        }
       }
     },
   )
@@ -74,7 +79,13 @@ sealed class Route(
     1,
     "Today's schedule",
     content = {
-      TodaySchedulePage(navController = it.navData.navController)
+      val mainScaffoldScope = this
+      item {
+        TodaySchedulePage(
+          navController = it.navData.navController,
+          mainScaffoldScope = mainScaffoldScope,
+        )
+      }
     },
   )
   object CalendarPage: MainMenuItemRoute(
@@ -82,7 +93,9 @@ sealed class Route(
     2,
     "Your calendar",
     content = {
-      CalendarPage(navController = it.navData.navController)
+      item {
+        CalendarPage(navController = it.navData.navController)
+      }
     },
   )
 
@@ -95,7 +108,7 @@ sealed class ScaffoldedRoute(
   route: String,
   val data: ScaffoldedRouteData = ScaffoldedRouteData(),
   open val scaffoldBuilder: @Composable NavGraphBuilder.(
-    content: @Composable NavGraphBuilder.(data: ScaffoldedComposableNavData) -> Unit,
+    content: LazyListScope.(data: ScaffoldedComposableNavData) -> Unit,
     routeData: ScaffoldedRouteData,
     navData: ComposableNavData,
   ) -> Unit =
@@ -109,7 +122,7 @@ sealed class ScaffoldedRoute(
           actionData = actions,
           ignoreContentPadding = ignoreContentPadding,
           content = {
-            graphBuilder.content(
+            toMainScaffoldScope().content(
               ScaffoldedComposableNavData(
                 navData = navData,
                 routeData = routeData,
@@ -120,13 +133,13 @@ sealed class ScaffoldedRoute(
         )
       }
     },
-  open val content: @Composable NavGraphBuilder.(data: ScaffoldedComposableNavData) -> Unit,
+  open val content: LazyListScope.(ScaffoldedComposableNavData) -> Unit,
 ): Route(
   route = route,
   composable = {},
 ) {
   override val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit =
-    { this.scaffoldBuilder(content, data, it) }
+    { scaffoldBuilder(content, data, it) }
 }
 
 
@@ -136,7 +149,7 @@ sealed class MainMenuItemRoute(
   val index: Int,
   title: String,
   ignoreContentPadding: Boolean = false,
-  content: @Composable NavGraphBuilder.(ScaffoldedComposableNavData) -> Unit,
+  content: LazyListScope.(ScaffoldedComposableNavData) -> Unit,
 ): ScaffoldedRoute(
   route = route,
   data = ScaffoldedRouteData(
@@ -148,7 +161,7 @@ sealed class MainMenuItemRoute(
 ) {
   override val scaffoldBuilder: @Composable NavGraphBuilder.(
     //Don't forget to add `@Composable` so there won't be bug.
-    content: @Composable NavGraphBuilder.(data: ScaffoldedComposableNavData) -> Unit,
+    content: LazyListScope.(data: ScaffoldedComposableNavData) -> Unit,
     routeData: ScaffoldedRouteData,
     navData: ComposableNavData,
   ) -> Unit =
@@ -158,14 +171,17 @@ sealed class MainMenuItemRoute(
         title = title,
         ignoreContentPadding = ignoreContentPadding,
       ) { contentPadding ->
-        AnimatedEnter(navComposableData = navData) {
-          navBuilder.content(
-            ScaffoldedComposableNavData(
-              routeData = routeData,
-              navData = navData,
-              contentPadding = contentPadding,
+        val lazyListScope = this
+        item {
+          AnimatedEnter(navComposableData = navData) {
+            lazyListScope.content(
+              ScaffoldedComposableNavData(
+                routeData = routeData,
+                navData = navData,
+                contentPadding = contentPadding,
+              )
             )
-          )
+          }
         }
       }
     }

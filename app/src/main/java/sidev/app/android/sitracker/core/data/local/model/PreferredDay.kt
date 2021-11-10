@@ -2,6 +2,7 @@ package sidev.app.android.sitracker.core.data.local.model
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import sidev.app.android.sitracker.util.Formats
 
 @Entity(
   tableName = "preferred_days",
@@ -16,8 +17,9 @@ import androidx.room.ForeignKey
 )
 data class PreferredDay(
   /**
-   * Starts with 0 which corresponds to Sunday
-   * until 6 which corresponds to Saturday.
+   * Starts with 1 which corresponds to Sunday
+   * until 7 which corresponds to Saturday.
+   * See [Formats.dayOfWeek].
    */
   val dayInWeek: Int,
   val scheduleId: Int,

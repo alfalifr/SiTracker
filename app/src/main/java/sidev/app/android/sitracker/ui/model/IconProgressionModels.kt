@@ -7,6 +7,26 @@ import sidev.app.android.sitracker.core.data.local.model.Task
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.component.IconProgressionText
 
+
+interface IconPicUiData {
+  val image: Painter
+  val color: Color
+}
+
+data class IconPicUiDataImpl(
+  override val image: Painter,
+  override val color: Color,
+): IconPicUiData
+
+fun IconPicUiData(
+  image: Painter,
+  color: Color,
+): IconPicUiData = IconPicUiDataImpl(
+  image, color
+)
+
+
+
 sealed class IconProgressionUiData(
   open val color: Color,
   open val progress: Float?,
@@ -17,13 +37,13 @@ sealed class IconProgressionUiData(
  * Composed of [Task] and [ScheduleProgress].
  */
 data class IconProgressionPicUiData(
-  val image: Painter,
+  override val image: Painter,
   override val color: Color,
   override val progress: Float?,
 ): IconProgressionUiData(
   color = color,
   progress = progress,
-)
+), IconPicUiData
 
 /**
  * Model for [IconProgressionText].

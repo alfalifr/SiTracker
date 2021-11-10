@@ -7,7 +7,7 @@ interface UseCaseDi {
   fun queryJointUseCase(): QueryJointUseCase
   fun iconUseCase(): IconUseCase
   fun recommendationUseCase(): RecommendationUseCase
-  fun taskItemScheduleUseCase(): TaskItemScheduleUseCase
+  fun scheduleItemUseCase(): ScheduleItemUseCase
 }
 
 class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
@@ -23,7 +23,7 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
   override fun queryJointUseCase(): QueryJointUseCase = QueryJointUseCaseImpl()
   override fun iconUseCase(): IconUseCase = IconUseCaseImpl()
   override fun recommendationUseCase(): RecommendationUseCase = RecommendationUseCaseImpl()
-  override fun taskItemScheduleUseCase(): TaskItemScheduleUseCase = TaskItemScheduleUseCaseImpl(
+  override fun scheduleItemUseCase(): ScheduleItemUseCase = ScheduleItemUseCaseImpl(
     iconUseCase = iconUseCase(),
   )
 }

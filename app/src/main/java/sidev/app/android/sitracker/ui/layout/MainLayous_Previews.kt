@@ -21,7 +21,7 @@ import sidev.app.android.sitracker.ui.model.ActionData
 @Preview
 fun TitleIconLayout_preview() {
   TitleIconLayout(
-    title = "This is header afuh aifjaof ", // afaf afag asfa afa afafagag agag  afagijaf iafaafaf
+    title = "This is header afuh aifjaof afaf afag asfa afa afafagag agag  afagijaf iafaafaf", //
     icon = rememberVectorPainter(image = Icons.Rounded.Star),
     iconColor = Color.Green,
     actionData = listOf(
@@ -38,7 +38,7 @@ fun TitleIconLayout_preview() {
     ),
     ignoreContentPadding = false,
   ) {
-    BoxWithConstraints {
+    item {
       //val contentHeight = maxHeight * 2f
       //println("Preview maxHeight = $maxHeight contentHeight = $contentHeight")
       DefaultText(
@@ -75,16 +75,18 @@ fun TitleIconLayout_preview_withoutIcon() {
      */
     ignoreContentPadding = false,
   ) {
-    BoxWithConstraints {
-      val contentHeight = maxHeight * 2f
-      println("Preview maxHeight = $maxHeight contentHeight = $contentHeight")
-      DefaultText(
-        text = "This is the content",
-        modifier = Modifier
-          .background(Color.Red)
-          .fillMaxWidth()
-          .height(1000.dp),
-      )
+    item {
+      BoxWithConstraints {
+        val contentHeight = maxHeight * 2f
+        println("Preview maxHeight = $maxHeight contentHeight = $contentHeight")
+        DefaultText(
+          text = "This is the content",
+          modifier = Modifier
+            .background(Color.Red)
+            .fillMaxWidth()
+            .height(1000.dp),
+        )
+      }
     }
   }
 }

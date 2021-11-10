@@ -21,9 +21,9 @@ object Dummy {
 
 
   val tasks = listOf(
-    Task(0, "Code 20 Lines", 1, AppIcon.Coding.id, "#0e9612"),
-    Task(1, "Read Life", 2, AppIcon.Bin.id, "#17ebeb"),
-    Task(2, "Runaway", 3, AppIcon.Clip.id, "#eb1726"),
+    Task(0, "Code 20 Lines", 1, "This is desc 1", AppIcon.Coding.id, "#0e9612"),
+    Task(1, "Read Life", 2, "This is desc 2", AppIcon.Bin.id, "#17ebeb"),
+    Task(2, "Runaway", 3, "This is desc 3", AppIcon.Clip.id, "#eb1726"),
   )
 
   /**

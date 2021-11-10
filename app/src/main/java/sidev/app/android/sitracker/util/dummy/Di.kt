@@ -10,6 +10,7 @@ object DiGraphDummy: DiGraph {
 
   override fun daoDi(): DaoDi = DaoDiDummy
   override fun useCaseDi(): UseCaseDi = UseCaseDiImpl(daoDi())
+  override fun uiUseCaseDi(): UiUseCaseDi = UiUseCaseDiImpl()
   override fun vmDi(): AndroidVmDi = VmDiDummy
 }
 
@@ -24,7 +25,10 @@ object DaoDiDummy: DaoDi {
   override fun progressTypeDao(): ProgressTypeDao = ProgressTypeDaoDummy
 }
 
-object VmDiDummy: VmDiImpl(DiGraphDummy.useCaseDi()) {
+object VmDiDummy: VmDiImpl(
+  useCaseDi = DiGraphDummy.useCaseDi(),
+  uiUseCaseDi = DiGraphDummy.uiUseCaseDi(),
+) {
   override val coroutineScope: CoroutineScope?
     get() {
       println("VmDiDummy.coroutineScope DiGraphDummy.coroutineScope = ${DiGraphDummy.coroutineScope}")

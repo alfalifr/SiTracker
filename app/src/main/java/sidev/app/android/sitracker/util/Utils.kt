@@ -8,12 +8,18 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import sidev.app.android.sitracker.core.data.local.model.ActiveDate
+import sidev.app.android.sitracker.core.domain.model.CalendarEvent
+import sidev.app.android.sitracker.core.domain.model.CalendarMark
 import sidev.app.android.sitracker.di.DiCenter
 import sidev.app.android.sitracker.ui.theme.GreenLight
 import sidev.app.android.sitracker.ui.theme.Red
+import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.log
+import kotlin.math.max
+import kotlin.math.min
 
 
 fun loge(
@@ -179,3 +185,210 @@ fun getScoreColor(
 fun getHexString(colorValue: Int) =
   "#" + Integer.toHexString(colorValue)
   //String.format("#%08X", (0xFFFFFFFF and colorValue))
+
+
+fun <T, R> Iterator<T>.map(transform: (T) -> R): List<R> {
+  val list = mutableListOf<R>()
+  for(e in this) {
+    list += transform(e)
+  }
+  return list
+}
+
+
+/**
+ * Just like [indexOfFirst] but the last indexed element
+ * is checked first.
+ */
+fun <T> List<T>.indexOfFirstFromBack(predicate: (T) -> Boolean): Int {
+  for(i in lastIndex downTo 0) {
+    if(predicate(this[i])) {
+      return i
+    }
+  }
+  return -1
+}
+
+/**
+ * Just like [find] but the last indexed element
+ * is checked first.
+ */
+fun <T> List<T>.findFromBack(predicate: (T) -> Boolean): T? =
+  indexOfFirstFromBack(predicate).let {
+    if(it >= 0) this[it] else null
+  }
+
+
+/**
+ * Group this [List] into some group of [T].
+ * If [predicate] returns `true`, then current [T] will be added to current group.
+ * If [predicate] returns `false`, then current [T] will be added to new group.
+ */
+fun <T> Iterable<T>.inSameGroup(predicate: (a: T, b: T) -> Boolean): List<List<T>> {
+  val itr = iterator()
+  if(!itr.hasNext()) {
+    return emptyList()
+  }
+
+  val result = mutableListOf<List<T>>()
+  var currentGroup = mutableListOf<T>()
+
+  var a = itr.next()
+  currentGroup += a
+  result += currentGroup
+
+  for(b in this) {
+    if(!predicate(a, b)) {
+      currentGroup = mutableListOf()
+      result += currentGroup
+    }
+    currentGroup += b
+    a = b
+  }
+
+  return result
+}
+
+
+fun <T1, T2> combine(
+  itr1: Iterable<T1>,
+  itr2: Iterable<T2>,
+  block: (Pair<T1, T2>) -> Unit,
+) {
+  val itr1 = itr1.iterator()
+  val itr2 = itr2.iterator()
+  if(!itr1.hasNext() || !itr2.hasNext()) {
+    return
+  }
+  for(e1 in itr1) {
+    for(e2 in itr2) {
+      block(e1 to e2)
+    }
+  }
+}
+
+fun <T1, T2, R> combineMap(
+  itr1: Iterable<T1>,
+  itr2: Iterable<T2>,
+  block: (Pair<T1, T2>) -> R,
+): List<R> {
+  val itr1 = itr1.iterator()
+  val itr2 = itr2.iterator()
+  if(!itr1.hasNext() || !itr2.hasNext()) {
+    return emptyList()
+  }
+  val result = mutableListOf<R>()
+  for(e1 in itr1) {
+    for(e2 in itr2) {
+      result += block(e1 to e2)
+    }
+  }
+  return result
+}
+
+
+fun <T> Iterable<T>.mergeIf(
+  condition: (a: T, b: T) -> Boolean,
+  merge: (a: T, b: T) -> T,
+): List<T> {
+  /**
+   * Returns false if there is no modification to [list].
+   */
+  fun mergeInOneIteration(list: MutableList<T>): Boolean {
+    if(list.isEmpty()) {
+      return false
+    }
+    val itr = list.listIterator()
+    var current = itr.next()
+    var mod = 0
+
+    for(e in itr) {
+      val prev = current
+      current = e
+      if(condition(prev, e)) {
+        val merged = merge(prev, e)
+        itr.remove()
+        list[0] = merged
+        current = merged
+        mod++
+      }
+    }
+
+    return mod > 0
+  }
+
+  val result = this.toMutableList()
+  while(mergeInOneIteration(result)) {
+    //do nothing cuz operation is done in `mergeInOneIteration`
+  }
+  return result
+}
+
+fun afaf() {
+  val a = mutableSetOf<Int>()
+  a.iterator()
+}
+
+
+
+operator fun ActiveDate.contains(time: Long): Boolean =
+  startDate <= time && (
+    endDate == null || time <= endDate
+  )
+
+operator fun ActiveDate.contains(other: ActiveDate): Boolean =
+  scheduleId == other.scheduleId
+    && startDate <= other.startDate
+    && (endDate == null
+      || (other.endDate != null && endDate >= other.endDate)
+    )
+
+infix fun ActiveDate.overlaps(other: ActiveDate): Boolean =
+  scheduleId == other.scheduleId
+    && (
+    (endDate == null || other.endDate == null)
+    || (startDate >= other.startDate
+          && startDate <= other.endDate)
+    || (other.startDate >= startDate
+          && other.startDate <= endDate)
+    )
+
+fun ActiveDate.mergeIfOverlaps(other: ActiveDate): ActiveDate? =
+  if(!(this overlaps other)) null
+  else merge(other)
+
+fun ActiveDate.merge(other: ActiveDate): ActiveDate = copy(
+  startDate = min(startDate, other.startDate),
+  endDate = if(endDate == null || other.endDate == null) null
+    else max(endDate, other.endDate),
+)
+
+
+
+infix fun ActiveDate.overlaps(other: UnclosedLongRange): Boolean =
+  (endDate == null || other.end == null)
+    || (startDate >= other.start
+        && startDate <= other.end)
+    || (other.start >= startDate
+        && other.start <= endDate)
+
+
+
+infix fun CalendarEvent.inSamePeriodAs(other: CalendarEvent): Boolean =
+  intervals.size == other.intervals.size
+    && intervals.containsAll(other.intervals)
+
+fun CalendarEvent.mergeIfInSamePeriod(
+  other: CalendarEvent,
+  mark: CalendarMark? = null,
+): CalendarEvent? =
+  if(!(this inSamePeriodAs other)) null
+  else merge(other, mark)
+
+fun CalendarEvent.merge(
+  other: CalendarEvent,
+  mark: CalendarMark? = null,
+): CalendarEvent = copy(
+  legends = legends + other.legends,
+  mark = mark ?: this.mark ?: other.mark
+)

@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import sidev.app.android.sitracker.core.data.local.dao.PreferredDayDao
 import sidev.app.android.sitracker.core.data.local.model.PreferredDay
+import sidev.app.android.sitracker.util.Formats
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object PreferredDayDaoDummy: PreferredDayDao {
@@ -24,6 +25,7 @@ object PreferredDayDaoDummy: PreferredDayDao {
   /**
    * [nowDay] is measured in day.
    * It has value between 1-7 starts with Sunday.
+   * See [Formats.dayOfWeek].
    */
   override fun getDayByNowOrScheduleIds(
     nowDay: Int,
@@ -40,6 +42,7 @@ object PreferredDayDaoDummy: PreferredDayDao {
   /**
    * [nowDay] is measured in day.
    * It has value between 1-7 starts with Sunday.
+   * See [Formats.dayOfWeek].
    */
   override fun getDayByNowAndScheduleIds(
     nowDay: Int,

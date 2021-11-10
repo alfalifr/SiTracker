@@ -43,9 +43,16 @@ val OppositeDark: Color
   @Composable
   get() = if(isSystemInDarkTheme()) Color.White else Color.Black
 
+fun OppositeDark(isDark: Boolean): Color =
+  if(isDark) Color.White else Color.Black
+
+
 val FollowingDark: Color
   @Composable
   get() = if(isSystemInDarkTheme()) Color.Black else Color.White
+
+fun FollowingDark(isDark: Boolean): Color =
+  if(isDark) Color.Black else Color.White
 
 
 val TransOppositeDarkColor1: Color
@@ -53,25 +60,51 @@ val TransOppositeDarkColor1: Color
   get() = if(isSystemInDarkTheme()) WhiteTrans1
   else BlackTrans1
 
+fun TransOppositeDarkColor1(isDark: Boolean): Color =
+  if(isDark) WhiteTrans1
+  else BlackTrans1
+
+
 val TransOppositeDarkColor2: Color
   @Composable
   get() = if(isSystemInDarkTheme()) WhiteTrans2
   else BlackTrans2
+
+fun TransOppositeDarkColor2(isDark: Boolean): Color =
+  if(isDark) WhiteTrans2
+  else BlackTrans2
+
 
 val TransOppositeDarkColor3: Color
   @Composable
   get() = if(isSystemInDarkTheme()) WhiteTrans3
   else BlackTrans3
 
+fun TransOppositeDarkColor3(isDark: Boolean): Color =
+  if(isDark) WhiteTrans3
+  else BlackTrans3
+
+
 val TransOppositeDarkColor4: Color
   @Composable
   get() = if(isSystemInDarkTheme()) WhiteTrans4
   else BlackTrans4
 
+fun TransOppositeDarkColor4(isDark: Boolean): Color =
+  if(isDark) WhiteTrans4
+  else BlackTrans4
+
+
 val TransOppositeDarkColor5: Color
   @Composable
   get() = if(isSystemInDarkTheme()) WhiteTrans5
   else BlackTrans5
+
+fun TransOppositeDarkColor5(isDark: Boolean): Color =
+  if(isDark) WhiteTrans5
+  else BlackTrans5
+
+
 
 
 val TransFollowingDarkColor1: Color
@@ -79,22 +112,46 @@ val TransFollowingDarkColor1: Color
   get() = if(isSystemInDarkTheme()) BlackTrans1
   else WhiteTrans1
 
+fun TransFollowingDarkColor1(isDark: Boolean): Color =
+  if(isDark) BlackTrans1
+  else WhiteTrans1
+
+
 val TransFollowingDarkColor2: Color
   @Composable
   get() = if(isSystemInDarkTheme()) BlackTrans2
   else WhiteTrans2
+
+fun TransFollowingDarkColor2(isDark: Boolean): Color =
+  if(isDark) BlackTrans2
+  else WhiteTrans2
+
 
 val TransFollowingDarkColor3: Color
   @Composable
   get() = if(isSystemInDarkTheme()) BlackTrans3
   else WhiteTrans3
 
+fun TransFollowingDarkColor3(isDark: Boolean): Color =
+  if(isDark) BlackTrans3
+  else WhiteTrans3
+
+
 val TransFollowingDarkColor4: Color
   @Composable
   get() = if(isSystemInDarkTheme()) BlackTrans4
   else WhiteTrans4
 
+fun TransFollowingDarkColor4(isDark: Boolean): Color =
+  if(isDark) BlackTrans4
+  else WhiteTrans4
+
+
 val TransFollowingDarkColor5: Color
   @Composable
   get() = if(isSystemInDarkTheme()) BlackTrans5
+  else WhiteTrans5
+
+fun TransFollowingDarkColor5(isDark: Boolean): Color =
+  if(isDark) BlackTrans5
   else WhiteTrans5

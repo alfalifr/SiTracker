@@ -6,13 +6,13 @@ import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.concurrent.TimeUnit
 
 
-interface TaskItemScheduleUseCase {
+interface ScheduleItemUseCase {
   /**
-   * Extract and join data in [ScheduleJoint] into list of [TaskItemSchedule].
+   * Extract and join data in [ScheduleJoint] into list of [ScheduleItemData].
    */
   fun extractTaskItemSchedules(
     progressJoint: ScheduleJoint,
-  ): List<TaskItemSchedule>
+  ): List<ScheduleItemData>
 
   /**
    * Same like [extractTaskItemSchedules], but this method
@@ -21,73 +21,73 @@ interface TaskItemScheduleUseCase {
    */
   fun getTaskItemSchedules(
     progressJoints: List<ScheduleJoint>,
-  ): List<TaskItemSchedule> = progressJoints.flatMap { extractTaskItemSchedules(it) }
+  ): List<ScheduleItemData> = progressJoints.flatMap { extractTaskItemSchedules(it) }
 
 
   /**
    * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.timeRange].
+   * of [ScheduleItemGroupData] by [ScheduleItemData.timeRange].
    *
-   * The algorithm works by grouping the [TaskItemSchedule.timeRange].
+   * The algorithm works by grouping the [ScheduleItemData.timeRange].
    * If there is an overlap between items, then they are in one group.
    * Items that have little different between item 1 (early one) end time
    * and item 2 (late one) start time will also become in one group.
    */
   fun orderTaskItemScheduleByTime(
-    taskItemSchedules: List<TaskItemSchedule>,
-  ): List<TaskItemScheduleGroup>
+    scheduleItems: List<ScheduleItemData>,
+  ): List<ScheduleItemGroupData>
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.task.name].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.task.name].
    */
   fun orderTaskItemScheduleByName(
-    taskItemSchedules: List<TaskItemSchedule>,
-  ): List<TaskItemScheduleGroup>
+    scheduleItems: List<ScheduleItemData>,
+  ): List<ScheduleItemGroupData>
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.task.priority].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.task.priority].
    */
   fun orderTaskItemScheduleByPriority(
-    taskItemSchedules: List<TaskItemSchedule>,
-  ): List<TaskItemScheduleGroup>
+    scheduleItems: List<ScheduleItemData>,
+  ): List<ScheduleItemGroupData>
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.progress].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.progress].
    */
   fun orderTaskItemScheduleByProgress(
-    taskItemSchedules: List<TaskItemSchedule>,
-  ): List<TaskItemScheduleGroup>
+    scheduleItems: List<ScheduleItemData>,
+  ): List<ScheduleItemGroupData>
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by the [order].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by the [order].
    */
   fun orderTaskItemScheduleBy(
-    taskItemSchedules: List<TaskItemSchedule>,
-    order: TaskItemScheduleGroupOrder,
-  ): List<TaskItemScheduleGroup> = when(order) {
-    TaskItemScheduleGroupOrder.BY_TIME -> orderTaskItemScheduleByTime(taskItemSchedules)
-    TaskItemScheduleGroupOrder.BY_NAME -> orderTaskItemScheduleByName(taskItemSchedules)
-    TaskItemScheduleGroupOrder.BY_PRIORITY -> orderTaskItemScheduleByPriority(taskItemSchedules)
-    TaskItemScheduleGroupOrder.BY_PROGRESS -> orderTaskItemScheduleByProgress(taskItemSchedules)
+    scheduleItems: List<ScheduleItemData>,
+    order: ScheduleItemGroupOrder,
+  ): List<ScheduleItemGroupData> = when(order) {
+    ScheduleItemGroupOrder.BY_TIME -> orderTaskItemScheduleByTime(scheduleItems)
+    ScheduleItemGroupOrder.BY_NAME -> orderTaskItemScheduleByName(scheduleItems)
+    ScheduleItemGroupOrder.BY_PRIORITY -> orderTaskItemScheduleByPriority(scheduleItems)
+    ScheduleItemGroupOrder.BY_PROGRESS -> orderTaskItemScheduleByProgress(scheduleItems)
   }
 }
 
 
 
 //TODO: Optimize clustering (grouping) algo in future.
-class TaskItemScheduleUseCaseImpl(
+class ScheduleItemUseCaseImpl(
   private val iconUseCase: IconUseCase,
-): TaskItemScheduleUseCase {
+): ScheduleItemUseCase {
   /**
-   * Extract and join data in [ProgressJoint] into list of [TaskItemSchedule].
+   * Extract and join data in [ProgressJoint] into list of [ScheduleItemData].
    */
   override fun extractTaskItemSchedules(
     progressJoint: ScheduleJoint
-  ): List<TaskItemSchedule> = with(progressJoint) {
+  ): List<ScheduleItemData> = with(progressJoint) {
     /*
     val prefixIcon = iconUseCase.getIconProgressionData(this)
 
@@ -109,7 +109,7 @@ class TaskItemScheduleUseCaseImpl(
     }
      */
 
-    val taskItemSchedules = mutableListOf<TaskItemSchedule>()
+    val scheduleItems = mutableListOf<ScheduleItemData>()
 
     /*
     fun createTaskCompData(timeRange: UnclosedLongRange?) = TaskCompData(
@@ -131,37 +131,37 @@ class TaskItemScheduleUseCaseImpl(
 
       //val taskCompData = createTaskCompData(timeRange)
 
-      taskItemSchedules += TaskItemSchedule(
+      scheduleItems += ScheduleItemData(
         this, timeRange
       )
     }
-    if(taskItemSchedules.isEmpty()) {
-      taskItemSchedules += TaskItemSchedule(
+    if(scheduleItems.isEmpty()) {
+      scheduleItems += ScheduleItemData(
         scheduleJoint = this,
         timeRange = null,
       )
     }
-    return taskItemSchedules
+    return scheduleItems
   }
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.timeRange].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.timeRange].
    *
-   * The algorithm works by grouping the [TaskItemSchedule.timeRange].
+   * The algorithm works by grouping the [ScheduleItemData.timeRange].
    * If there is an overlap between items, then they are in one group.
    * Items that have little different between item 1 (early one) end time
    * and item 2 (late one) start time will also become in one group.
    */
   override fun orderTaskItemScheduleByTime(
-    taskItemSchedules: List<TaskItemSchedule>
-  ): List<TaskItemScheduleGroup> {
+    scheduleItems: List<ScheduleItemData>
+  ): List<ScheduleItemGroupData> {
     var currentGroup = 0
     var doesCurrentlyHavePreferredTime = false
     var currentCheckpoint: Long? = null
     var isCheckpointStart = false
 
-    return taskItemSchedules.sortedBy {
+    return scheduleItems.sortedBy {
       it.timeRange?.start
     }.groupBy {
       //1. If `timeRange` is null, then no need to check whether it overlaps with other or not.
@@ -217,7 +217,7 @@ class TaskItemScheduleUseCaseImpl(
         }
       }
 
-      TaskItemScheduleGroup(
+      ScheduleItemGroupData(
         schedules = taskItemScheduleList,
         header = headStr,
       )
@@ -225,16 +225,16 @@ class TaskItemScheduleUseCaseImpl(
   }
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.task.name].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.task.name].
    */
   override fun orderTaskItemScheduleByName(
-    taskItemSchedules: List<TaskItemSchedule>
-  ): List<TaskItemScheduleGroup> = taskItemSchedules
+    scheduleItems: List<ScheduleItemData>
+  ): List<ScheduleItemGroupData> = scheduleItems
     .groupBy {
       it.scheduleJoint.task.name.firstOrNull()
     }.map { (key, value) ->
-      TaskItemScheduleGroup(
+      ScheduleItemGroupData(
         schedules = value,
         header = key?.toString() ?: "..."
       )
@@ -242,28 +242,28 @@ class TaskItemScheduleUseCaseImpl(
 
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.task.priority].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.task.priority].
    */
   override fun orderTaskItemScheduleByPriority(
-    taskItemSchedules: List<TaskItemSchedule>
-  ): List<TaskItemScheduleGroup> = taskItemSchedules
+    scheduleItems: List<ScheduleItemData>
+  ): List<ScheduleItemGroupData> = scheduleItems
     .groupBy {
       it.scheduleJoint.task.priority
     }.map { (key, value) ->
-      TaskItemScheduleGroup(
+      ScheduleItemGroupData(
         schedules = value,
         header = "# $key",
       )
     }
 
   /**
-   * Order and group [taskItemSchedules] into list
-   * of [TaskItemScheduleGroup] by [TaskItemSchedule.scheduleJoint.progress].
+   * Order and group [scheduleItems] into list
+   * of [ScheduleItemGroupData] by [ScheduleItemData.scheduleJoint.progress].
    */
   override fun orderTaskItemScheduleByProgress(
-    taskItemSchedules: List<TaskItemSchedule>
-  ): List<TaskItemScheduleGroup> {
+    scheduleItems: List<ScheduleItemData>
+  ): List<ScheduleItemGroupData> {
     //Divided into 5 parts
     fun getProgressClass(fraction: Double): Int = when {
       fraction <= 20.0 -> 1
@@ -281,14 +281,14 @@ class TaskItemScheduleUseCaseImpl(
       4 -> "60% - 80%"
       else -> "80% - 100%"
     }
-    return taskItemSchedules.groupBy { taskItemSchedule ->
+    return scheduleItems.groupBy { taskItemSchedule ->
       val fraction = taskItemSchedule.scheduleJoint.progress?.let {
         it.actualProgress.toDouble() /
           taskItemSchedule.scheduleJoint.schedule.totalProgress
       } ?: 0.0
       getProgressClass(fraction)
     }.map { (key, value) ->
-      TaskItemScheduleGroup(
+      ScheduleItemGroupData(
         schedules = value,
         header = getProgressClassString(key)
       )

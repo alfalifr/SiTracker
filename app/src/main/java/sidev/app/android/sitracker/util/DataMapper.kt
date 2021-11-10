@@ -29,6 +29,15 @@ object DataMapper {
   }
 
   @Composable
+  fun IconPicData.toUiData(): IconPicUiData = when(this) {
+    is IconProgressionPicData -> toUiData()
+    else -> IconPicUiData(
+      image = painterResource(id = resId),
+      color = Color(color),
+    )
+  }
+
+  @Composable
   fun List<IconProgressionPicData>.toPicUiData(): List<IconProgressionPicUiData> = map {
     it.toUiData()
   }
@@ -41,9 +50,9 @@ object DataMapper {
     it.toUiData()
   }
 
-  fun TaskItemSchedule.toUiData(
+  fun ScheduleItemData.toUiData(
     iconUseCase: IconUseCase,
-  ): TaskCompData = with(scheduleJoint) {
+  ): ScheduleItemDataUi = with(scheduleJoint) {
     val prefixIcon = iconUseCase.getIconProgressionData(this)
 
     val progressFraction = progress?.actualProgress?.let {
@@ -69,7 +78,7 @@ object DataMapper {
       )
     }
 
-    TaskCompData(
+    ScheduleItemDataUi(
       id = schedule.id,
       icon = prefixIcon,
       title = task.name,
@@ -81,9 +90,9 @@ object DataMapper {
     )
   }
 
-  fun TaskItemScheduleGroup.toUiData(
+  fun ScheduleItemGroupData.toUiData(
     iconUseCase: IconUseCase,
-  ): TaskItemScheduleGroupUi = TaskItemScheduleGroupUi(
+  ): ScheduleItemGroupUi = ScheduleItemGroupUi(
     schedules = schedules.map { it.toUiData(iconUseCase) },
     header = header,
   )

@@ -18,6 +18,7 @@ interface AndroidVmDi: VmDi, ViewModelProvider.Factory
 open class VmDiImpl(
   //private val diGraph: DiGraph,
   private val useCaseDi: UseCaseDi,
+  private val uiUseCaseDi: UiUseCaseDi,
   protected open val coroutineScope: CoroutineScope? = null,
 ): AndroidVmDi {
 
@@ -33,7 +34,7 @@ open class VmDiImpl(
     queryJointUseCase = useCaseDi.queryJointUseCase(),
     queryUseCase = useCaseDi.queryUseCase(),
     iconUseCase = useCaseDi.iconUseCase(),
-    taskItemScheduleUseCase = useCaseDi.taskItemScheduleUseCase(),
+    scheduleItemUseCase = useCaseDi.scheduleItemUseCase(),
     coroutineScope = coroutineScope,
   )
 

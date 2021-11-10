@@ -1,6 +1,8 @@
 package sidev.app.android.sitracker.core.domain.model
 
 import sidev.app.android.sitracker.core.data.local.model.*
+import sidev.app.android.sitracker.util.Const
+import sidev.app.android.sitracker.util.Formats
 import sidev.app.android.sitracker.util.getTimeMillisInDay
 import sidev.app.android.sitracker.util.model.UnclosedLongRange
 import java.util.*
@@ -89,6 +91,7 @@ data class ProgressImportanceFactor(
 
   /**
    * Preferred days, 1-7 day (Sunday-Saturday) in week.
+   * See [Formats.dayOfWeek].
    */
   val tPrefDays: List<Int>,
 ) {
@@ -192,9 +195,16 @@ data class ProgressImportanceFactor(
   fun pFraction(p: Long): Double = p.toDouble() / pt
 
   /**
-   * Fraction of how far now [t0] to deadline of active date [td1]
-   * from start point of active date [td0].
-   * 0 if [td1] is 0 (that means [ActiveDate.endDate] is null).
+   * Fraction of how far now [t0] to deadline of active date [ActiveDate.endDate]
+   * from start point of active date [ActiveDate.startDate].
+   * 0 if [ActiveDate.endDate] is null (that means this progress doesn't have deadline).
+   *
+   * This method can also produce [Const.importanceScoreLowerLimit]
+   * it means this progress isn't active and won't be displayed.
+   * Every schedule has at least 1 [ActiveDate] with [ActiveDate.startDate]
+   * as the created timestamp of the schedule and [ActiveDate.endDate] null
+   * as the schedule will always be active.
+   *
    * Higher more important.
    */
   fun tdFraction(t0: Long): Double = tdRanges
@@ -204,7 +214,7 @@ data class ProgressImportanceFactor(
         return@let 0.0
       }
       (t0 - start).toDouble() / (end - start)
-    } ?: 0.0
+    } ?: Const.importanceScoreLowerLimit
 
   /**
    * Fraction of how far now [t0] to deadline of current period [ti1]

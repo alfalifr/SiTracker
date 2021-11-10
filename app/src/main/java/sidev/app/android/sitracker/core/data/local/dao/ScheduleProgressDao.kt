@@ -37,4 +37,14 @@ interface ScheduleProgressDao {
   fun getActiveProgressListByTime(
     now: Long,
   ): Flow<List<ScheduleProgress>>
+
+
+  @Query("""
+    SELECT * FROM schedule_progress
+    WHERE scheduleId IN (:scheduleIds)
+    ORDER BY startTimestamp DESC
+  """)
+  fun getRecentByScheduleIds(
+    scheduleIds: Set<Int>,
+  ): Flow<List<ScheduleProgress>>
 }

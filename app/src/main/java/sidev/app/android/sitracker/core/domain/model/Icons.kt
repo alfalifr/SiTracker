@@ -24,6 +24,23 @@ enum class AppIcon(
 }
 
 
+interface IconPicData {
+  val resId: Int
+  val color: String
+}
+
+data class IconPicDataImpl(
+  override val resId: Int,
+  override val color: String,
+): IconPicData
+
+fun IconPicData(
+  resId: Int,
+  color: String,
+): IconPicData = IconPicDataImpl(
+  resId, color
+)
+
 
 sealed class IconProgressionData(
   open val color: String,
@@ -32,13 +49,13 @@ sealed class IconProgressionData(
 
 data class IconProgressionPicData(
   @DrawableRes
-  val resId: Int,
+  override val resId: Int,
   override val color: String,
   override val progressFraction: Float?,
 ): IconProgressionData(
   color = color,
   progressFraction = progressFraction,
-)
+), IconPicData
 
 data class IconProgressionTextData(
   val text: String,

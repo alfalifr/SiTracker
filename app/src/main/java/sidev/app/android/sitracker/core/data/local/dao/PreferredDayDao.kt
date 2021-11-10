@@ -1,10 +1,10 @@
 package sidev.app.android.sitracker.core.data.local.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import sidev.app.android.sitracker.core.data.local.model.PreferredDay
+import sidev.app.android.sitracker.util.Formats
 
 @Dao
 interface PreferredDayDao {
@@ -27,6 +27,7 @@ interface PreferredDayDao {
   /**
    * [nowDay] is measured in day.
    * It has value between 1-7 starts with Sunday.
+   * See [Formats.dayOfWeek].
    */
   @Query("""
     SELECT * FROM preferred_days
@@ -41,6 +42,7 @@ interface PreferredDayDao {
   /**
    * [nowDay] is measured in day.
    * It has value between 1-7 starts with Sunday.
+   * See [Formats.dayOfWeek].
    */
   @Query("""
     SELECT * FROM preferred_days

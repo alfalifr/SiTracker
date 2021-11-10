@@ -2,6 +2,7 @@ package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.core.data.local.model.Interval
+import sidev.app.android.sitracker.util.Formats
 import java.math.BigDecimal
 import java.util.*
 import kotlin.math.absoluteValue
@@ -68,6 +69,7 @@ data class ProgressImportanceCalculator(
   val tPrefTime1: Long?,
   /**
    * Preferred day, 1-7 day (Sunday-Saturday) in week.
+   * See [Formats.dayOfWeek].
    */
   val tPrefDay: Int?,
 ) {

@@ -9,6 +9,7 @@ data class Task(
   val id: Int,
   val name: String,
   val priority: Int,
+  val desc: String,
   val iconId: Int,
   /**
    * Format #
