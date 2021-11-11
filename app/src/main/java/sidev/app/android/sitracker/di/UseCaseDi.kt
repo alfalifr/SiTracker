@@ -8,6 +8,8 @@ interface UseCaseDi {
   fun iconUseCase(): IconUseCase
   fun recommendationUseCase(): RecommendationUseCase
   fun scheduleItemUseCase(): ScheduleItemUseCase
+  fun timeUseCase(): TimeUseCase
+  fun calendarUseCase(): CalendarUseCase
 }
 
 class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
@@ -25,5 +27,10 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
   override fun recommendationUseCase(): RecommendationUseCase = RecommendationUseCaseImpl()
   override fun scheduleItemUseCase(): ScheduleItemUseCase = ScheduleItemUseCaseImpl(
     iconUseCase = iconUseCase(),
+  )
+  override fun timeUseCase(): TimeUseCase = TimeUseCaseImpl()
+  override fun calendarUseCase(): CalendarUseCase = CalendarUseCaseImpl(
+    iconUseCase = iconUseCase(),
+    timeUseCase = timeUseCase(),
   )
 }

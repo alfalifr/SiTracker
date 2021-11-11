@@ -1,5 +1,7 @@
 package sidev.app.android.sitracker.util
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
@@ -8,11 +10,13 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.util.lerp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.PagerScope
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.launch
@@ -111,3 +115,20 @@ fun Modifier.getSize(receiver: MeasureScope.(Size) -> Unit) = this.then(
     }
   }
 )
+
+
+@Composable
+fun DefaultToast(
+  text: String = "Toast...",
+  duration: Int = Toast.LENGTH_LONG,
+) {
+  Toast.makeText(LocalContext.current, text, duration).show()
+}
+
+fun DefaultToast(
+  context: Context,
+  text: String = "Toast...",
+  duration: Int = Toast.LENGTH_LONG,
+) {
+  Toast.makeText(context, text, duration).show()
+}

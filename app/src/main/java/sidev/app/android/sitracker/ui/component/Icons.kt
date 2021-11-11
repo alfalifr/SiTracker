@@ -2,7 +2,6 @@ package sidev.app.android.sitracker.ui.component
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
@@ -17,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.*
@@ -28,6 +26,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import sidev.app.android.sitracker.util.Const
+import sidev.app.android.sitracker.util.Const.textIconSizeStd
 import sidev.app.android.sitracker.util.SuppressLiteral
 import sidev.app.android.sitracker.util.maxSquareSideLen
 
@@ -446,7 +445,8 @@ fun IconWithText(
   ) {
     val usedIconSize = iconSize
       ?: with(LocalDensity.current) {
-        (MaterialTheme.typography.body1.fontSize * 1.5).toDp()
+        //(MaterialTheme.typography.body1.fontSize * 1.5).toDp()
+        textIconSizeStd
       }
     Icon(
       modifier = Modifier.size(usedIconSize),

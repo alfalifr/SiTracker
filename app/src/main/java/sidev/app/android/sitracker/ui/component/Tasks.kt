@@ -77,7 +77,7 @@ fun TaskItem(
   isPostfixIconDataColorSameAsMainColor: Boolean = true,
   onClick: (() -> Unit)? = null,
 ) {
-  val bgShape = RoundedCornerShape(15.dp)
+  val bgShape = MaterialTheme.shapes.medium //RoundedCornerShape(15.dp)
   val spaceWidth = 15.dp
   //val containerHeight = 70.dp
 

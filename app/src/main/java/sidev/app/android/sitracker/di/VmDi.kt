@@ -3,6 +3,7 @@ package sidev.app.android.sitracker.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
+import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomeViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodayScheduleViewModel
 import sidev.app.android.sitracker.util.SuppressLiteral
@@ -10,6 +11,7 @@ import sidev.app.android.sitracker.util.SuppressLiteral
 interface VmDi {
   fun homeViewModel(): HomeViewModel
   fun todayScheduleViewModel(): TodayScheduleViewModel
+  fun detailViewModel(): TaskDetailViewModel
 }
 
 interface AndroidVmDi: VmDi, ViewModelProvider.Factory
@@ -35,6 +37,15 @@ open class VmDiImpl(
     queryUseCase = useCaseDi.queryUseCase(),
     iconUseCase = useCaseDi.iconUseCase(),
     scheduleItemUseCase = useCaseDi.scheduleItemUseCase(),
+    coroutineScope = coroutineScope,
+  )
+
+  override fun detailViewModel(): TaskDetailViewModel = TaskDetailViewModel(
+    queryUseCase = useCaseDi.queryUseCase(),
+    queryJointUseCase = useCaseDi.queryJointUseCase(),
+    iconUseCase = useCaseDi.iconUseCase(),
+    calendarUseCase = useCaseDi.calendarUseCase(),
+    calendarUiUseCase = uiUseCaseDi.calendarUiUseCase(),
     coroutineScope = coroutineScope,
   )
 

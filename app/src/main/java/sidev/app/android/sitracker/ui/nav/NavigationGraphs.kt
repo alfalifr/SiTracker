@@ -21,6 +21,7 @@ fun NavGraphComp(
     navRoutes.forEach { route ->
       composable(
         route = route.completeRoute,
+        arguments = route.arguments,
       ) { navBackStackEntry ->
         /*
         loge(

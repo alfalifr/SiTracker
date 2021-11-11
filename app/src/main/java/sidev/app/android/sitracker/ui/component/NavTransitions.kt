@@ -9,7 +9,7 @@ import androidx.compose.runtime.remember
 import sidev.app.android.sitracker.util.model.Direction
 
 @Composable
-fun MainMenuContentTransition(
+fun HorizontalSlidingTransition(
   slidingDirection: Direction,
   content: @Composable AnimatedVisibilityScope.() -> Unit,
 ) {

@@ -7,6 +7,14 @@ import sidev.app.android.sitracker.core.data.local.model.ScheduleProgress
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object ScheduleProgressDaoDummy: ScheduleProgressDao {
+  override fun getRecentByScheduleIds(scheduleIds: Set<Int>): Flow<List<ScheduleProgress>> = flow {
+    emit(
+      Dummy.scheduleProgress
+        .filter { it.scheduleId in scheduleIds }
+        .sortedByDescending { it.startTimestamp }
+    )
+  }
+
   override fun getLatestProgressOfSchedule(
     scheduleId: Int
   ): Flow<ScheduleProgress?> = flow {

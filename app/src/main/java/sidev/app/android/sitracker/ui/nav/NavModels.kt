@@ -7,6 +7,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import sidev.app.android.sitracker.ui.model.ActionData
 
+
 data class ComposableNavData(
   val navBackStackEntry: NavBackStackEntry,
   val prevNavBackStackEntry: NavBackStackEntry?,

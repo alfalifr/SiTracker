@@ -10,22 +10,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import sidev.app.android.sitracker.ui.layout.MainScaffoldScope
-import sidev.app.android.sitracker.ui.layout.TitleIconLayout
-import sidev.app.android.sitracker.ui.layout.toMainScaffoldScope
+import sidev.app.android.sitracker.ui.layout.*
 
 //TODO: Extract logic to common function
 @Composable
 fun MainMenuItemLayout(
   title: String?,
+  index: Int,
   ignoreContentPadding: Boolean = false,
-  content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
+  content: MainMenuContentScope.(contentPadding: Dp) -> Unit,
 ) {
   TitleIconLayout(
     title = title,
     ignoreContentPadding = ignoreContentPadding,
     content = {
-      toMainScaffoldScope().content(it)
+      toMainMenContentScope(index).content(it)
     },
   )
   /*

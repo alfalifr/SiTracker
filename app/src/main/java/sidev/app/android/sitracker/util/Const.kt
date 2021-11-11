@@ -1,6 +1,10 @@
 package sidev.app.android.sitracker.util
 
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import sidev.app.android.sitracker.core.domain.model.ProgressImportanceFactor
 import sidev.app.android.sitracker.ui.theme.Red
@@ -11,6 +15,20 @@ object Const {
 
   const val contentPadding = 15
   val contentPaddingDp = contentPadding.dp
+
+  const val surfaceShadowElevation = 7
+  val surfaceShadowElevationDp = surfaceShadowElevation.dp
+
+
+  const val stdSpacer = 15
+  val stdSpacerDp = stdSpacer.dp
+
+  val Density.textIconSizeStd: Dp
+    @Composable
+    get() = (MaterialTheme.typography.body1.fontSize * 1.5).toDp()
+
+  const val iconSizeStd = 25
+  val iconSizeStdDp = iconSizeStd.dp
 
 
   const val scoreScale = 10 //100
@@ -26,4 +44,8 @@ object Const {
     get() = getHexString(Red.toArgb())
 
   const val blackHex = "#00000000"
+
+
+  const val id = "id"
+  const val taskId = "taskId"
 }

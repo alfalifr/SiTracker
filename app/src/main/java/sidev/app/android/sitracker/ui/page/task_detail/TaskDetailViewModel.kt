@@ -1,9 +1,13 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
-package sidev.app.android.sitracker.ui.page.detail
+package sidev.app.android.sitracker.ui.page.task_detail
 
-import androidx.compose.ui.text.toLowerCase
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.domain.model.CalendarRange
 import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
 import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
@@ -19,21 +23,29 @@ import sidev.app.android.sitracker.util.Texts
 import sidev.app.android.sitracker.util.getDateMillis
 import java.util.*
 
-class DetailViewModel(
+
+class TaskDetailViewModel(
   private val queryUseCase: QueryUseCase,
   private val queryJointUseCase: QueryJointUseCase,
   private val iconUseCase: IconUseCase,
   private val calendarUseCase: CalendarUseCase,
   private val calendarUiUseCase: CalendarUiUseCase,
-) {
+  private val coroutineScope: CoroutineScope? = null,
+): ViewModel() {
+
+  private var job: Job? = null
+
+
   val taskId = MutableSharedFlow<Int>()
+  private val _taskId = taskId.distinctUntilChanged()
   val isDarkTheme = MutableSharedFlow<Boolean>()
+  //TODO: Make method that can change this value with monthly interval
   val timestamp = MutableSharedFlow<Long>()
   private val onlyDateTimestamp = timestamp.map {
     getDateMillis(it)
   }.distinctUntilChanged()
 
-  private val queryResult: Flow<ProgressQueryResult> = taskId.flatMapLatest {
+  private val queryResult: Flow<ProgressQueryResult> = _taskId.flatMapLatest {
     queryUseCase.queryTaskDetail(it)
   }
   private val queryJoint: Flow<TaskJoint> = queryResult.map {
@@ -43,6 +55,7 @@ class DetailViewModel(
   val taskPanelData: Flow<TaskItemDataUi> = queryJoint.map {
     with(it.task) {
       TaskItemDataUi(
+        taskId = id,
         icon = IconProgressionPicData(
           resId = iconUseCase.getResId(iconId),
           color = color,
@@ -99,5 +112,18 @@ class DetailViewModel(
       calendarRange = calendarRange,
       isDark = isDark,
     )
+  }
+
+  fun loadData(
+    taskId: Int,
+    isDark: Boolean,
+  ) {
+    val taskIdFlow = this.taskId
+    job?.cancel()
+    job = (coroutineScope ?: viewModelScope).launch {
+      taskIdFlow.emit(taskId)
+      isDarkTheme.emit(isDark)
+      timestamp.emit(System.currentTimeMillis())
+    }
   }
 }

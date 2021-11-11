@@ -3,27 +3,32 @@ package sidev.app.android.sitracker.ui.nav
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import sidev.app.android.sitracker.ui.component.MainMenuContentTransition
-import sidev.app.android.sitracker.ui.layout.MainScaffoldScope
-import sidev.app.android.sitracker.ui.layout.TitleIconLayout
-import sidev.app.android.sitracker.ui.layout.toMainScaffoldScope
+import androidx.navigation.NavType
+import androidx.navigation.compose.NamedNavArgument
+import androidx.navigation.compose.navArgument
+import sidev.app.android.sitracker.ui.component.DefaultText
+import sidev.app.android.sitracker.ui.component.HorizontalSlidingTransition
+import sidev.app.android.sitracker.ui.layout.*
+import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailPage
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodaySchedulePage
+import sidev.app.android.sitracker.util.Const
+import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.model.Direction
 //TODO: Compiler error
 sealed class Route(
   val route: String,
   open val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit,
+  val arguments: List<NamedNavArgument> = emptyList(),
   //open val ignoreContentPadding: Boolean = false,
 ) {
 
@@ -67,10 +72,15 @@ sealed class Route(
     "What to do?",
     ignoreContentPadding = true,
     content = {
-      item {
-        HomePage(navController = it.navData.navController) {
-          TODO("Implement `Routes.HomePage.onItemClick`")
-        }
+      mainMenuItem(it.navData) {
+        val ctx = LocalContext.current
+        HomePage(
+          navController = it.navData.navController,
+          onItemClick = { progressId ->
+            DefaultToast(ctx, "progressId = $progressId")
+            //TODO("Implement `Routes.HomePage.onItemClick`")
+          }
+        )
       }
     },
   )
@@ -80,10 +90,15 @@ sealed class Route(
     "Today's schedule",
     content = {
       val mainScaffoldScope = this
-      item {
+      mainMenuItem(it.navData) {
+        val ctx = LocalContext.current
         TodaySchedulePage(
           navController = it.navData.navController,
           mainScaffoldScope = mainScaffoldScope,
+          onItemClick = { scheduleId ->
+            DefaultToast(ctx, "scheduleId = $scheduleId")
+            //TODO("Implement `Routes.TodaySchedulePage.onItemClick`")
+          }
         )
       }
     },
@@ -93,11 +108,39 @@ sealed class Route(
     2,
     "Your calendar",
     content = {
-      item {
+      mainMenuItem(it.navData) {
         CalendarPage(navController = it.navData.navController)
       }
     },
   )
+  object TaskDetailPage: ScaffoldedRoute(
+    "TaskDetailPage",
+    data = ScaffoldedRouteData(),
+    arguments = listOf(
+      navArgument(Const.taskId) {
+        type = NavType.IntType
+      }
+    ),
+    content = {
+      item {
+        TaskDetailPage(
+          navController = it.navData.navController,
+          taskId = it.navData.navBackStackEntry
+            .arguments!!.getInt(Const.taskId),
+        )
+      }
+    },
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.taskId}}"
+
+    fun go(
+      navController: NavController,
+      taskId: Int,
+    ) {
+      navController.navigate("$route/$taskId")
+    }
+  }
 
 
 }
@@ -108,12 +151,12 @@ sealed class ScaffoldedRoute(
   route: String,
   val data: ScaffoldedRouteData = ScaffoldedRouteData(),
   open val scaffoldBuilder: @Composable NavGraphBuilder.(
-    content: LazyListScope.(data: ScaffoldedComposableNavData) -> Unit,
+    content: MainScaffoldScope.(data: ScaffoldedComposableNavData) -> Unit,
     routeData: ScaffoldedRouteData,
     navData: ComposableNavData,
   ) -> Unit =
     { content, routeData, navData ->
-      val graphBuilder = this
+      //val graphBuilder = this
       with(routeData) {
         TitleIconLayout(
           title = title,
@@ -133,10 +176,12 @@ sealed class ScaffoldedRoute(
         )
       }
     },
-  open val content: LazyListScope.(ScaffoldedComposableNavData) -> Unit,
+  open val content: MainScaffoldScope.(ScaffoldedComposableNavData) -> Unit,
+  arguments: List<NamedNavArgument> = emptyList(),
 ): Route(
   route = route,
   composable = {},
+  arguments = arguments,
 ) {
   override val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit =
     { scaffoldBuilder(content, data, it) }
@@ -149,31 +194,43 @@ sealed class MainMenuItemRoute(
   val index: Int,
   title: String,
   ignoreContentPadding: Boolean = false,
-  content: LazyListScope.(ScaffoldedComposableNavData) -> Unit,
+  content: MainMenuContentScope.(ScaffoldedComposableNavData) -> Unit,
+  arguments: List<NamedNavArgument> = emptyList(),
 ): ScaffoldedRoute(
   route = route,
   data = ScaffoldedRouteData(
     title = title,
     ignoreContentPadding = ignoreContentPadding,
   ),
-  content = content,
-  scaffoldBuilder = { _, _, _ -> }
+  content = { this.toMainMenContentScope(index).content(it) },
+  scaffoldBuilder = { _, _, _ -> },
+  arguments = arguments,
 ) {
   override val scaffoldBuilder: @Composable NavGraphBuilder.(
     //Don't forget to add `@Composable` so there won't be bug.
-    content: LazyListScope.(data: ScaffoldedComposableNavData) -> Unit,
+    content: MainMenuContentScope.(data: ScaffoldedComposableNavData) -> Unit,
     routeData: ScaffoldedRouteData,
     navData: ComposableNavData,
   ) -> Unit =
     { content, routeData, navData ->
-      val navBuilder = this
+      //val navBuilder = this
       MainMenuItemLayout(
         title = title,
+        index = index,
         ignoreContentPadding = ignoreContentPadding,
       ) { contentPadding ->
-        val lazyListScope = this
+        //val lazyListScope = this
+        content(
+          ScaffoldedComposableNavData(
+            routeData = routeData,
+            navData = navData,
+            contentPadding = contentPadding,
+          )
+        )
+        /*
         item {
           AnimatedEnter(navComposableData = navData) {
+            ///*
             lazyListScope.content(
               ScaffoldedComposableNavData(
                 routeData = routeData,
@@ -181,8 +238,12 @@ sealed class MainMenuItemRoute(
                 contentPadding = contentPadding,
               )
             )
+            // */
+            //Text(route)
+            DefaultText(route)
           }
         }
+         */
       }
     }
 
@@ -191,7 +252,7 @@ sealed class MainMenuItemRoute(
     navComposableData: ComposableNavData,
     content: @Composable AnimatedVisibilityScope.() -> Unit,
   ) {
-    MainMenuContentTransition(
+    HorizontalSlidingTransition(
       slidingDirection = getSlidingDirection(
         navComposableData.prevNavBackStackEntry?.destination?.route
       ),

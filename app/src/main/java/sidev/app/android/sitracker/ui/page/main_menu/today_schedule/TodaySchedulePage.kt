@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.ui.page.main_menu.today_schedule
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.ui.component.LoadingPlaceholder
 import sidev.app.android.sitracker.ui.component.TaskGroup
 import sidev.app.android.sitracker.ui.model.ScheduleItemGroupUi
+import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.util.defaultViewModel
 
 
@@ -23,6 +25,7 @@ fun TodaySchedulePage(
   navController: NavController = rememberNavController(),
   viewModel: TodayScheduleViewModel = defaultViewModel(),
   mainScaffoldScope: LazyListScope? = null,
+  onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
   //DefaultText(text = "TodaySchedulePage")
   LaunchedEffect(key1 = Unit) {
@@ -34,6 +37,7 @@ fun TodaySchedulePage(
     navController = navController,
     viewModel = viewModel,
     mainScaffoldScope = mainScaffoldScope,
+    onItemClick = onItemClick,
   )
 }
 
@@ -42,6 +46,7 @@ private fun MainList(
   navController: NavController = rememberNavController(),
   viewModel: TodayScheduleViewModel = defaultViewModel(),
   mainScaffoldScope: LazyListScope? = null,
+  onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
   val taskGroups = viewModel.taskItemScheduleGroupsUi
     .collectAsState(initial = null).value
@@ -76,6 +81,12 @@ private fun MainList(
         taskData = data.schedules,
         disableScroll = true,
         modifier = Modifier.padding(vertical = 15.dp),
+        itemModifier = { itemData ->
+          Modifier.let {
+            if(onItemClick == null) it
+            else it.clickable { onItemClick(itemData.id) }
+          }
+        },
       )
     }
 
