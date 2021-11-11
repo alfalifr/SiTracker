@@ -16,6 +16,8 @@ object Texts {
 
   fun formatProgress(progress: Float): String = "${String.format("%.0f", progress * 100)}%"
 
+  fun format(progress: Float): String = "${String.format("%.0f", progress * 100)}%"
+
   fun iconOf(name: String): String = "Icon of $name"
   fun editItem(name: String): String = "Edit $name"
   //fun iconOf(name: String): String = "Icon of $name"

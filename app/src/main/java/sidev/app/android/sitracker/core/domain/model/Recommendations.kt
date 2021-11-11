@@ -60,11 +60,11 @@ data class ProgressImportanceFactor(
   val tdRanges: List<UnclosedLongRange>,
 
   /**
-   * Start of interval (ti0): Time now until deadline defined by the end of period of [Interval].
+   * Start of interval (ti0): Time now until deadline defined by the end of period of [IntervalType].
    */
   val ti0: Long,
   /**
-   * Deadline of interval (ti1): The end of period of [Interval].
+   * Deadline of interval (ti1): The end of period of [IntervalType].
    */
   val ti1: Long,
 /*

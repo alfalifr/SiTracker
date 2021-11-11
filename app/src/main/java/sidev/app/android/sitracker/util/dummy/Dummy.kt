@@ -12,11 +12,11 @@ object Dummy {
     ProgressType(1, "Times"),
   )
 
-  val intervals = listOf<Interval>(
-    Interval(0, "Daily", 1),
-    Interval(1, "Weekly", 7),
-    Interval(2, "Monthly", 30),
-    Interval(3, "Annually", 365),
+  val intervals = listOf<IntervalType>(
+    IntervalType(0, "Daily", 1),
+    IntervalType(1, "Weekly", 7),
+    IntervalType(2, "Monthly", 30),
+    IntervalType(3, "Annually", 365),
   )
 
 

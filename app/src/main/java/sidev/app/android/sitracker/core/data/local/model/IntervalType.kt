@@ -3,8 +3,8 @@ package sidev.app.android.sitracker.core.data.local.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "intervals")
-data class Interval(
+@Entity(tableName = "interval_types")
+data class IntervalType(
   @PrimaryKey
   val id: Int,
   val label: String,

@@ -14,6 +14,8 @@ data class ProgressQueryResult(
   val progresses: List<ScheduleProgress>,
   val schedules: List<Schedule>,
   val tasks: List<Task>,
+  val intervalTypes: List<IntervalType>,
+  val progressTypes: List<ProgressType>,
 )
 
 
@@ -29,6 +31,8 @@ data class ProgressJoint(
   val activeDates: List<ActiveDate>,
   val preferredTimes: List<PreferredTime>,
   val preferredDays: List<PreferredDay>,
+  val intervalType: IntervalType,
+  val progressType: ProgressType,
 )
 
 /**
@@ -43,6 +47,8 @@ data class ScheduleJoint(
   val activeDates: List<ActiveDate>,
   val preferredTimes: List<PreferredTime>,
   val preferredDays: List<PreferredDay>,
+  val intervalType: IntervalType,
+  val progressType: ProgressType,
 )
 
 /**

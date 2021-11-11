@@ -19,6 +19,15 @@ interface ActiveDateDao {
 
   @Query("""
     SELECT * FROM active_dates
+    WHERE scheduleId = :scheduleId
+    ORDER BY startDate DESC
+  """)
+  fun getRecentByScheduleId(
+    scheduleId: Int
+  ): Flow<List<ActiveDate>>
+
+  @Query("""
+    SELECT * FROM active_dates
     WHERE scheduleId IN (:scheduleIds)
     ORDER BY startDate DESC
   """)

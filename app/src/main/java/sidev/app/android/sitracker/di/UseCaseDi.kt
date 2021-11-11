@@ -10,6 +10,7 @@ interface UseCaseDi {
   fun scheduleItemUseCase(): ScheduleItemUseCase
   fun timeUseCase(): TimeUseCase
   fun calendarUseCase(): CalendarUseCase
+  fun dbEnumUseCase(): DbEnumUseCase
 }
 
 class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
@@ -20,6 +21,8 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
     scheduleDao = daoDi.scheduleDao(),
     scheduleProgressDao = daoDi.scheduleProgressDao(),
     taskDao = daoDi.taskDao(),
+    progressTypeDao = daoDi.progressTypeDao(),
+    intervalTypeDao = daoDi.intervalDao(),
   )
 
   override fun queryJointUseCase(): QueryJointUseCase = QueryJointUseCaseImpl()
@@ -33,4 +36,6 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
     iconUseCase = iconUseCase(),
     timeUseCase = timeUseCase(),
   )
+
+  override fun dbEnumUseCase(): DbEnumUseCase = DbEnumUseCaseImpl()
 }

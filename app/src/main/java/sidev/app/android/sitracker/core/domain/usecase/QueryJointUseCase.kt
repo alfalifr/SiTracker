@@ -22,6 +22,8 @@ interface QueryJointUseCase {
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
     progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
     //nowDateLong: Long = Date().time,
   ): List<ProgressJoint>
 
@@ -38,6 +40,8 @@ interface QueryJointUseCase {
       preferredTimes = preferredTimes,
       preferredDays = preferredDays,
       progresses = progresses,
+      intervalTypes = intervalTypes,
+      progressTypes = progressTypes,
     )
   }
 
@@ -59,6 +63,8 @@ interface QueryJointUseCase {
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
     progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
   ): List<ScheduleJoint>
 
   /**
@@ -74,6 +80,8 @@ interface QueryJointUseCase {
       preferredTimes = preferredTimes,
       preferredDays = preferredDays,
       progresses = progresses,
+      intervalTypes = intervalTypes,
+      progressTypes = progressTypes,
     )
   }
 
@@ -85,6 +93,8 @@ interface QueryJointUseCase {
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
     progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
   ): List<TaskJoint>
 
   /**
@@ -100,6 +110,8 @@ interface QueryJointUseCase {
       preferredTimes = preferredTimes,
       preferredDays = preferredDays,
       progresses = progresses,
+      intervalTypes = intervalTypes,
+      progressTypes = progressTypes,
     )
   }
 }
@@ -119,7 +131,9 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     activeDates: List<ActiveDate>,
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
-    progresses: List<ScheduleProgress>
+    progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
   ): List<ProgressJoint> {
     val progressJoints = mutableListOf<ProgressJoint>()
 
@@ -128,6 +142,12 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
         ?: continue
 
       val task = tasks.find { it.id == schedule.taskId }
+        ?: continue
+
+      val intervalType = intervalTypes.find { it.id == schedule.intervalId }
+        ?: continue
+
+      val progressType = progressTypes.find { it.id == schedule.progressTypeId }
         ?: continue
 
       val progressActiveDates = activeDates.filter {
@@ -149,6 +169,8 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
         activeDates = progressActiveDates,
         preferredTimes = prefTimes,
         preferredDays = prefDays,
+        intervalType = intervalType,
+        progressType = progressType,
       )
     }
     return progressJoints
@@ -170,7 +192,9 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     activeDates: List<ActiveDate>,
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
-    progresses: List<ScheduleProgress>
+    progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
   ): List<ScheduleJoint> {
     println("getScheduleJoint AWAL schedules = $schedules")
     val scheduleJoints = mutableListOf<ScheduleJoint>()
@@ -178,6 +202,12 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     for(schedule in schedules) {
       println("getScheduleJoint schedule = $schedule tasks.find { it.id == schedule.taskId } => ${tasks.find { it.id == schedule.taskId }}")
       val task = tasks.find { it.id == schedule.taskId }
+        ?: continue
+
+      val intervalType = intervalTypes.find { it.id == schedule.intervalId }
+        ?: continue
+
+      val progressType = progressTypes.find { it.id == schedule.progressTypeId }
         ?: continue
 
       val progress = progresses.find { it.scheduleId == schedule.id }
@@ -201,6 +231,8 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
         activeDates = progressActiveDates,
         preferredTimes = prefTimes,
         preferredDays = prefDays,
+        intervalType = intervalType,
+        progressType = progressType,
       )
     }
     return scheduleJoints
@@ -212,9 +244,12 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     activeDates: List<ActiveDate>,
     preferredTimes: List<PreferredTime>,
     preferredDays: List<PreferredDay>,
-    progresses: List<ScheduleProgress>
+    progresses: List<ScheduleProgress>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
   ): List<TaskJoint> = getScheduleJoint(
-    tasks, schedules, activeDates, preferredTimes, preferredDays, progresses
+    tasks, schedules, activeDates, preferredTimes, preferredDays, progresses,
+    intervalTypes, progressTypes,
   ).groupBy {
     it.task
   }.map { (task, scheduleJoints) ->

@@ -11,7 +11,6 @@ import sidev.app.android.sitracker.core.data.local.dao.*
 import sidev.app.android.sitracker.core.data.local.model.*
 import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
 import sidev.app.android.sitracker.util.SuppressLiteral
-import sidev.app.android.sitracker.util.getDateMillis
 import sidev.app.android.sitracker.util.getTimeMillisInDay
 import java.util.*
 
@@ -44,7 +43,10 @@ interface QueryUseCase {
    *       - Preferred times and days (point 2),
    *       - `ScheduleProgress` (point 3).
    *
-   *    5. Query any other `Task` whose `Schedule` doesn't have active dates, preferred times and days, and progress yet
+   *    5. Query `Task` based on set of `taskId` from query result of `Schedule` (point 4).
+   *       Of course `Task` with no `Schedule` won't be queried.
+   *
+   *    6. Query any other `Task` whose `Schedule` doesn't have active dates, preferred times and days, and progress yet
    *       will be queried with necessary calculated limit (isn't always same) so that
    *       the query result won't waste memory. The query condition will exclude (NOT IN) ids from (AND condition):
    *       - set of `scheduleId` from `ActiveDate` (point 1).
@@ -53,8 +55,6 @@ interface QueryUseCase {
    *
    *       The query result is sorted descending by `Task` priority.
    *
-   *    6. Query `Task` based on set of `taskId` from query result of `Schedule` (point 4).
-   *       Of course `Task` with no `Schedule` won't be queried.
    */
   fun queryRecommendations(
 /*
@@ -110,6 +110,13 @@ interface QueryUseCase {
   fun queryTaskDetail(
     taskId: Int,
   ): Flow<ProgressQueryResult>
+
+  /**
+   * Query every data related to a [Schedule] with [scheduleId].
+   */
+  fun queryScheduleDetail(
+    scheduleId: Int,
+  ): Flow<ProgressQueryResult>
 }
 
 
@@ -120,6 +127,8 @@ class QueryUseCaseImpl(
   private val scheduleProgressDao: ScheduleProgressDao,
   private val scheduleDao: ScheduleDao,
   private val taskDao: TaskDao,
+  private val intervalTypeDao: IntervalTypeDao,
+  private val progressTypeDao: ProgressTypeDao,
 ): QueryUseCase {
 
   override fun queryRecommendations(now: Long): Flow<ProgressQueryResult> {
@@ -171,6 +180,9 @@ class QueryUseCaseImpl(
       )
     }
 
+    /*
+    These random tasks and schedules don't have active dates, preferred times and days, and progress yet.
+     */
     val randomTaskFlow = scheduleIdFlow.flatMapLatest { scheduleIds ->
       val limit = calculateNecessaryRandomScheduleCount(scheduleIds.size)
       taskDao.getNotInIdsOrderedByPriority(
@@ -185,13 +197,33 @@ class QueryUseCaseImpl(
       )
     }
 
+    val intervalTypeFlow = combine(
+      scheduleFlow,
+      randomScheduleFlow,
+    ) { schedules, randomSchedules ->
+      intervalTypeDao.getByIds(
+        (schedules + randomSchedules).map { it.intervalId }.toSet()
+      )
+    }.flattenConcat()
+
+    val progressTypeFlow = combine(
+      scheduleFlow,
+      randomScheduleFlow,
+    ) { schedules, randomSchedules ->
+      progressTypeDao.getByIds(
+        (schedules + randomSchedules).map { it.progressTypeId }.toSet()
+      )
+    }.flattenConcat()
+
     @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return combine(
-      activeDateFlow, progressFlow,
-      prefTimeFlow, prefDayFlow,
-      scheduleFlow, taskFlow,
+      activeDateFlow, progressFlow, //1
+      prefTimeFlow, prefDayFlow, //3
+      scheduleFlow, taskFlow, //5
       randomTaskFlow,
-      randomScheduleFlow,
+      randomScheduleFlow, //7
+      intervalTypeFlow,
+      progressTypeFlow, //9
     ) { results ->
       val tasks: List<Task> = (results[5] + results[6]) as List<Task>
       val schedules: List<Schedule> = (results[4] + results[7]) as List<Schedule>
@@ -203,6 +235,8 @@ class QueryUseCaseImpl(
         preferredDays = results[3] as List<PreferredDay>,
         schedules = schedules,
         tasks = tasks,
+        intervalTypes = results[8] as List<IntervalType>,
+        progressTypes = results[9] as List<ProgressType>,
       )
     }
   }
@@ -256,6 +290,17 @@ class QueryUseCaseImpl(
       )
     }
 
+    val intervalTypeFlow = scheduleFlow.flatMapLatest { schedules ->
+      intervalTypeDao.getByIds(
+        schedules.map { it.intervalId }.toSet()
+      )
+    }
+    val progressTypeFlow = scheduleFlow.flatMapLatest { schedules ->
+      progressTypeDao.getByIds(
+        schedules.map { it.progressTypeId }.toSet()
+      )
+    }
+
     @Suppress(SuppressLiteral.UNCHECKED_CAST)
     return combine(
       activeDateFlow,
@@ -264,6 +309,8 @@ class QueryUseCaseImpl(
       scheduleProgressFlow,
       scheduleFlow, //4
       taskFlow,
+      intervalTypeFlow, //6
+      progressTypeFlow,
     ) { results ->
       ProgressQueryResult(
         activeDates = results[0] as List<ActiveDate>,
@@ -272,6 +319,8 @@ class QueryUseCaseImpl(
         progresses = results[3] as List<ScheduleProgress>,
         schedules = results[4] as List<Schedule>,
         tasks = results[5] as List<Task>,
+        intervalTypes = results[6] as List<IntervalType>,
+        progressTypes = results[7] as List<ProgressType>,
       )
     }
   }
@@ -312,13 +361,26 @@ class QueryUseCaseImpl(
       )
     }
 
+    val intervalTypeFlow = scheduleFlow.flatMapLatest { schedules ->
+      intervalTypeDao.getByIds(
+        schedules.map { it.intervalId }.toSet()
+      )
+    }
+    val progressTypeFlow = scheduleFlow.flatMapLatest { schedules ->
+      progressTypeDao.getByIds(
+        schedules.map { it.progressTypeId }.toSet()
+      )
+    }
+
     return combine(
-      taskFlow,
+      taskFlow, //0
       scheduleFlow,
-      scheduleProgressFlow,
+      scheduleProgressFlow, //2
       activeDateFlow,
-      preferredDayFlow,
+      preferredDayFlow, //4
       preferredTimeFlow,
+      intervalTypeFlow, //6
+      progressTypeFlow,
     ) { results ->
       @Suppress(SuppressLiteral.UNCHECKED_CAST)
       ProgressQueryResult(
@@ -328,6 +390,69 @@ class QueryUseCaseImpl(
         activeDates = results[3] as List<ActiveDate>,
         preferredDays = results[4] as List<PreferredDay>,
         preferredTimes = results[5] as List<PreferredTime>,
+        intervalTypes = results[6] as List<IntervalType>,
+        progressTypes = results[7] as List<ProgressType>,
+      )
+    }
+  }
+
+  /**
+   * Query every data related to a [Schedule] with [scheduleId].
+   */
+  override fun queryScheduleDetail(scheduleId: Int): Flow<ProgressQueryResult> {
+    val scheduleFlow = scheduleDao.getById(scheduleId).filterNotNull()
+
+    val taskFlow = scheduleFlow.flatMapLatest {
+      taskDao.getById(it.taskId)
+    }.filterNotNull()
+
+    val progressFlow = scheduleFlow.flatMapLatest {
+      scheduleProgressDao.getLatestProgressOfSchedule(it.id)
+    }
+
+    val activeDateFlow = scheduleFlow.flatMapLatest {
+      activeDateDao.getRecentByScheduleId(it.id)
+    }
+
+    val preferredDay = scheduleFlow.flatMapLatest {
+      preferredDayDao.getDayBySchedule(it.id)
+    }
+
+    val preferredTime = scheduleFlow.flatMapLatest {
+      preferredTimeDao.getTimeBySchedule(it.id)
+    }
+
+    val intervalTypeFlow = scheduleFlow.flatMapLatest { schedule ->
+      intervalTypeDao.getById(
+        schedule.intervalId
+      )
+    }.filterNotNull()
+    val progressTypeFlow = scheduleFlow.flatMapLatest { schedule ->
+      progressTypeDao.getById(
+        schedule.progressTypeId
+      )
+    }.filterNotNull()
+
+    return combine(
+      scheduleFlow, //0
+      taskFlow,
+      progressFlow, //2
+      activeDateFlow,
+      preferredDay, //4
+      preferredTime,
+      intervalTypeFlow, //6
+      progressTypeFlow,
+    ) { results ->
+      @Suppress(SuppressLiteral.UNCHECKED_CAST)
+      ProgressQueryResult(
+        schedules = listOf(results[0] as Schedule),
+        tasks = listOf(results[1] as Task),
+        progresses = (results[2] as ScheduleProgress?)?.let { listOf(it) } ?: emptyList(),
+        activeDates = results[3] as List<ActiveDate>,
+        preferredDays = results[4] as List<PreferredDay>,
+        preferredTimes = results[5] as List<PreferredTime>,
+        intervalTypes = listOf(results[6] as IntervalType),
+        progressTypes = listOf(results[7] as ProgressType),
       )
     }
   }

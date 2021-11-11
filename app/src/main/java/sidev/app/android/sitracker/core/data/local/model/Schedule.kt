@@ -20,7 +20,7 @@ import androidx.room.PrimaryKey
       onDelete = ForeignKey.CASCADE,
     ),
     ForeignKey(
-      entity = Interval::class,
+      entity = IntervalType::class,
       parentColumns = ["id"],
       childColumns = ["intervalId"],
       onDelete = ForeignKey.CASCADE,

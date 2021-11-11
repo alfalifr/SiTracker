@@ -11,10 +11,7 @@ import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
 import sidev.app.android.sitracker.core.domain.model.ProgressImportanceJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressJoint
 import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
-import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
-import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
-import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
-import sidev.app.android.sitracker.core.domain.usecase.RecommendationUseCase
+import sidev.app.android.sitracker.core.domain.usecase.*
 import sidev.app.android.sitracker.util.Texts.formatDurationToShortest
 import sidev.app.android.sitracker.util.Texts.formatPriority
 import sidev.app.android.sitracker.util.Texts.formatTimeToShortest
@@ -32,6 +29,7 @@ class HomeViewModel(
   private val queryJointUseCase: QueryJointUseCase,
   private val recommendationUseCase: RecommendationUseCase,
   private val iconUseCase: IconUseCase,
+  private val dbEnumUseCase: DbEnumUseCase,
   private val coroutineScope: CoroutineScope? = null,
 ): ViewModel() {
 
@@ -70,14 +68,7 @@ class HomeViewModel(
     queryUseCase.queryRecommendations(it)
   }
   private val rawProgressJoints: Flow<List<ProgressJoint>> = progressQuery.map {
-    queryJointUseCase.getProgressJoint(
-      tasks = it.tasks,
-      schedules = it.schedules,
-      activeDates = it.activeDates,
-      preferredTimes = it.preferredTimes,
-      preferredDays = it.preferredDays,
-      progresses = it.progresses,
-    )
+    queryJointUseCase.getProgressJoint(it)
   }
   val importances: Flow<List<ProgressImportanceJoint>> = rawProgressJoints.map {
     recommendationUseCase.getProgressImportance(it)
@@ -116,7 +107,7 @@ class HomeViewModel(
         ?.startTime
 
       HomeLowerDetailData(
-        duration = formatDurationToShortest(schedule.totalProgress),
+        duration = dbEnumUseCase.formatProgress(schedule),
         startTime = startTime?.let { formatTimeToShortest(it) },
         priority = formatPriority(importance.joint.task.priority),
       )

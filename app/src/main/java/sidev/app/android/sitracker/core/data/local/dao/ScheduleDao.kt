@@ -10,6 +10,12 @@ import sidev.app.android.sitracker.core.data.local.model.Task
 @Dao
 interface ScheduleDao {
   @Query("""
+    SELECT * FROM schedules
+    WHERE id = :id
+  """)
+  fun getById(id: Int): Flow<Schedule?>
+
+  @Query("""
     SELECT * FROM schedules 
     WHERE taskId = (:taskId)
   """)

@@ -9,12 +9,12 @@ import sidev.app.android.sitracker.util.Formats
 @Dao
 interface PreferredDayDao {
   @Query("""
-    SELECT dayInWeek FROM preferred_days
+    SELECT * FROM preferred_days
     WHERE scheduleId = :scheduleId
   """)
   fun getDayBySchedule(
     scheduleId: Int,
-  ): Flow<List<Int>>
+  ): Flow<List<PreferredDay>>
 
   @Query("""
     SELECT * FROM preferred_days

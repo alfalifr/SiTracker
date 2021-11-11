@@ -29,6 +29,7 @@ open class VmDiImpl(
     queryJointUseCase = useCaseDi.queryJointUseCase(),
     recommendationUseCase = useCaseDi.recommendationUseCase(),
     iconUseCase = useCaseDi.iconUseCase(),
+    dbEnumUseCase = useCaseDi.dbEnumUseCase(),
     coroutineScope = coroutineScope,
   )
 

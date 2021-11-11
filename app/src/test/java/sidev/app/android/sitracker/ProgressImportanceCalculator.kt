@@ -1,9 +1,8 @@
 package sidev.app.android.sitracker
 
 import sidev.app.android.sitracker.core.data.local.model.ActiveDate
-import sidev.app.android.sitracker.core.data.local.model.Interval
+import sidev.app.android.sitracker.core.data.local.model.IntervalType
 import sidev.app.android.sitracker.util.Formats
-import java.math.BigDecimal
 import java.util.*
 import kotlin.math.absoluteValue
 
@@ -34,11 +33,11 @@ data class ProgressImportanceCalculator(
   val td1: Long,
 
   /**
-   * Start of interval (ti0): Time now until deadline defined by the end of period of [Interval].
+   * Start of interval (ti0): Time now until deadline defined by the end of period of [IntervalType].
    */
   val ti0: Long,
   /**
-   * Deadline of interval (ti1): The end of period of [Interval].
+   * Deadline of interval (ti1): The end of period of [IntervalType].
    */
   val ti1: Long,
 
@@ -199,7 +198,7 @@ data class ProgressImportanceCalculator(
     get() = if(td1 == 0L) 0 else t0 - td0
 
   /**
-   * Difference between start of period of [Interval] and now ([t0] - [ti0]).
+   * Difference between start of period of [IntervalType] and now ([t0] - [ti0]).
    */
   val t0i: Long
     get() = t0 - ti0
@@ -212,7 +211,7 @@ data class ProgressImportanceCalculator(
     get() = if(td1 == 0L) 0 else td1 - td0
 
   /**
-   * Difference between start and end of period of [Interval] ([ti1] - [ti0]).
+   * Difference between start and end of period of [IntervalType] ([ti1] - [ti0]).
    */
   val ti: Long
     get() = ti1 - ti0

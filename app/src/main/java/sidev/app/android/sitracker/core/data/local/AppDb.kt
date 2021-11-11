@@ -15,7 +15,7 @@ import sidev.app.android.sitracker.core.data.local.model.*
     PreferredTime::class,
     PreferredDay::class,
     ScheduleProgress::class,
-    Interval::class,
+    IntervalType::class,
     ProgressType::class,
   ],
   version = 1,
@@ -28,7 +28,7 @@ abstract class AppDb: RoomDatabase() {
   abstract fun preferredTimeDao(): PreferredTimeDao
   abstract fun preferredDayDao(): PreferredDayDao
   abstract fun scheduleProgressDao(): ScheduleProgressDao
-  abstract fun intervalDao(): IntervalDao
+  abstract fun intervalDao(): IntervalTypeDao
   abstract fun progressTypeDao(): ProgressTypeDao
 
   companion object {

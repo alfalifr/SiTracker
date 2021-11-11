@@ -21,7 +21,7 @@ object DaoDiDummy: DaoDi {
   override fun preferredTimeDao(): PreferredTimeDao = PreferredTimeDaoDummy
   override fun preferredDayDao(): PreferredDayDao = PreferredDayDaoDummy
   override fun scheduleProgressDao(): ScheduleProgressDao = ScheduleProgressDaoDummy
-  override fun intervalDao(): IntervalDao = IntervalDaoDummy
+  override fun intervalDao(): IntervalTypeDao = IntervalTypeDaoDummy
   override fun progressTypeDao(): ProgressTypeDao = ProgressTypeDaoDummy
 }
 
