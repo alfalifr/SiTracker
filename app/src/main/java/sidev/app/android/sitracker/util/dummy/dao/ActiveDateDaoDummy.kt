@@ -7,6 +7,14 @@ import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object ActiveDateDaoDummy: ActiveDateDao {
+  override fun getRecentByScheduleId(scheduleId: Int): Flow<List<ActiveDate>> = flow {
+    emit(
+      Dummy.activeDates
+        .filter { it.scheduleId == scheduleId }
+        .sortedByDescending { it.startDate }
+    )
+  }
+
   override fun getRecentByScheduleIds(scheduleIds: Set<Int>): Flow<List<ActiveDate>> = flow {
     emit(
       Dummy.activeDates

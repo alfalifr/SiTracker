@@ -72,7 +72,7 @@ sealed class Route(
     "What to do?",
     ignoreContentPadding = true,
     content = {
-      mainMenuItem(it.navData) {
+      mainMenuItem {
         val ctx = LocalContext.current
         HomePage(
           navController = it.navData.navController,
@@ -90,7 +90,7 @@ sealed class Route(
     "Today's schedule",
     content = {
       val mainScaffoldScope = this
-      mainMenuItem(it.navData) {
+      mainMenuItem {
         val ctx = LocalContext.current
         TodaySchedulePage(
           navController = it.navData.navController,
@@ -108,7 +108,7 @@ sealed class Route(
     2,
     "Your calendar",
     content = {
-      mainMenuItem(it.navData) {
+      mainMenuItem {
         CalendarPage(navController = it.navData.navController)
       }
     },
@@ -165,7 +165,7 @@ sealed class ScaffoldedRoute(
           actionData = actions,
           ignoreContentPadding = ignoreContentPadding,
           content = {
-            toMainScaffoldScope().content(
+            content(
               ScaffoldedComposableNavData(
                 navData = navData,
                 routeData = routeData,
@@ -202,7 +202,7 @@ sealed class MainMenuItemRoute(
     title = title,
     ignoreContentPadding = ignoreContentPadding,
   ),
-  content = { this.toMainMenContentScope(index).content(it) },
+  content = { this.toMainMenContentScope(index, it.navData).content(it) },
   scaffoldBuilder = { _, _, _ -> },
   arguments = arguments,
 ) {

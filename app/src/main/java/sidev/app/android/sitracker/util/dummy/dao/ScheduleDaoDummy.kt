@@ -8,6 +8,12 @@ import sidev.app.android.sitracker.core.data.local.model.Schedule
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object ScheduleDaoDummy: ScheduleDao {
+  override fun getById(id: Int): Flow<Schedule?> = flow {
+    emit(
+      Dummy.schedules.find { it.id == id }
+    )
+  }
+
   override fun getByTaskId(taskId: Int): Flow<List<Schedule>> = flow {
     emit(
       Dummy.schedules.filter { it.taskId == taskId }

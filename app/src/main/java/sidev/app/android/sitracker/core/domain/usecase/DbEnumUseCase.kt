@@ -10,7 +10,7 @@ interface DbEnumUseCase {
   fun formatProgress(id: Int, progress: Long): String
   fun formatProgress(schedule: Schedule): String =
     formatProgress(
-      id = schedule.id,
+      id = schedule.progressTypeId,
       progress = schedule.totalProgress,
     )
 }

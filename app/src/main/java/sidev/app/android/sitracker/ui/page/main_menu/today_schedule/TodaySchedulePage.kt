@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.ui.component.LoadingPlaceholder
 import sidev.app.android.sitracker.ui.component.TaskGroup
+import sidev.app.android.sitracker.ui.layout.MainMenuContentScope
 import sidev.app.android.sitracker.ui.model.ScheduleItemGroupUi
 import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.util.defaultViewModel
@@ -24,7 +25,7 @@ import sidev.app.android.sitracker.util.defaultViewModel
 fun TodaySchedulePage(
   navController: NavController = rememberNavController(),
   viewModel: TodayScheduleViewModel = defaultViewModel(),
-  mainScaffoldScope: LazyListScope? = null,
+  mainScaffoldScope: MainMenuContentScope? = null,
   onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
   //DefaultText(text = "TodaySchedulePage")
@@ -45,7 +46,7 @@ fun TodaySchedulePage(
 private fun MainList(
   navController: NavController = rememberNavController(),
   viewModel: TodayScheduleViewModel = defaultViewModel(),
-  mainScaffoldScope: LazyListScope? = null,
+  mainScaffoldScope: MainMenuContentScope? = null,
   onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
   val taskGroups = viewModel.taskItemScheduleGroupsUi
@@ -97,7 +98,7 @@ private fun MainList(
         }
       }
     } else {
-      mainScaffoldScope.items(taskGroups.size) { i ->
+      mainScaffoldScope.mainMenuItems(taskGroups.size) { i ->
         InnerItem(data = taskGroups[i])
       }
     }

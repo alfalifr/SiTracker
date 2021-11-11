@@ -18,13 +18,13 @@ fun MainMenuItemLayout(
   title: String?,
   index: Int,
   ignoreContentPadding: Boolean = false,
-  content: MainMenuContentScope.(contentPadding: Dp) -> Unit,
+  content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
 ) {
   TitleIconLayout(
     title = title,
     ignoreContentPadding = ignoreContentPadding,
     content = {
-      toMainMenContentScope(index).content(it)
+      toMainScaffoldScope().content(it)
     },
   )
   /*

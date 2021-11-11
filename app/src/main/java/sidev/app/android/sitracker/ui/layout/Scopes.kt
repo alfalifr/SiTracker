@@ -22,10 +22,27 @@ interface MainScaffoldScope: LazyListScope {
       )
     }
   }
+  fun animatedHorizontalSlidings(
+    count: Int,
+    slidingDirection: Direction,
+    key: ((Int) -> Unit)? = null,
+    content: @Composable AnimatedVisibilityScope.(Int) -> Unit,
+  ) {
+    items(
+      count = count,
+      key = key,
+    ) { i ->
+      HorizontalSlidingTransition(
+        slidingDirection = slidingDirection,
+        content = { content(i) },
+      )
+    }
+  }
 }
 
 interface MainMenuContentScope: MainScaffoldScope {
   val index: Int
+  val navComposableData: ComposableNavData
 
   //TODO: Sliding effect from item #2 to item #1 still get left direction (expected is right).
   // perhaps it has something to do with `popUpTo` in BottomNavBar navigation
@@ -43,10 +60,26 @@ interface MainMenuContentScope: MainScaffoldScope {
   }
 
   fun mainMenuItem(
-    navComposableData: ComposableNavData,
+    //navComposableData: ComposableNavData,
     content: @Composable AnimatedVisibilityScope.() -> Unit,
   ) {
     animatedHorizontalSliding(
+      slidingDirection = getSlidingDirection(
+        navComposableData.prevNavBackStackEntry?.destination?.route
+      ),
+      content = content,
+    )
+  }
+
+  fun mainMenuItems(
+    count: Int,
+    //navComposableData: ComposableNavData,
+    key: ((Int) -> Unit)? = null,
+    content: @Composable AnimatedVisibilityScope.(Int) -> Unit,
+  ) {
+    animatedHorizontalSlidings(
+      count = count,
+      key = key,
       slidingDirection = getSlidingDirection(
         navComposableData.prevNavBackStackEntry?.destination?.route
       ),
@@ -61,6 +94,7 @@ private class MainScaffoldScopeImpl(
 
 private class MainMenuContentScopeImpl(
   override val index: Int,
+  override val navComposableData: ComposableNavData,
   private val lazyListScope: LazyListScope,
 ): MainMenuContentScope, LazyListScope by lazyListScope
 
@@ -68,8 +102,12 @@ private class MainMenuContentScopeImpl(
 fun LazyListScope.toMainScaffoldScope(): MainScaffoldScope =
   MainScaffoldScopeImpl(this)
 
-fun LazyListScope.toMainMenContentScope(index: Int): MainMenuContentScope =
+fun LazyListScope.toMainMenContentScope(
+  index: Int,
+  navComposableData: ComposableNavData,
+): MainMenuContentScope =
   MainMenuContentScopeImpl(
     index = index,
+    navComposableData = navComposableData,
     lazyListScope = this,
   )

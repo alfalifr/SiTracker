@@ -6,12 +6,14 @@ import kotlinx.coroutines.CoroutineScope
 import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomeViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodayScheduleViewModel
+import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailViewModel
 import sidev.app.android.sitracker.util.SuppressLiteral
 
 interface VmDi {
   fun homeViewModel(): HomeViewModel
   fun todayScheduleViewModel(): TodayScheduleViewModel
-  fun detailViewModel(): TaskDetailViewModel
+  fun taskDetailViewModel(): TaskDetailViewModel
+  fun scheduleDetailViewModel(): ScheduleDetailViewModel
 }
 
 interface AndroidVmDi: VmDi, ViewModelProvider.Factory
@@ -41,13 +43,19 @@ open class VmDiImpl(
     coroutineScope = coroutineScope,
   )
 
-  override fun detailViewModel(): TaskDetailViewModel = TaskDetailViewModel(
+  override fun taskDetailViewModel(): TaskDetailViewModel = TaskDetailViewModel(
     queryUseCase = useCaseDi.queryUseCase(),
     queryJointUseCase = useCaseDi.queryJointUseCase(),
     iconUseCase = useCaseDi.iconUseCase(),
     calendarUseCase = useCaseDi.calendarUseCase(),
     calendarUiUseCase = uiUseCaseDi.calendarUiUseCase(),
     coroutineScope = coroutineScope,
+  )
+
+  override fun scheduleDetailViewModel(): ScheduleDetailViewModel = ScheduleDetailViewModel(
+    queryUseCase = useCaseDi.queryUseCase(),
+    queryJointUseCase = useCaseDi.queryJointUseCase(),
+    dbEnumUseCase = useCaseDi.dbEnumUseCase(),
   )
 
   /**
@@ -63,6 +71,8 @@ open class VmDiImpl(
   override fun <T : ViewModel?> create(modelClass: Class<T>): T = when {
     modelClass.isAssignableFrom(HomeViewModel::class.java) -> homeViewModel()
     modelClass.isAssignableFrom(TodayScheduleViewModel::class.java) -> todayScheduleViewModel()
+    modelClass.isAssignableFrom(TaskDetailViewModel::class.java) -> taskDetailViewModel()
+    modelClass.isAssignableFrom(ScheduleDetailViewModel::class.java) -> scheduleDetailViewModel()
     else -> throw IllegalArgumentException("Unknown `modelClass` ($modelClass)")
   } as T
 }

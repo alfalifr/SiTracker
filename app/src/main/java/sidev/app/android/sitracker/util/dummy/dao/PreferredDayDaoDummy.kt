@@ -8,11 +8,10 @@ import sidev.app.android.sitracker.util.Formats
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object PreferredDayDaoDummy: PreferredDayDao {
-  override fun getDayBySchedule(scheduleId: Int): Flow<List<Int>> = flow {
+  override fun getDayBySchedule(scheduleId: Int): Flow<List<PreferredDay>> = flow {
     emit(
       Dummy.preferredDay
         .filter { it.scheduleId == scheduleId }
-        .map { it.dayInWeek }
     )
   }
 

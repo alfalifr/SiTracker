@@ -54,7 +54,7 @@ fun MainScaffold(
   icon: @Composable ((contentPadding: Dp) -> Unit)? = null,
   actions: @Composable ((contentPadding: Dp) -> Unit)? = null,
   ignoreContentPadding: Boolean = false,
-  content: LazyListScope.(contentPadding: Dp) -> Unit,
+  content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
 ) {
   //var measurablePointer = 0
 
@@ -100,7 +100,7 @@ fun MainScaffold(
         horizontal = drawnPadding,
       ),
     ) {
-      val lazyListScope = this
+      val lazyListScope = toMainScaffoldScope()
       item {
         Row(
           modifier = Modifier
@@ -126,7 +126,7 @@ fun MainScaffold(
           }
         }
       }
-      content(passedContentPadding)
+      lazyListScope.content(passedContentPadding)
 
       if(!ignoreContentPadding) {
         item {
@@ -327,7 +327,7 @@ fun TitleIconLayout(
   titleMaxLines: Int = 3,
   titleOverflow: TextOverflow = TextOverflow.Ellipsis,
   ignoreContentPadding: Boolean = false,
-  content: LazyListScope.(contentPadding: Dp) -> Unit,
+  content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
 ) {
   MainScaffold(
     header = if(title != null) {
