@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit
 class CobTest {
 
   val tasks = listOf(
-    Task(0, "Code 20 Lines", 1, 0, "#FFF"),
-    Task(1, "Read Life", 2, 0, "#FFF"),
-    Task(2, "Runaway", 3, 0, "#FFF"),
+    Task(0, "Code 20 Lines", 1, "desc0", 0, "#FFF"),
+    Task(1, "Read Life", 2, "desc1", 0, "#FFF"),
+    Task(2, "Runaway", 3, "desc2", 0, "#FFF"),
   )
 
   val scheduleProgressNumber = listOf<Pair<Long, Long>>(

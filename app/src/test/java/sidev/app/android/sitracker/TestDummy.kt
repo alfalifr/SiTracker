@@ -26,6 +26,7 @@ object TestDummy {
       Task(
         id = it,
         name = faker.job().title(),
+        desc = "desc $it",
         priority = faker.random().nextInt(1000),
         iconId = faker.random().nextInt(10),
         color = faker.color().hex(),

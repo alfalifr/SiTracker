@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.ui.component
 
+import android.accounts.AuthenticatorDescription
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -425,6 +426,74 @@ private fun IconWithText_preview() {
     text = "Hello",
   )
 }
+@Composable
+@Preview
+private fun IconWithTexts_preview() {
+  IconWithTexts(
+    icon = rememberVectorPainter(Icons.Rounded.Person),
+    iconContentDescription = null,
+    "Hello",
+    "Ho",
+    "Bro",
+  )
+}
+
+@Composable
+fun IconWithTexts(
+  icon: Painter,
+  iconContentDescription: String?,
+  vararg texts: String,
+  modifier: Modifier = Modifier,
+  iconModifier: Modifier = Modifier,
+  textModifier: ((index: Int) -> Modifier)? = null,
+  spaceBetween: Dp = 10.dp,
+  iconSize: Dp? = null,
+  textSize: TextUnit = TextUnit.Unspecified,
+  //contentDescription: String = text,
+) {
+  val alignment = if(texts.size == 1) Alignment.CenterVertically
+    else Alignment.Top
+
+  Row(
+    modifier = modifier,
+    /*
+    modifier
+      .semantics(true) {
+        this.contentDescription = contentDescription
+      },
+     */
+    verticalAlignment = alignment,
+  ) {
+    val usedIconSize = iconSize
+      ?: with(LocalDensity.current) {
+        //(MaterialTheme.typography.body1.fontSize * 1.5).toDp()
+        textIconSizeStd
+      }
+    Icon(
+      modifier = iconModifier.size(usedIconSize),
+        //.background(Color.Blue),
+      painter = icon,
+      tint = MaterialTheme.typography.body1.color,
+      contentDescription = iconContentDescription,
+    )
+    Spacer(
+      modifier = Modifier
+        .size(width = spaceBetween, height = 0.dp)
+    )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(Const.stdSpacerDp),
+    ) {
+      for(i in texts.indices) {
+        Text(
+          text = texts[i],
+          fontSize = textSize,
+          modifier = textModifier?.invoke(i) ?: Modifier,
+          //modifier = Modifier.clearAndSetSemantics {  }
+        )
+      }
+    }
+  }
+}
 
 @Composable
 fun IconWithText(
@@ -435,34 +504,41 @@ fun IconWithText(
   iconSize: Dp? = null,
   textSize: TextUnit = TextUnit.Unspecified,
   contentDescription: String = text,
-) {
-  Row(
-    modifier = modifier
-      .semantics(true) {
-        this.contentDescription = contentDescription
-      },
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    val usedIconSize = iconSize
-      ?: with(LocalDensity.current) {
-        //(MaterialTheme.typography.body1.fontSize * 1.5).toDp()
-        textIconSizeStd
-      }
-    Icon(
-      modifier = Modifier.size(usedIconSize),
-        //.background(Color.Blue),
-      painter = icon,
-      tint = MaterialTheme.typography.body1.color,
-      contentDescription = null,
-    )
-    Spacer(
-      modifier = Modifier
-        .size(width = spaceBetween, height = 0.dp)
-    )
-    Text(
-      text = text,
-      fontSize = textSize,
-      modifier = Modifier.clearAndSetSemantics {  }
-    )
-  }
-}
+) = IconWithTexts(
+  icon = icon,
+  iconContentDescription = null,
+  texts = arrayOf(text),
+  modifier = modifier
+    .semantics(true) {
+      this.contentDescription = contentDescription
+    },
+  spaceBetween = spaceBetween,
+  iconSize = iconSize,
+  textSize = textSize,
+  textModifier = { Modifier.clearAndSetSemantics {  } },
+)
+
+/*
+@Composable
+fun IconWithTexts(
+  icon: Painter,
+  iconContentDescription: String,
+  vararg texts: String,
+  modifier: Modifier = Modifier,
+  iconModifier: Modifier = Modifier,
+  textModifier: ((index: Int) -> Modifier)? = null,
+  spaceBetween: Dp = 10.dp,
+  iconSize: Dp? = null,
+  textSize: TextUnit = TextUnit.Unspecified,
+) = _IconWithText(
+  icon = icon,
+  iconContentDescription = iconContentDescription,
+  texts = texts,
+  modifier = modifier,
+  spaceBetween = spaceBetween,
+  iconModifier = iconModifier,
+  textModifier = textModifier,
+  iconSize = iconSize,
+  textSize = textSize,
+)
+ */

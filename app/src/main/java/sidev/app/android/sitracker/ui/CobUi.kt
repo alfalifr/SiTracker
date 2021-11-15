@@ -111,7 +111,7 @@ fun ExceededColumn_preview() {
     Column(
       Modifier
         //.height(50.dp)
-        .verticalScroll(scrollState)
+        .verticalScroll(scrollState),
     ) {
       Text("scrollState.maxValue = ${scrollState.maxValue}",
         Modifier
@@ -185,6 +185,29 @@ fun LayoutMod_preview() {
         Modifier
           .background(Color.Red)
       )
+    }
+  }
+}
+
+
+@Composable
+@Preview
+fun OverflownRow_preview() {
+  Box(Modifier.width(100.dp)) {
+    Row(
+      Modifier.fillMaxWidth(),
+        //.wrapContentSize(),
+      horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+      for(i in 0 until 5) {
+        Text(
+          i.toString(),
+          Modifier
+            .size(25.dp)
+            .background(Color.Blue)
+            .padding(5.dp),
+        )
+      }
     }
   }
 }

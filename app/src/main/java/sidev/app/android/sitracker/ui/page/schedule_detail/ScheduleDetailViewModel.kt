@@ -37,18 +37,18 @@ class ScheduleDetailViewModel(
     )
   }
 
-  val preferredTimes: Flow<ScheduleDetailPreferredTimeUi> = queryJoint.map {
+  val preferredTimes: Flow<ScheduleDetailPreferredTimeUi> = queryJoint.map { scheduleJoint ->
     ScheduleDetailPreferredTimeUi(
-      it.preferredTimes.map { time ->
+      scheduleJoint.preferredTimes.map { time ->
         Texts.formatTimeToShortest(time.startTime) to
           time.endTime?.let { Texts.formatTimeToShortest(it) }
       }
     )
   }
 
-  val preferredDays: Flow<ScheduleDetailPreferredDayUi> = queryJoint.map {
+  val preferredDays: Flow<ScheduleDetailPreferredDayUi> = queryJoint.map { scheduleJoint ->
     ScheduleDetailPreferredDayUi(
-      it.preferredDays.map { it.dayInWeek }
+      scheduleJoint.preferredDays.map { it.dayInWeek }
     )
   }
 }
