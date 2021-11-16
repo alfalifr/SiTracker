@@ -1,8 +1,17 @@
 package sidev.app.android.sitracker.ui.theme
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import sidev.app.android.sitracker.util.colorContrast
 
 val Purple200 = Color(0xFFBB86FC)
 val Purple500 = Color(0xFF6200EE)
@@ -155,3 +164,126 @@ val TransFollowingDarkColor5: Color
 fun TransFollowingDarkColor5(isDark: Boolean): Color =
   if(isDark) BlackTrans5
   else WhiteTrans5
+
+
+//*
+//TODO: make `OppositeBrightnessColor` fun
+fun OppositeBrightnessColor(color: Color): Color {
+  /*
+  val sum = with(color) {
+    red + green + blue
+  }
+   */
+
+  val contrast = colorContrast(
+    rgb1 = Triple(0,0,0), //black
+    rgb2 = Triple(
+      (color.red * 255).toInt(),
+      (color.green * 255).toInt(),
+      (color.blue * 255).toInt(),
+    )
+  )
+// minimal recommended contrast ratio is 4.5, or 3 for larger font-sizes
+
+  return if(contrast >= 4.5) Color.Black
+  else Color.White
+}
+// */
+
+@Composable
+@Preview
+private fun OppositeBrightnessColor_preview() {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(15.dp)
+  ) {
+    @Composable
+    fun ColorTile(color: Color) {
+      Text(
+        "r:${color.red} g:${color.green} b:${color.blue}",
+        Modifier.background(color).
+          padding(10.dp),
+        color = OppositeBrightnessColor(color),
+      )
+    }
+
+    ColorTile(
+      Color(
+        red = 15,
+        green = 44,
+        blue = 0,
+        alpha = 255
+      )
+    )
+    ColorTile(
+      Color(
+        red = 252,
+        green = 168,
+        blue = 143,
+        alpha = 255
+      )
+    )
+
+    ColorTile(
+      Color(
+        red = 255,
+        green = 0,
+        blue = 0,
+      )
+    )
+    ColorTile(
+      Color(
+        red = 0,
+        green = 255,
+        blue = 0,
+      )
+    )
+    ColorTile(
+      Color(
+        red = 0,
+        green = 0,
+        blue = 255,
+      )
+    )
+
+    ColorTile(
+      Color(
+        red = 34,
+        green = 172,
+        blue = 29,
+        alpha = 255
+      )
+    )
+    ColorTile(
+      Color(
+        red = 37,
+        green = 255,
+        blue = 0,
+        alpha = 255
+      )
+    )
+    ColorTile(
+      Color(
+        red = 252,
+        green = 214,
+        blue = 30,
+        alpha = 255
+      )
+    )
+    ColorTile(
+      Color(
+        red = 55,
+        green = 0,
+        blue = 255,
+        alpha = 255
+      )
+    )
+    ColorTile(
+      Color(
+        red = 255,
+        green = 251,
+        blue = 0,
+        alpha = 255
+      )
+    )
+  }
+}

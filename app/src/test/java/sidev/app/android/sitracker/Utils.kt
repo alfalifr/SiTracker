@@ -1,6 +1,10 @@
 package sidev.app.android.sitracker
 
+import android.graphics.Color.luminance
 import com.github.javafaker.Faker
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
 
 val faker = Faker()
 
@@ -25,3 +29,4 @@ fun <T> List<T>.randomSubset(): Set<T> {
   }
   return res
 }
+

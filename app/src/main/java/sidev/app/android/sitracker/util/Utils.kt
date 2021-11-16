@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.log
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 
 
 fun loge(
@@ -392,3 +393,32 @@ fun CalendarEvent.merge(
   legends = legends + other.legends,
   mark = mark ?: this.mark ?: other.mark
 )
+
+
+
+fun colorLuminance(r: Int, g: Int, b: Int): Double {
+  fun factor(colorComp: Int): Double =
+    (colorComp / 255).let {
+      if(it <= 0.03928) it / 12.92
+      else ((it + 0.055) / 1.055).pow(2.4)
+    }
+
+  return factor(r) * 0.2126 +
+    factor(g) * 0.7152 +
+    factor(b) * 0.0722
+}
+
+fun colorContrast(rgb1: Triple<Int, Int, Int>, rgb2: Triple<Int, Int, Int>): Double {
+  //contrast()
+  val lum1 = with(rgb1) { colorLuminance(first, second, third) }
+  val lum2 = with(rgb2) { colorLuminance(first, second, third) }
+  val brightest = max(lum1, lum2)
+  val darkest = min(lum1, lum2)
+  return (brightest + 0.05) / (darkest + 0.05)
+}
+
+/*
+colorContrast([255, 255, 255], [255, 255, 0]); // 1.074 for yellow
+colorContrast([255, 255, 255], [0, 0, 255]); // 8.592 for blue
+// minimal recommended contrast ratio is 4.5, or 3 for larger font-sizes
+ */

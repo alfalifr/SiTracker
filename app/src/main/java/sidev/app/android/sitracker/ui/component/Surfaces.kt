@@ -52,11 +52,13 @@ private fun AppSurface(
 fun LargeSurface(
   modifier: Modifier = Modifier,
   ignorePadding: Boolean = false,
+  color: Color = MaterialTheme.colors.surface,
   content: @Composable (BoxScope.() -> Unit)? = null,
 ) = AppSurface(
   shape = MaterialTheme.shapes.large,
   modifier = modifier,
   ignorePadding = ignorePadding,
+  color = color,
   content = content,
 )
 
@@ -64,11 +66,13 @@ fun LargeSurface(
 fun MediumSurface(
   modifier: Modifier = Modifier,
   ignorePadding: Boolean = false,
+  color: Color = MaterialTheme.colors.surface,
   content: @Composable (BoxScope.() -> Unit)? = null,
 ) = AppSurface(
   shape = MaterialTheme.shapes.medium,
   modifier = modifier,
   ignorePadding = ignorePadding,
+  color = color,
   content = content,
 )
 
@@ -76,10 +80,12 @@ fun MediumSurface(
 fun SmallSurface(
   modifier: Modifier = Modifier,
   ignorePadding: Boolean = false,
+  color: Color = MaterialTheme.colors.surface,
   content: @Composable (BoxScope.() -> Unit)? = null,
 ) = AppSurface(
   shape = MaterialTheme.shapes.small,
   modifier = modifier,
   ignorePadding = ignorePadding,
+  color = color,
   content = content,
 )

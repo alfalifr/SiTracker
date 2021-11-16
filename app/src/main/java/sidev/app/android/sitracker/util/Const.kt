@@ -23,6 +23,9 @@ object Const {
   const val stdSpacer = 15
   val stdSpacerDp = stdSpacer.dp
 
+  const val stdBorderWidth = 15
+  val stdBorderWidthDp = stdBorderWidth.dp
+
   val Density.textIconSizeStd: Dp
     @Composable
     get() = (MaterialTheme.typography.body1.fontSize * 1.5).toDp()

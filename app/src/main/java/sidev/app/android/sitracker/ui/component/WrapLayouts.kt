@@ -19,7 +19,7 @@ fun WrappingRow_preview() {
     Modifier
       .width(150.dp)
       .background(Color.Red),
-    horizontalArrangement = Arrangement.spacedBy(58.dp),
+    horizontalArrangement = Arrangement.SpaceEvenly, //Arrangement.spacedBy(58.dp),
     verticalArrangement = Arrangement.spacedBy(10.dp),
     verticalAlignment = Alignment.Bottom
   ) {

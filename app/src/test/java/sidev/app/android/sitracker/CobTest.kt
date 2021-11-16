@@ -1,5 +1,7 @@
 package sidev.app.android.sitracker
 
+import androidx.compose.ui.graphics.BlendMode.Companion.Color
+import androidx.compose.ui.graphics.Color
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import sidev.app.android.sitracker.core.data.local.model.*
@@ -327,4 +329,34 @@ class CobTest {
     assert(range1 !in range2)
     assert(range1 !in range3)
   }
+
+
+  @Test
+  fun colorCobTest() {
+    Color(
+      red = 255,
+      green = 0,
+      blue = 0,
+    ).apply {
+      println("""
+        # RED 255
+        red = $red
+        green = $green
+        blue = $blue
+        """.trimIndent())
+    }
+    Color(
+      red = 250,
+      green = 255,
+      blue = 0,
+    ).apply {
+      println("""
+        # RED 250 # GREEN 255
+        red = $red
+        green = $green
+        blue = $blue
+        """.trimIndent())
+    }
+  }
+
 }

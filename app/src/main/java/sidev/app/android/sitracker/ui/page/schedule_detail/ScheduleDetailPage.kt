@@ -12,6 +12,7 @@ import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.IconWithText
 import sidev.app.android.sitracker.ui.component.IconWithTexts
 import sidev.app.android.sitracker.ui.component.LargeSurface
+import sidev.app.android.sitracker.ui.component.WrappingRow
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.Texts
 
@@ -138,15 +139,17 @@ private fun PreferredTimePanel(data: ScheduleDetailPreferredTimeUi) {
 private fun PreferredDayPanel(data: ScheduleDetailPreferredDayUi) {
   LargeSurface {
     Column(
-
+      verticalArrangement = Arrangement.spacedBy(Const.stdSpacerDp),
     ) {
       Text(
         Texts.preferredDays,
         style = MaterialTheme.typography.h6,
         fontWeight = FontWeight.Bold,
       )
-      Spacer(Modifier.height(Const.stdSpacerDp))
-      //Row
+      //Spacer(Modifier.height(Const.stdSpacerDp))
+      WrappingRow {
+
+      }
     }
   }
 }
