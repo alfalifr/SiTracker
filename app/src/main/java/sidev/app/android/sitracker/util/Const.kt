@@ -23,7 +23,7 @@ object Const {
   const val stdSpacer = 15
   val stdSpacerDp = stdSpacer.dp
 
-  const val stdBorderWidth = 15
+  const val stdBorderWidth = 5
   val stdBorderWidthDp = stdBorderWidth.dp
 
   val Density.textIconSizeStd: Dp
@@ -51,4 +51,5 @@ object Const {
 
   const val id = "id"
   const val taskId = "taskId"
+  const val scheduleId = "scheduleId"
 }

@@ -21,6 +21,7 @@ import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodaySchedulePage
+import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPage
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.model.Direction
@@ -46,7 +47,7 @@ sealed class Route(
   // ===============
   companion object {
     fun getAppRoutes(): List<Route> = listOf(
-      MainMenuPage,
+      MainMenuPage, ScheduleDetailPage, TaskDetailPage,
     )
     fun getMainMenuContentRoutes(): List<MainMenuItemRoute> = listOf(
       HomePage, TodaySchedulePage, CalendarPage,
@@ -97,6 +98,10 @@ sealed class Route(
           mainScaffoldScope = mainScaffoldScope,
           onItemClick = { scheduleId ->
             DefaultToast(ctx, "scheduleId = $scheduleId")
+            ScheduleDetailPage.go(
+              it.navData.parentNavController!!,
+              scheduleId = scheduleId,
+            )
             //TODO("Implement `Routes.TodaySchedulePage.onItemClick`")
           }
         )
@@ -113,6 +118,8 @@ sealed class Route(
       }
     },
   )
+
+
   object TaskDetailPage: ScaffoldedRoute(
     "TaskDetailPage",
     data = ScaffoldedRouteData(),
@@ -139,6 +146,31 @@ sealed class Route(
       taskId: Int,
     ) {
       navController.navigate("$route/$taskId")
+    }
+  }
+  object ScheduleDetailPage: Route(
+    "ScheduleDetailPage",
+    arguments = listOf(
+      navArgument(Const.scheduleId) {
+        type = NavType.IntType
+      }
+    ),
+    composable = {
+      ScheduleDetailPage(
+        navController = it.navController,
+        scheduleId = it.navBackStackEntry
+          .arguments!!.getInt(Const.scheduleId),
+      )
+    },
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.scheduleId}}"
+
+    fun go(
+      navController: NavController,
+      scheduleId: Int,
+    ) {
+      navController.navigate("$route/$scheduleId")
     }
   }
 

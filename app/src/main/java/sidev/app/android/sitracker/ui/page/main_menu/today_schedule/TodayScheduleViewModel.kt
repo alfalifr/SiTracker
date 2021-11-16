@@ -63,7 +63,7 @@ class TodayScheduleViewModel(
   val taskItemScheduleGroupsUi = taskItemScheduleGroups.map { groups ->
     groups.map { it.toUiData(iconUseCase = iconUseCase) }
   }
-
+/*
   init {
     viewModelScope.launch {
       launch {
@@ -83,6 +83,7 @@ class TodayScheduleViewModel(
       }
     }
   }
+ */
 
   fun refreshList() {
     processingJob?.cancel()

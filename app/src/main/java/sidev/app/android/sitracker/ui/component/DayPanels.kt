@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
@@ -15,26 +16,27 @@ import sidev.app.android.sitracker.util.Const
 fun DayItem(
   text: String,
   modifier: Modifier = Modifier,
+  color: Color,
   isActive: Boolean = false,
 ) {
   SmallSurface(
+    color = if(isActive) color
+      else MaterialTheme.colors.surface,
     modifier = modifier.let {
-      if(!isActive) { it }
-      else {
+      if(!isActive) {
         it.border(
           width = Const.stdBorderWidthDp,
           color = OppositeDark,
           shape = MaterialTheme.shapes.small,
         )
-      }
+      } else { it }
     }
   ) {
     Text(
       text = text,
       style = MaterialTheme.typography.body2,
-      color = if(isActive) OppositeBrightnessColor(
-        MaterialTheme.colors.primary
-      ) else Color.Unspecified,
+      color = if(isActive) OppositeBrightnessColor(color)
+        else Color.Unspecified,
     )
   }
 }

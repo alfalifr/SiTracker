@@ -249,9 +249,10 @@ fun WrappingRow(
 
       with(verticalArrangement) {
         val eachRowYOutStart = IntArray(eachRowHeight.size)
+        val spacingPx = spacing.roundToPx()
         arrange(
           totalSize = if(constraints.maxHeight < Int.MAX_VALUE) constraints.maxHeight
-            else eachRowHeight.sum(),
+            else eachRowHeight.reduce { acc, i -> acc + i + spacingPx },
           sizes = IntArray(eachRowHeight.size) { eachRowHeight[it] },
           outPositions = eachRowYOutStart,
         )

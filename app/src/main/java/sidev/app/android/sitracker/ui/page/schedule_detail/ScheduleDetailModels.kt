@@ -1,5 +1,7 @@
 package sidev.app.android.sitracker.ui.page.schedule_detail
 
+import androidx.compose.ui.graphics.Color
+
 
 data class ScheduleDetailHeaderUiData(
   val totalProgress: String,
@@ -12,5 +14,12 @@ data class ScheduleDetailPreferredTimeUi(
 )
 
 data class ScheduleDetailPreferredDayUi(
-  val preferredDays: List<Int>,
+  val preferredDays: List<ScheduleDetailPreferredDayItemUi>,
+  val color: Color,
+)
+
+data class ScheduleDetailPreferredDayItemUi(
+  val dayNum: Int,
+  val name: String,
+  val isActive: Boolean,
 )

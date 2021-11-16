@@ -400,9 +400,11 @@ class QueryUseCaseImpl(
    * Query every data related to a [Schedule] with [scheduleId].
    */
   override fun queryScheduleDetail(scheduleId: Int): Flow<ProgressQueryResult> {
+    println("queryScheduleDetail AWAL")
     val scheduleFlow = scheduleDao.getById(scheduleId).filterNotNull()
 
     val taskFlow = scheduleFlow.flatMapLatest {
+      println("queryScheduleDetail scheduleFlow result = $it")
       taskDao.getById(it.taskId)
     }.filterNotNull()
 
@@ -443,6 +445,14 @@ class QueryUseCaseImpl(
       intervalTypeFlow, //6
       progressTypeFlow,
     ) { results ->
+
+      println("""
+        queryScheduleDetail results = ${results.joinToString(
+          prefix = "[\n",
+          postfix = "\n]",
+          separator = "\n",
+        )}
+      """.trimIndent())
       @Suppress(SuppressLiteral.UNCHECKED_CAST)
       ProgressQueryResult(
         schedules = listOf(results[0] as Schedule),
