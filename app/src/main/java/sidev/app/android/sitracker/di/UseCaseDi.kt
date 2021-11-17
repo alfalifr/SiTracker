@@ -8,6 +8,7 @@ interface UseCaseDi {
   fun iconUseCase(): IconUseCase
   fun recommendationUseCase(): RecommendationUseCase
   fun scheduleItemUseCase(): ScheduleItemUseCase
+  fun scheduleProgressUseCase(): ScheduleProgressUseCase
   fun timeUseCase(): TimeUseCase
   fun calendarUseCase(): CalendarUseCase
   fun dbEnumUseCase(): DbEnumUseCase
@@ -31,6 +32,13 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
   override fun scheduleItemUseCase(): ScheduleItemUseCase = ScheduleItemUseCaseImpl(
     iconUseCase = iconUseCase(),
   )
+
+  override fun scheduleProgressUseCase(): ScheduleProgressUseCase = ScheduleProgressUseCaseImpl(
+    progressDao = daoDi.scheduleProgressDao(),
+    scheduleDao = daoDi.scheduleDao(),
+    intervalType = daoDi.intervalDao(),
+  )
+
   override fun timeUseCase(): TimeUseCase = TimeUseCaseImpl()
   override fun calendarUseCase(): CalendarUseCase = CalendarUseCaseImpl(
     iconUseCase = iconUseCase(),

@@ -16,8 +16,8 @@ import androidx.room.PrimaryKey
   ],
 )
 data class ScheduleProgress(
-  @PrimaryKey
-  val id: Int,
+  @PrimaryKey(autoGenerate = true)
+  val id: Int = 0,
   val scheduleId: Int,
   val startTimestamp: Long,
   /**
@@ -40,4 +40,21 @@ data class ScheduleProgress(
    * that users count as task.
    */
   val actualProgress: Long,
+) {
+  /**
+   * Checks whether all of `this` property have same value as [other]'s
+   * without check [actualProgress]. This is useful in count down
+   * as [actualProgress] may changes frequently.
+   */
+  infix fun equivalentTo(other: ScheduleProgress): Boolean =
+    id == other.id
+      && scheduleId == other.scheduleId
+      && startTimestamp == other.startTimestamp
+      && endTimestamp == other.endTimestamp
+}
+
+
+data class ScheduleProgressUpdate(
+  val id: Int,
+  val progress: Long,
 )

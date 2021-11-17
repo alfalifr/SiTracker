@@ -66,7 +66,9 @@ object Dummy {
     ActiveDate(schedules[2].id, getTimeLong(-3, now = nowLong), getTimeLong(1, now = nowLong)),
   )
 
-  val scheduleProgress = listOf<ScheduleProgress>(
+  val scheduleProgress: List<ScheduleProgress>
+    get() = _scheduleProgress
+  private val _scheduleProgress = mutableListOf<ScheduleProgress>(
     ScheduleProgress(0, activeDates[0].scheduleId, activeDates[0].startDate, activeDates[0].endDate ?: (now.time + 100), scheduleProgressNumber[0].first),
     ScheduleProgress(1, activeDates[1].scheduleId, activeDates[1].startDate, activeDates[1].endDate ?: (now.time + 100), scheduleProgressNumber[1].first),
     ScheduleProgress(2, activeDates[2].scheduleId, activeDates[2].startDate, activeDates[2].endDate ?: (now.time + 100), scheduleProgressNumber[2].first),
@@ -108,4 +110,13 @@ object Dummy {
     PreferredDay(6, schedules[2].id),
      // */
   )
+
+  /**
+   * Returns the size of newly increased [_scheduleProgress]
+   * which mimics row id.
+   */
+  fun addScheduleProgress(progress: ScheduleProgress): Long {
+    _scheduleProgress += progress
+    return _scheduleProgress.size.toLong()
+  }
 }

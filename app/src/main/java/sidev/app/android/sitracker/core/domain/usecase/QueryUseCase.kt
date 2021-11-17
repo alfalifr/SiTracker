@@ -117,6 +117,15 @@ interface QueryUseCase {
   fun queryScheduleDetail(
     scheduleId: Int,
   ): Flow<ProgressQueryResult>
+
+  /**
+   * Query every data related to a [Schedule] with [scheduleId]
+   * for count down page.
+   */
+  fun queryScheduleForCountDown(
+    scheduleId: Int,
+    timestamp: Long,
+  ): Flow<ProgressQueryResult>
 }
 
 
@@ -400,11 +409,9 @@ class QueryUseCaseImpl(
    * Query every data related to a [Schedule] with [scheduleId].
    */
   override fun queryScheduleDetail(scheduleId: Int): Flow<ProgressQueryResult> {
-    println("queryScheduleDetail AWAL")
     val scheduleFlow = scheduleDao.getById(scheduleId).filterNotNull()
 
     val taskFlow = scheduleFlow.flatMapLatest {
-      println("queryScheduleDetail scheduleFlow result = $it")
       taskDao.getById(it.taskId)
     }.filterNotNull()
 
@@ -463,6 +470,45 @@ class QueryUseCaseImpl(
         preferredTimes = results[5] as List<PreferredTime>,
         intervalTypes = listOf(results[6] as IntervalType),
         progressTypes = listOf(results[7] as ProgressType),
+      )
+    }
+  }
+
+  /**
+   * Query every data related to a [Schedule] with [scheduleId]
+   * for count down page.
+   */
+  override fun queryScheduleForCountDown(
+    scheduleId: Int,
+    timestamp: Long,
+  ): Flow<ProgressQueryResult> {
+    val scheduleFlow = scheduleDao.getById(scheduleId).filterNotNull()
+
+    val taskFlow = scheduleFlow.flatMapLatest {
+      taskDao.getById(it.taskId)
+    }.filterNotNull()
+
+    val scheduleProgressFlow = scheduleFlow.flatMapLatest {
+      scheduleProgressDao.getLatestActiveProgressOfSchedule(
+        scheduleId = it.id,
+        timestamp = timestamp,
+      )
+    }
+
+    return combine(
+      scheduleFlow,
+      taskFlow,
+      scheduleProgressFlow,
+    ) { schedule, task, progress ->
+      ProgressQueryResult(
+        schedules = listOf(schedule),
+        tasks = listOf(task),
+        progresses = progress?.let { listOf(it) } ?: emptyList(),
+        activeDates = emptyList(),
+        preferredDays = emptyList(),
+        preferredTimes = emptyList(),
+        intervalTypes = emptyList(),
+        progressTypes = emptyList(),
       )
     }
   }

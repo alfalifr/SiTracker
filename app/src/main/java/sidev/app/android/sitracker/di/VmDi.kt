@@ -3,6 +3,7 @@ package sidev.app.android.sitracker.di
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.CoroutineScope
+import sidev.app.android.sitracker.ui.page.count_down.CountDownViewModel
 import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomeViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodayScheduleViewModel
@@ -14,6 +15,7 @@ interface VmDi {
   fun todayScheduleViewModel(): TodayScheduleViewModel
   fun taskDetailViewModel(): TaskDetailViewModel
   fun scheduleDetailViewModel(): ScheduleDetailViewModel
+  fun countDownViewModel(): CountDownViewModel
 }
 
 interface AndroidVmDi: VmDi, ViewModelProvider.Factory
@@ -60,6 +62,14 @@ open class VmDiImpl(
     coroutineScope = coroutineScope,
   )
 
+  override fun countDownViewModel(): CountDownViewModel = CountDownViewModel(
+    queryUseCase = useCaseDi.queryUseCase(),
+    queryJointUseCase = useCaseDi.queryJointUseCase(),
+    iconUseCase = useCaseDi.iconUseCase(),
+    scheduleProgressUseCase = useCaseDi.scheduleProgressUseCase(),
+    coroutineScope = coroutineScope,
+  )
+
   /**
    * Creates a new instance of the given `Class`.
    *
@@ -75,6 +85,7 @@ open class VmDiImpl(
     modelClass.isAssignableFrom(TodayScheduleViewModel::class.java) -> todayScheduleViewModel()
     modelClass.isAssignableFrom(TaskDetailViewModel::class.java) -> taskDetailViewModel()
     modelClass.isAssignableFrom(ScheduleDetailViewModel::class.java) -> scheduleDetailViewModel()
+    modelClass.isAssignableFrom(CountDownViewModel::class.java) -> countDownViewModel()
     else -> throw IllegalArgumentException("Unknown `modelClass` ($modelClass)")
   } as T
 }

@@ -52,4 +52,7 @@ object Const {
   const val id = "id"
   const val taskId = "taskId"
   const val scheduleId = "scheduleId"
+
+  const val tickerInterval = 1000L //millis
+  const val progressAutoSaveCheckpoint = 5000L //millis
 }

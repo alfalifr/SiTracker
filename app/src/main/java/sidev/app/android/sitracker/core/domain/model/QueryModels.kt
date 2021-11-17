@@ -58,3 +58,17 @@ data class TaskJoint(
   val task: Task,
   val scheduleJoints: List<ScheduleJoint>,
 )
+
+
+/**
+ * A joint of [ScheduleProgress] and realted data needed
+ * to be shown at count down page.
+ *
+ * [progress] can be null because it can be
+ * when [schedule] doesn't have progress yet.
+ */
+data class CountDownProgressJoint(
+  val progress: ScheduleProgress?,
+  val schedule: Schedule,
+  val task: Task,
+)

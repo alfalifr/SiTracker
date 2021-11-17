@@ -14,6 +14,13 @@ object Texts {
 
   //TODO: implement time formatting algo
   fun formatTimeToShortest(time: Long): String = time.toString()
+
+  /**
+   * Format [time] to HH:mm:ss format
+   */
+  //TODO: implement time formatting algo
+  fun formatTimeToClock(time: Long): String = time.toString()
+
   //TODO: implement duration formatting algo
   fun formatDurationToShortest(time: Long): String = time.toString()
 

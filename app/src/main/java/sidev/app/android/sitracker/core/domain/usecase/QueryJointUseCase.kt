@@ -1,10 +1,7 @@
 package sidev.app.android.sitracker.core.domain.usecase
 
 import sidev.app.android.sitracker.core.data.local.model.*
-import sidev.app.android.sitracker.core.domain.model.ProgressJoint
-import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
-import sidev.app.android.sitracker.core.domain.model.ScheduleJoint
-import sidev.app.android.sitracker.core.domain.model.TaskJoint
+import sidev.app.android.sitracker.core.domain.model.*
 
 
 interface QueryJointUseCase {
@@ -112,6 +109,30 @@ interface QueryJointUseCase {
       progresses = progresses,
       intervalTypes = intervalTypes,
       progressTypes = progressTypes,
+    )
+  }
+
+
+  fun getProgressJointForCountDown(
+    tasks: List<Task>,
+    schedules: List<Schedule>,
+    progresses: List<ScheduleProgress>,
+    /*
+    activeDates: List<ActiveDate>,
+    preferredTimes: List<PreferredTime>,
+    preferredDays: List<PreferredDay>,
+    intervalTypes: List<IntervalType>,
+    progressTypes: List<ProgressType>,
+     */
+  ): List<CountDownProgressJoint>
+
+  fun getProgressJointForCountDown(
+    queryResults: ProgressQueryResult,
+  ): List<CountDownProgressJoint> = with(queryResults) {
+    getProgressJointForCountDown(
+      tasks = tasks,
+      schedules = schedules,
+      progresses = progresses,
     )
   }
 }
@@ -256,6 +277,19 @@ class QueryJointUseCaseImpl: QueryJointUseCase {
     TaskJoint(
       task = task,
       scheduleJoints = scheduleJoints,
+    )
+  }
+
+  override fun getProgressJointForCountDown(
+    tasks: List<Task>,
+    schedules: List<Schedule>,
+    progresses: List<ScheduleProgress>
+  ): List<CountDownProgressJoint> = schedules.map { schedule ->
+    CountDownProgressJoint(
+      schedule = schedule,
+      task = tasks.find { it.id == schedule.taskId }
+        ?: throw IllegalArgumentException("No task with id '${schedule.taskId}' in `tasks`"),
+      progress = progresses.find { it.scheduleId == schedule.id },
     )
   }
 }
