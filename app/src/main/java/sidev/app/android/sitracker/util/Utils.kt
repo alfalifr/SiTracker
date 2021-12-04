@@ -8,6 +8,11 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.core.domain.model.CalendarEvent
 import sidev.app.android.sitracker.core.domain.model.CalendarMark
@@ -425,3 +430,16 @@ colorContrast([255, 255, 255], [0, 0, 255]); // 8.592 for blue
 
 
 fun getSecFromMillis(millis: Long): Long = millis / 1000L
+
+
+fun <T> MutableStateFlow<T>.addSource(
+  scope: CoroutineScope,
+  flow: Flow<T>,
+): MutableStateFlow<T> {
+  scope.launch {
+    flow.collect {
+      value = it
+    }
+  }
+  return this
+}
