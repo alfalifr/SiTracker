@@ -15,6 +15,7 @@ import androidx.navigation.compose.navArgument
 import sidev.app.android.sitracker.ui.component.DefaultText
 import sidev.app.android.sitracker.ui.component.HorizontalSlidingTransition
 import sidev.app.android.sitracker.ui.layout.*
+import sidev.app.android.sitracker.ui.page.count_down.CountDownPage
 import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailPage
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
@@ -25,7 +26,7 @@ import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPage
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.model.Direction
-//TODO: Compiler error
+
 sealed class Route(
   val route: String,
   open val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit,
@@ -47,7 +48,7 @@ sealed class Route(
   // ===============
   companion object {
     fun getAppRoutes(): List<Route> = listOf(
-      MainMenuPage, ScheduleDetailPage, TaskDetailPage,
+      MainMenuPage, ScheduleDetailPage, TaskDetailPage, CountDownPage,
     )
     fun getMainMenuContentRoutes(): List<MainMenuItemRoute> = listOf(
       HomePage, TodaySchedulePage, CalendarPage,
@@ -77,9 +78,13 @@ sealed class Route(
         val ctx = LocalContext.current
         HomePage(
           navController = it.navData.navController,
-          onItemClick = { progressId ->
-            DefaultToast(ctx, "progressId = $progressId")
-            //TODO("Implement `Routes.HomePage.onItemClick`")
+          onItemClick = { scheduleId ->
+            println("HomePage onItemClick scheduleId = $scheduleId")
+            DefaultToast(ctx, "scheduleId = $scheduleId")
+            CountDownPage.go(
+              it.navData.parentNavController!!,
+              scheduleId,
+            )
           }
         )
       }
@@ -174,7 +179,31 @@ sealed class Route(
     }
   }
 
+  object CountDownPage: Route(
+    "CountDownPage",
+    arguments = listOf(
+      navArgument(Const.scheduleId) {
+        type = NavType.IntType
+      },
+    ),
+    composable = {
+      CountDownPage(
+        scheduleId = it.navBackStackEntry
+          .arguments!!.getInt(Const.scheduleId),
+        navController = it.navController,
+      )
+    }
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.scheduleId}}"
 
+    fun go(
+      navController: NavController,
+      scheduleId: Int,
+    ) {
+      navController.navigate("$route/$scheduleId")
+    }
+  }
 }
 
 

@@ -75,6 +75,7 @@ object DataMapper {
           .also { println("TaskItemSchedule.toUiData check color = $it") }
         ,
         progressFraction = null,
+        desc = task.name,
       )
     }
 

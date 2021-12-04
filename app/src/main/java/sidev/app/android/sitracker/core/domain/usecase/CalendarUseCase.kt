@@ -221,6 +221,7 @@ class CalendarUseCaseImpl(
             icon = IconPicData(
               resId = iconUseCase.getResId(task.iconId),
               color = task.color,
+              desc = task.name,
             ),
           )
         )

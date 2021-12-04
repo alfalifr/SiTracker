@@ -54,5 +54,5 @@ object Const {
   const val scheduleId = "scheduleId"
 
   const val tickerInterval = 1000L //millis
-  const val progressAutoSaveCheckpoint = 5000L //millis
+  const val progressAutoSaveCheckpoint = 10L //in secs
 }

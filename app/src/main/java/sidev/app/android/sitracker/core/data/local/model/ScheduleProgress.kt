@@ -38,6 +38,7 @@ data class ScheduleProgress(
    * Actual amount of realisation
    * (can be either duration or frequency [e.g. 3 times, 4 times, 100 times, so on])
    * that users count as task.
+   * For duration type, this property is measured in millis.
    */
   val actualProgress: Long,
 ) {

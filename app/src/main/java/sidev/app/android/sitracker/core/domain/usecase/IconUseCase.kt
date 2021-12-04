@@ -20,7 +20,8 @@ class IconUseCaseImpl: IconUseCase {
       resId = getResId(progressJoint.task.iconId),
       color = progressJoint.task.color,
       progressFraction = progressJoint.progress.actualProgress.toFloat() /
-        progressJoint.schedule.totalProgress
+        progressJoint.schedule.totalProgress,
+      desc = progressJoint.task.name,
     )
 
   override fun getIconProgressionData(
@@ -32,6 +33,7 @@ class IconUseCaseImpl: IconUseCase {
       progressFraction = scheduleJoint.progress?.let {
         it.actualProgress.toFloat() /
           scheduleJoint.schedule.totalProgress
-      }
+      },
+      desc = scheduleJoint.task.name,
     )
 }

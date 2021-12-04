@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit
 
 object Dummy {
 
+  private const val secondMillis = 1000L
+
   val progressTypes = listOf<ProgressType>(
     ProgressType(0, "Duration"),
     ProgressType(1, "Times"),
@@ -30,9 +32,9 @@ object Dummy {
    * Pair of actual progress and total progress.
    */
   val scheduleProgressNumber = listOf<Pair<Long, Long>>(
-    100L to 2500L,
-    30L to 88L,
-    10L to 50L,
+    100L * secondMillis to 2500L * secondMillis,
+    30L * secondMillis to 88L * secondMillis,
+    10L * secondMillis to 50L * secondMillis,
   )
 
   val schedules = tasks.mapIndexed { i, task ->

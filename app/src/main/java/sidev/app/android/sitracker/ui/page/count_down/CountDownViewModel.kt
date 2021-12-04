@@ -9,17 +9,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.combine
 import sidev.app.android.sitracker.core.data.local.model.ScheduleProgress
 import sidev.app.android.sitracker.core.domain.model.CountDownProgressJoint
+import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.core.domain.model.ProgressQueryResult
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
 import sidev.app.android.sitracker.core.domain.usecase.ScheduleProgressUseCase
-import sidev.app.android.sitracker.util.Const
-import sidev.app.android.sitracker.util.Stopwatch
-import sidev.app.android.sitracker.util.Texts
+import sidev.app.android.sitracker.util.*
 
+//TODO: Counting down mechanism results weird
 class CountDownViewModel(
   private val queryUseCase: QueryUseCase,
   private val queryJointUseCase: QueryJointUseCase,
@@ -72,7 +73,7 @@ class CountDownViewModel(
       )
   }
 
-  private val progressData = combine(_nowDateTime, scheduleJoint) {
+  private val progressData: Flow<ScheduleProgress> = combine(_nowDateTime, scheduleJoint) {
       timestamp, scheduleJoint ->
     scheduleProgressUseCase.ensureScheduleHasProgress(
       scheduleId = scheduleJoint.schedule.id,
@@ -80,10 +81,27 @@ class CountDownViewModel(
     )
   }.flattenConcat()
 
-  private val initialProgressFlow: Flow<Long> = progressData.map {
-    it.actualProgress
+
+  
+
+  val iconData: Flow<IconPicData> = scheduleJoint.map { joint ->
+    joint.task.let {
+      IconPicData(
+        resId = iconUseCase.getResId(it.iconId),
+        color = it.color,
+        desc = it.name,
+      )
+    }
   }
-  private val initialProgress = MutableStateFlow(0L)
+  /*
+  val taskIconId: Flow<Int> = scheduleJoint.map {
+    iconUseCase.getResId(it.task.iconId)
+  }
+  val taskColor: Flow<String> = scheduleJoint.map {
+    it.task.color
+  }
+   */
+
 
   /**
    * This is for [progressData] filtering with `distinctUntilChanged()`
@@ -94,14 +112,20 @@ class CountDownViewModel(
    * when total progress of a schedule change.
    */
   private val totalProgressFlow: Flow<Long> = scheduleJoint.map {
-    it.schedule.totalProgress
+    it.schedule.totalProgress.also {
+      totalProgress.value = it
+    }
   }
   private val totalProgress = MutableStateFlow(0L)
-  
 
-  val taskIconId: Flow<Int> = scheduleJoint.map {
-    iconUseCase.getResId(it.task.iconId)
+  private val initialCountDownProgressFlow: Flow<Long> = combine(totalProgressFlow, progressData) {
+      totalProgress, progressData ->
+    (totalProgress - progressData.actualProgress).also {
+      initialCountDownProgress.value = it
+    }
   }
+  private val initialCountDownProgress = MutableStateFlow(0L)
+
 
   private val _progress = MutableStateFlow(0f)
   val progress: Flow<Float>
@@ -114,7 +138,7 @@ class CountDownViewModel(
 
   private val checkpointCountDownProgress = MutableStateFlow<Long?>(null)
   val checkpointCountDownProgressStr: Flow<String?> = checkpointCountDownProgress.map {
-    if(it == null) { null }
+    if(it == null || it == initialCountDownProgress.value) { null }
     else { Texts.formatTimeToClock(it) }
   }
 
@@ -141,15 +165,27 @@ class CountDownViewModel(
   val isFinished: Flow<Boolean>
     get() = _isFinished
 
-  private val stopwatch by lazy { Stopwatch() }
-  private val timerFlow: Flow<CountDownTimer> = combine(initialProgressFlow, totalProgressFlow) {
+  private val timerMillis = MutableStateFlow(0L)
+
+  //private val stopwatch by lazy { Stopwatch() }
+  private val prevTimer = MutableStateFlow<CountDownTimer?>(null)
+  private val timerFlow: Flow<CountDownTimer> = timerMillis.map { timeStart ->
+    prevTimer.value?.cancel()
+    /*
       initialProgress, totalProgress ->
 
     val timeLeft = totalProgress - initialProgress
     countDownProgress.value = timeLeft
+    checkpointCountDownProgress.value = timeLeft
     setProgress(timeLeft)
+     */
 
-    object: CountDownTimer(timeLeft, Const.tickerInterval) {
+    countDownProgress.value = timeStart
+    //checkpointCountDownProgress.value = timeStart
+    setProgress(timeStart)
+
+    val newTimer = object: CountDownTimer(timeStart, Const.tickerInterval) {
+
       /**
        * Callback fired on regular interval.
        * @param millisUntilFinished The amount of time until finished.
@@ -157,10 +193,7 @@ class CountDownViewModel(
       override fun onTick(millisUntilFinished: Long) {
         countDownProgress.value = millisUntilFinished
         setProgress(millisUntilFinished)
-        autoSave(
-          stopwatch.currentElapsedTimeInMillis,
-          millisUntilFinished,
-        )
+        autoSave(millisUntilFinished)
       }
 
       /**
@@ -169,12 +202,25 @@ class CountDownViewModel(
       override fun onFinish() {
         scope.launch {
           _isFinished.emit(true)
-          stopwatch.stop()
         }
       }
     }
+    prevTimer.value = newTimer
+    newTimer
   }
-  private val timer = MutableStateFlow<CountDownTimer?>(null)
+  private val _isCounting = MutableStateFlow(false)
+  val isCounting: Flow<Boolean>
+    get() = _isCounting
+
+
+  private val countingTimer = combine(timerFlow, _isCounting) { timer, isCounting ->
+    if(isCounting) {
+      timer.start()
+    } else {
+      timer.cancel()
+      timerMillis.value = countDownProgress.value
+    }
+  }
 
 
 
@@ -185,19 +231,28 @@ class CountDownViewModel(
           actualTimeProgress.value = it.actualProgress
         }
       }
+      ///*
       launch {
-        timerFlow.collect {
-          timer.value = it
+        countingTimer.collect {
+          // just collect so that logic inside `countingTimer` can run. TODO: Optimize
         }
       }
-      launch {
-        totalProgressFlow.collect {
-          totalProgress.value = it
-        }
+      // */
+      initTimerStart()
+    }
+  }
+
+
+  private fun CoroutineScope.initTimerStart() {
+    launch {
+      initialCountDownProgressFlow.collect {
+        timerMillis.value = it
       }
-      launch {
-        initialProgressFlow.collect {
-          initialProgress.value = it
+    }
+    launch {
+      checkpointCountDownProgress.collect {
+        if(it != null) {
+          timerMillis.value = it
         }
       }
     }
@@ -225,42 +280,64 @@ class CountDownViewModel(
   /**
    * [countDownTimestamp] counts from [totalProgress] to 0 (descending).
    */
+  fun resetCountDown(pauseCountDown: Boolean = true) {
+    countDownProgress.value = checkpointCountDownProgress.value
+      ?: initialCountDownProgress.value
+    timerMillis.value = countDownProgress.value
+    if(pauseCountDown) {
+      _isCounting.value = false
+    }
+  }
+
+
+  fun playCountDown(play: Boolean? = null) {
+    _isCounting.value = play ?: !_isCounting.value
+  }
+
+
+  /**
+   * [countDownTimestamp] counts from [totalProgress] to 0 (descending).
+   */
   fun setCheckpoint(
     countDownTimestamp: Long = countDownProgress.value,
+    total: Long = totalProgress.value,
   ) {
     checkpointCountDownProgress.value = countDownTimestamp
-    actualTimeProgress.value = totalProgress.value -
-      countDownTimestamp +
-      initialProgress.value
+    actualTimeProgress.value = total - countDownTimestamp
+      //initialProgress.value
   }
+  // total: 100
+  // init: 20
+  //
 
   /**
    * [currentElapsedTime] is in millis.
    */
   private fun autoSave(
-    currentElapsedTime: Long,
+    //currentElapsedTime: Long,
     countDownTimestamp: Long = countDownProgress.value,
   ) {
-    if(currentElapsedTime %
+    /*
+    val elapsedInSec = currentElapsedTime / 1000L
+    val elapsedRem = elapsedInSec % Const.progressAutoSaveCheckpoint
+
+    println("autoSave() currentElapsedTime = $currentElapsedTime  elapsedInSec = $elapsedInSec elapsedRem = $elapsedRem")
+     */
+    val total = totalProgress.value
+    if((total - countDownTimestamp / 1000L) %
       Const.progressAutoSaveCheckpoint == 0L
     ) {
-      setCheckpoint(countDownTimestamp)
+      setCheckpoint(countDownTimestamp, total)
     }
   }
 
-  fun startCount() {
-    timer.value?.also {
-      stopwatch.start()
-      it.start()
-    }
-  }
 
   private fun setProgress(
     countDownTimestamp: Long = countDownProgress.value,
   ) {
-    _progress.value = totalProgress.value.toFloat() /
-      countDownTimestamp +
-      initialProgress.value
+    val total = totalProgress.value
+    _progress.value = total - countDownTimestamp /
+      total.toFloat()
   }
 
   private fun setCountDownProgressFromActual(

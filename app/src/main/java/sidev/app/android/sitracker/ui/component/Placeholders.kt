@@ -13,11 +13,12 @@ import sidev.app.android.sitracker.util.Texts
 @Composable
 fun <T> Placeholder(
   key: T?,
-  placeholder: @Composable () -> Unit,
+  placeholder: (@Composable () -> Unit)?,
+  precondition: ((T) -> Boolean)? = null,
   content: @Composable (T) -> Unit,
 ) {
-  if(key == null) {
-    placeholder()
+  if(key == null || precondition?.invoke(key) == false) {
+    placeholder?.invoke()
   } else {
     content(key)
   }
@@ -31,6 +32,7 @@ fun <T> LoadingPlaceholder(
   loadingModifier: Modifier = Modifier,
   loadingText: String? = Texts.defaultLoadingText,
   loadingSpaceBetween: Dp? = null,
+  precondition: ((T) -> Boolean)? = null,
   content: @Composable (T) -> Unit,
 ) = Placeholder(
   key = key,
@@ -41,5 +43,23 @@ fun <T> LoadingPlaceholder(
       spaceBetween = loadingSpaceBetween,
     )
   },
+  precondition = precondition,
+  content = content,
+)
+
+
+/**
+ * A placeholder that simply hide the [content]
+ * when [key] is null.
+ */
+@Composable
+fun <T> EmptyPlacehoder(
+  key: T?,
+  precondition: ((T) -> Boolean)? = null,
+  content: @Composable (T) -> Unit,
+) = Placeholder(
+  key = key,
+  placeholder = null,
+  precondition = precondition,
   content = content,
 )

@@ -81,9 +81,16 @@ class HomeViewModel(
 
 //  private val _recommendedTasks = MutableStateFlow<List<Task>?>(null)
 
-  val iconResIdData: Flow<List<IconProgressionPicData>> = sortedImportances.map { importances ->
+  private val iconResIdData: Flow<List<IconProgressionPicData>> = sortedImportances.map { importances ->
     importances.map {
       iconUseCase.getIconProgressionData(it.joint)
+    }
+  }
+
+  val itemDataList: Flow<List<Pair<IconProgressionPicData, Int>>> = combine(sortedImportances, iconResIdData) {
+      importances, iconData ->
+    iconData.mapIndexed { index, iconProgressionPicData ->
+      iconProgressionPicData to importances[index].joint.schedule.id
     }
   }
 

@@ -60,6 +60,7 @@ class TaskDetailViewModel(
           resId = iconUseCase.getResId(iconId),
           color = color,
           progressFraction = null,
+          desc = it.task.name,
         ),
         name = name,
         desc = desc,

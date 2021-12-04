@@ -2,6 +2,7 @@
 
 package sidev.app.android.sitracker.ui.page.main_menu.home
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,10 +20,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
-import sidev.app.android.sitracker.ui.component.DefaultLoading
-import sidev.app.android.sitracker.ui.component.IconProgressionPic
-import sidev.app.android.sitracker.ui.component.IconWithText
+import sidev.app.android.sitracker.ui.component.*
 import sidev.app.android.sitracker.util.DataMapper.toPicUiData
+import sidev.app.android.sitracker.util.DataMapper.toUiData
 import sidev.app.android.sitracker.util.defaultViewModel
 import sidev.app.android.sitracker.util.maxSquareSideLen
 import sidev.app.android.sitracker.util.pagerTransformation
@@ -32,7 +32,7 @@ import sidev.app.android.sitracker.util.pagerTransformation
 fun HomePage(
   navController: NavController = rememberNavController(),
   viewModel: HomeViewModel = defaultViewModel(),
-  onItemClick: ((progressId: Int) -> Unit)? = null, //TODO: pair `HomePage.onItemClick`
+  onItemClick: ((scheduleId: Int) -> Unit)? = null, //TODO: pair `HomePage.onItemClick`
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500)
@@ -42,22 +42,25 @@ fun HomePage(
 
   //loge("HomePage: induk")
 
-  HomePageMainComp(viewModel)
+  HomePageMainComp(
+    viewModel,
+    onItemClick,
+  )
 }
 
 
 @Composable
 private fun HomePageMainComp(
-  viewModel: HomeViewModel = defaultViewModel()
+  viewModel: HomeViewModel = defaultViewModel(),
+  onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
 
   val title = viewModel.activeTaskTitle
     .collectAsState(initial = null).value
   val lowerDetailData = viewModel.activeLowerDetailData
     .collectAsState(initial = null).value
-  val iconList = viewModel.iconResIdData
+  val itemData = viewModel.itemDataList
     .collectAsState(initial = null).value
-    ?.toPicUiData()
 
   val pagerState = rememberPagerState()
 
@@ -70,40 +73,42 @@ private fun HomePageMainComp(
     verticalArrangement = Arrangement.SpaceEvenly,
     modifier = Modifier.fillMaxSize(),
   ) {
-    if(title != null) {
+    LoadingPlaceholder(key = title) {
       Text(
-        text = title,
+        text = it,
         style = MaterialTheme.typography.h4,
       )
-    } else {
-      DefaultLoading()
     }
     //Spacer(Modifier.height(15.dp))
 
-    if(iconList != null) {
+    LoadingPlaceholder(key = itemData) { itemData ->
       BoxWithConstraints {
         val iconLen = maxSquareSideLen * .80f
         val iconPadding = iconLen * .30f
 
         //TODO: Set pager height as high as screen height so that user can easily reach scrollable part.
         HorizontalPager(
-          count = iconList.size,
+          count = itemData.size,
           modifier = Modifier
             .height(iconLen)
             .fillMaxWidth(),
           contentPadding = PaddingValues(horizontal = iconPadding),
           state = pagerState,
         ) { page ->
-          val data = iconList[page]
+          val data = itemData[page]
+          val icon = data.first.toUiData()
           //loge("HomePage: HorizontalPage Item currentPage = $currentPage currentPageOffset = $currentPageOffset it = $page this = $this data= $data")
           IconProgressionPic(
-            icon = data.image,
-            mainColor = data.color,
+            icon = icon.image,
+            mainColor = icon.color,
             name = title,
-            progress = data.progress,
+            progress = icon.progress,
             progressStrokeWidth = 7.dp,
             modifier = Modifier
               .size(iconLen)
+              .clickable {
+                onItemClick?.invoke(data.second)
+              }
               //.background(Color.Blue)
               .pagerTransformation(
                 pagerScope = this,
@@ -112,13 +117,10 @@ private fun HomePageMainComp(
           )
         }
       }
-    } else {
-      DefaultLoading()
     }
 
-    if(lowerDetailData != null) {
-      //Spacer(Modifier.height(20.dp))
-      HomeLowerDetail(lowerDetailData)
+    EmptyPlacehoder(key = lowerDetailData) {
+      HomeLowerDetail(it)
     }
   }
 }

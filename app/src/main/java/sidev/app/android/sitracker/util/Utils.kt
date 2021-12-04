@@ -422,3 +422,6 @@ colorContrast([255, 255, 255], [255, 255, 0]); // 1.074 for yellow
 colorContrast([255, 255, 255], [0, 0, 255]); // 8.592 for blue
 // minimal recommended contrast ratio is 4.5, or 3 for larger font-sizes
  */
+
+
+fun getSecFromMillis(millis: Long): Long = millis / 1000L
