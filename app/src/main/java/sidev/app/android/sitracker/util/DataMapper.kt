@@ -1,7 +1,6 @@
 package sidev.app.android.sitracker.util
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import sidev.app.android.sitracker.R
@@ -109,7 +108,7 @@ object DataMapper {
       preferredDays = Formats.dayOfWeek.map {
         ScheduleDetailPreferredDayItemUi(
           dayNum = it,
-          name = Texts.getDayName(it),
+          name = Texts.getShortDayName(it),
           isActive = it in prefDays,
         )
       },

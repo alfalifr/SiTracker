@@ -2,6 +2,7 @@ package sidev.app.android.sitracker.ui.page.task_detail
 
 
 data class TaskSchedulePanelData(
+  val taskId: Int,
   val header: String,
   val items: List<String>,
   /**

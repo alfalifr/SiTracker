@@ -40,8 +40,8 @@ class ScheduleListViewModel(
   /**
    * Why this property? Because if the task
    */
-  val taskName: Flow<String> = queryResult.map {
-    it.tasks.first().name
+  val header: Flow<String> = queryResult.map {
+    "${it.tasks.first().name} (${it.schedules.size})"
   }
   val scheduleList: Flow<List<TaskScheduleListItem>> = scheduleJoints.map { joints ->
     joints.map {
@@ -49,10 +49,10 @@ class ScheduleListViewModel(
         scheduleId = it.schedule.id,
         name = it.schedule.label,
         preferredTime = it.preferredTimes.joinToString {
-          Texts.formatTimeToShortest(it.startTime)
+          Texts.formatTimeToClock(it.startTime, withSecond = false)
         },
         preferredDay = it.preferredDays.joinToString {
-          Texts.getDayName(it.dayInWeek)
+          Texts.getShortDayName(it.dayInWeek)
         },
       )
     }

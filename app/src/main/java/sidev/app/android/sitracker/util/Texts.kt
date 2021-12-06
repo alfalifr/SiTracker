@@ -3,6 +3,7 @@ package sidev.app.android.sitracker.util
 import android.text.format.Time
 import java.lang.Math.pow
 import java.text.DateFormatSymbols
+import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.log10
@@ -30,11 +31,19 @@ object Texts {
   //TODO: implement time formatting algo
   fun formatTimeToShortest(time: Long): String = time.toString()
 
+  fun formatTimeToDate(time: Long): String {
+    val format = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return format.format(Date(time))
+  }
+
   /**
    * Format [time] to HH:mm:ss format.
    * [time] is in millis.
    */
-  fun formatTimeToClock(time: Long): String {
+  fun formatTimeToClock(
+    time: Long,
+    withSecond: Boolean = true,
+  ): String {
     val millisInSec = 1000L //TimeUnit.SECONDS.toMillis(1)
     val millisInMin = millisInSec * 60 //TimeUnit.MINUTES.toMillis(1)
     val millisInHour = millisInMin * 60 //TimeUnit.HOURS.toMillis(1)
@@ -42,9 +51,15 @@ object Texts {
     var decreasingTime = time
     val hour = (decreasingTime / millisInHour).also { decreasingTime -= it * millisInHour }
     val min = (decreasingTime / millisInMin).also { decreasingTime -= it * millisInMin }
-    val sec = decreasingTime / millisInSec
 
-    return "${lenSpecifiedNumStr(hour, 2)}:${lenSpecifiedNumStr(min, 2)}:${lenSpecifiedNumStr(sec, 2)}"
+    //val secStr = if(withSecond) ":" +lenSpecifiedNumStr(sec, 2) else ""
+
+    var str = "${lenSpecifiedNumStr(hour, 2)}:${lenSpecifiedNumStr(min, 2)}"
+    if(withSecond) {
+      val sec = decreasingTime / millisInSec
+      str += ":${lenSpecifiedNumStr(sec, 2)}"
+    }
+    return str
   }
 
   //TODO: implement duration formatting algo
@@ -62,6 +77,11 @@ object Texts {
   fun getDayName(day: Int): String {
     val dateFormat = DateFormatSymbols.getInstance(Locale.getDefault())
     return dateFormat.weekdays[day]
+  }
+
+  fun getShortDayName(day: Int): String {
+    val dayName = getDayName(day)
+    return dayName.take(3)
   }
 
   fun iconOf(name: String): String = "Icon of $name"

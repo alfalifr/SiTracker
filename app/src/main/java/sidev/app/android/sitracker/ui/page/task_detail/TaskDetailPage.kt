@@ -35,6 +35,7 @@ import sidev.app.android.sitracker.ui.component.*
 import sidev.app.android.sitracker.ui.layout.MainScaffold
 import sidev.app.android.sitracker.ui.layout.MainScaffoldScope
 import sidev.app.android.sitracker.ui.model.TaskItemDataUi
+import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.ui.theme.OppositeDark
 import sidev.app.android.sitracker.ui.theme.TransOppositeDarkColor3
 import sidev.app.android.sitracker.util.*
@@ -97,7 +98,10 @@ fun TaskDetailPage(
     animatedHorizontalSliding(Direction.LEFT) {
       LargeSurface {
         LoadingPlaceholder(key = schedulePanelData) {
-          ScheduleListPanel(data = it)
+          ScheduleListPanel(
+            data = it,
+            navController = navController
+          )
         }
       }
     }
@@ -242,8 +246,17 @@ private fun TaskPanel(
 @Composable
 private fun ScheduleListPanel(
   data: TaskSchedulePanelData,
+  navController: NavController,
 ) {
-  Column(Modifier.fillMaxWidth()) {
+  Column(Modifier
+    .fillMaxWidth()
+    .clickable {
+      Route.ScheduleListPage.go(
+        navController,
+        data.taskId,
+      )
+    }
+  ) {
     Text(
       text = data.header,
       style = MaterialTheme.typography.h6,

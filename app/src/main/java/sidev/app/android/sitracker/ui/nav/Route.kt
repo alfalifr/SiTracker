@@ -49,7 +49,7 @@ sealed class Route(
   // ===============
   companion object {
     fun getAppRoutes(): List<Route> = listOf(
-      MainMenuPage, ScheduleDetailPage, TaskDetailPage, CountDownPage,
+      MainMenuPage, ScheduleListPage, ScheduleDetailPage, TaskDetailPage, CountDownPage,
     )
     fun getMainMenuContentRoutes(): List<MainMenuItemRoute> = listOf(
       HomePage, TodaySchedulePage, CalendarPage,

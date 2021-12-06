@@ -128,8 +128,8 @@ private fun HeaderPanel(data: ScheduleDetailHeaderUiData?) {
 private fun PreferredTimePanel(data: ScheduleDetailPreferredTimeUi?) {
   LargeSurface(
     Modifier
-      .fillMaxWidth()
-      .sizeIn(minHeight = stdEmptyPanelHeight),
+      .fillMaxWidth(),
+      //.sizeIn(minHeight = stdEmptyPanelHeight),
   ) {
     LoadingPlaceholder(
       key = data,
@@ -158,7 +158,8 @@ private fun PreferredTimePanel(data: ScheduleDetailPreferredTimeUi?) {
           This section DOESN'T SORT the contents of `data.preferredTimes`.
            */
           Row(
-            Modifier.padding(start = Const.stdSpacerDp),
+            Modifier.padding(start = Const.stdSpacerDp)
+              .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
           ) {
             val columnSize = data.preferredTimes.size / 2

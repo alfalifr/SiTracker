@@ -12,6 +12,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -33,7 +34,7 @@ fun ScheduleListPage(
     viewModel.loadData(taskId)
   }
 
-  val taskName = viewModel.taskName
+  val taskName = viewModel.header
     .collectAsState(initial = null).value
   val dataList = viewModel.scheduleList
     .collectAsState(initial = null).value
@@ -81,6 +82,7 @@ private fun ScheduleItem(
         Text(
           text = data.preferredDay,
           style = MaterialTheme.typography.body2,
+          textAlign = TextAlign.End,
         )
       }
     }

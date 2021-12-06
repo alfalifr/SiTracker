@@ -90,8 +90,8 @@ class ScheduleDetailViewModel(
       totalProgress = dbEnumUseCase.formatProgress(it.schedule),
       interval = dbEnumUseCase.getIntervalLabel(it.schedule.intervalId),
       activeDates = it.activeDates.map { date ->
-        Texts.formatTimeToShortest(date.startDate) to
-          date.endDate?.let { Texts.formatTimeToShortest(it) }
+        Texts.formatTimeToDate(date.startDate) to
+          date.endDate?.let { Texts.formatTimeToDate(it) }
       },
     )
   }
@@ -99,8 +99,8 @@ class ScheduleDetailViewModel(
   val preferredTimes: Flow<ScheduleDetailPreferredTimeUi> = queryJoint.map { scheduleJoint ->
     ScheduleDetailPreferredTimeUi(
       scheduleJoint.preferredTimes.map { time ->
-        Texts.formatTimeToShortest(time.startTime) to
-          time.endTime?.let { Texts.formatTimeToShortest(it) }
+        Texts.formatTimeToClock(time.startTime, withSecond = false) to
+          time.endTime?.let { Texts.formatTimeToClock(it, withSecond = false) }
       }
     )
   }

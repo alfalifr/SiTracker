@@ -87,7 +87,7 @@ class TaskDetailViewModel(
     val seeOtherString = if(items.size <= 3) null
       else Texts.seeOther(items.size - 3)
 
-    TaskSchedulePanelData(header, items, seeOtherString)
+    TaskSchedulePanelData(joint.task.id, header, items, seeOtherString)
   }
 
   /*
