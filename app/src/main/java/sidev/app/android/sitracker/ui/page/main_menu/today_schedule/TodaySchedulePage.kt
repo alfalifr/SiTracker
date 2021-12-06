@@ -1,14 +1,13 @@
 package sidev.app.android.sitracker.ui.page.main_menu.today_schedule
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -76,12 +75,15 @@ private fun MainList(
     // */
     ///*
     @Composable
-    fun InnerItem(data: ScheduleItemGroupUi) {
+    fun InnerItem(
+      data: ScheduleItemGroupUi,
+      topMargin: Dp = 0.dp,
+    ) {
       TaskGroup(
         header = data.header,
         taskData = data.schedules,
         disableScroll = true,
-        modifier = Modifier.padding(vertical = 15.dp),
+        modifier = Modifier.padding(top = topMargin),
         itemModifier = { itemData ->
           Modifier.let {
             if(onItemClick == null) it
@@ -92,14 +94,19 @@ private fun MainList(
     }
 
     if(mainScaffoldScope == null) {
-      Column {
+      Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
         for(data in taskGroups) {
           InnerItem(data)
         }
       }
     } else {
-      mainScaffoldScope.mainMenuItems(taskGroups.size) { i ->
-        InnerItem(data = taskGroups[i])
+      mainScaffoldScope.apply {
+        mainMenuItems(taskGroups.size) { i ->
+          InnerItem(
+            data = taskGroups[i],
+            topMargin = (if(i > 0) 15 else 0).dp,
+          )
+        }
       }
     }
     // */

@@ -51,6 +51,7 @@ data class ScheduleJoint(
   val progressType: ProgressType,
 )
 
+
 /**
  * This a joint of [Task] and other related data.
  */

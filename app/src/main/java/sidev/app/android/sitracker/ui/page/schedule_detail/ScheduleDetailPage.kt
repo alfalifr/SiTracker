@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalAnimationApi::class)
 package sidev.app.android.sitracker.ui.page.schedule_detail
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,6 +24,7 @@ import sidev.app.android.sitracker.ui.layout.TitleIconLayout
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.Texts
 import sidev.app.android.sitracker.util.defaultViewModel
+import sidev.app.android.sitracker.util.model.Direction
 
 private val stdEmptyPanelHeight = 100.dp
 
@@ -29,6 +33,7 @@ fun ScheduleDetailPage(
   scheduleId: Int,
   viewModel: ScheduleDetailViewModel = defaultViewModel(),
   navController: NavController = rememberNavController(),
+  onIconClick: ((taskId: Int) -> Unit)? = null,
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500) // I don't know why but without delay, this side effect doesn't have effect.
@@ -37,34 +42,46 @@ fun ScheduleDetailPage(
   }
   val title = viewModel.scheduleLabel
     .collectAsState(initial = null).value
-  val iconIdRes = viewModel.taskIcon
+  val iconData = viewModel.taskIcon
+    .collectAsState(initial = null).value
+
+  val headerData = viewModel.headerData
+    .collectAsState(initial = null).value
+  val preferredTimes = viewModel.preferredTimes
+    .collectAsState(initial = null).value
+  val preferredDays = viewModel.preferredDays
     .collectAsState(initial = null).value
 
   println("""
     ScheduleDetailPage title = $title
-    iconIdRes = $iconIdRes
+    iconData = $iconData
   """.trimIndent())
 ///*
-  TitleIconLayout(
-    title = title,
-    icon = iconIdRes?.let { painterResource(id = it) },
-  ) {
-    item {
-      val headerData = viewModel.headerData
-        .collectAsState(initial = null).value
-      HeaderPanel(data = headerData)
-    }
+  LoadingPlaceholder(key = iconData) { iconData ->
+    TitleIconLayout(
+      title = title,
+      icon = painterResource(id = iconData.iconResId),
+      iconModifier = Modifier.clickable {
+        onIconClick?.invoke(iconData.itemId)
+      },
+    ) {
+      animatedHorizontalSliding(Direction.LEFT) {
+        println("headerData = $headerData")
+        HeaderPanel(data = headerData)
+      }
 
-    item {
-      val preferredTimes = viewModel.preferredTimes
-        .collectAsState(initial = null).value
-      PreferredTimePanel(data = preferredTimes)
-    }
+      item { Spacer(Modifier.height(15.dp)) }
 
-    item {
-      val preferredDays = viewModel.preferredDays
-        .collectAsState(initial = null).value
-      PreferredDayPanel(data = preferredDays)
+      animatedHorizontalSliding(Direction.LEFT) {
+        PreferredTimePanel(data = preferredTimes)
+        Spacer(Modifier.height(15.dp))
+      }
+
+      item { Spacer(Modifier.height(15.dp)) }
+
+      animatedHorizontalSliding(Direction.LEFT) {
+        PreferredDayPanel(data = preferredDays)
+      }
     }
   }
 // */
@@ -196,45 +213,6 @@ private fun PreferredTimePanel(data: ScheduleDetailPreferredTimeUi?) {
             horizontalArrangement = arrangement,
             content = preferredTimeContent,
           )
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun PreferredDayPanel(data: ScheduleDetailPreferredDayUi?) {
-  LargeSurface(
-    Modifier
-      .fillMaxWidth()
-      .sizeIn(minHeight = stdEmptyPanelHeight),
-  ) {
-    LoadingPlaceholder(
-      key = data,
-      loadingText = null,
-    ) { data ->
-      Column(
-        verticalArrangement = Arrangement.spacedBy(Const.stdSpacerDp),
-      ) {
-        Text(
-          Texts.preferredDays,
-          style = MaterialTheme.typography.h6,
-          fontWeight = FontWeight.Bold,
-        )
-        //Spacer(Modifier.height(Const.stdSpacerDp))
-        val arrangement = Arrangement.spacedBy(Const.stdSpacerDp)
-        WrappingRow(
-          modifier = Modifier.padding(start = Const.stdSpacerDp),
-          verticalArrangement = arrangement,
-          horizontalArrangement = arrangement,
-        ) {
-          for(day in data.preferredDays) {
-            DayItem(
-              text = day.name,
-              isActive = day.isActive,
-              color = data.color,
-            )
-          }
         }
       }
     }

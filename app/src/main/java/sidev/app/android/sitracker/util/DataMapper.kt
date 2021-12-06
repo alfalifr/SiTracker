@@ -1,12 +1,15 @@
 package sidev.app.android.sitracker.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.core.domain.model.*
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.ui.model.*
+import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPreferredDayItemUi
+import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPreferredDayUi
 import sidev.app.android.sitracker.ui.theme.GreenLight
 
 object DataMapper {
@@ -97,6 +100,36 @@ object DataMapper {
     schedules = schedules.map { it.toUiData(iconUseCase) },
     header = header,
   )
+
+  fun getPrefDayPanelData(
+    prefDays: Collection<Int>,
+    activeColor: String,
+  ): ScheduleDetailPreferredDayUi {
+    return ScheduleDetailPreferredDayUi(
+      preferredDays = Formats.dayOfWeek.map {
+        ScheduleDetailPreferredDayItemUi(
+          dayNum = it,
+          name = Texts.getDayName(it),
+          isActive = it in prefDays,
+        )
+      },
+      color = Color(activeColor),
+    )
+  }
+
+  fun ScheduleJoint.toPreferredDayData(): ScheduleDetailPreferredDayUi {
+    val prefDayNums = preferredDays.map { it.dayInWeek }
+    return getPrefDayPanelData(prefDayNums, task.color)
+  }
+  fun TaskJoint.toPreferredDayData(): ScheduleDetailPreferredDayUi {
+    val prefDayNums = mutableSetOf<Int>()
+    scheduleJoints.forEach { joint ->
+      joint.preferredDays.mapTo(prefDayNums) {
+        it.dayInWeek
+      }
+    }
+    return getPrefDayPanelData(prefDayNums, task.color)
+  }
 
 /*
   fun ScheduleJoint.toTaskItemSchedule(

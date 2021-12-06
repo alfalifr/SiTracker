@@ -15,9 +15,12 @@ import sidev.app.android.sitracker.core.domain.usecase.DbEnumUseCase
 import sidev.app.android.sitracker.core.domain.usecase.IconUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
+import sidev.app.android.sitracker.ui.model.ItemIcon
 import sidev.app.android.sitracker.util.Color
+import sidev.app.android.sitracker.util.DataMapper.toPreferredDayData
 import sidev.app.android.sitracker.util.Formats
 import sidev.app.android.sitracker.util.Texts
+import sidev.app.android.sitracker.util.collect
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
@@ -71,9 +74,14 @@ class ScheduleDetailViewModel(
     println("view model scheduleLabel label = ${it.schedule.label}")
     it.schedule.label
   }
-  val taskIcon: Flow<Int> = queryJoint.map {
-    iconUseCase.getResId(
+
+  val taskIcon: Flow<ItemIcon> = queryJoint.map {
+    val resId = iconUseCase.getResId(
       it.task.iconId
+    )
+    ItemIcon(
+      resId,
+      it.task.id
     )
   }
 
@@ -97,22 +105,14 @@ class ScheduleDetailViewModel(
     )
   }
 
+  /*
   private val dayNameFormat by lazy {
     //SimpleDateFormat("EEE", Locale.getDefault())
     DateFormatSymbols.getInstance(Locale.getDefault())
   }
+   */
   val preferredDays: Flow<ScheduleDetailPreferredDayUi> = queryJoint.map { scheduleJoint ->
-    val prefDayNums = scheduleJoint.preferredDays.map { it.dayInWeek }
-    ScheduleDetailPreferredDayUi(
-      preferredDays = Formats.dayOfWeek.map {
-        ScheduleDetailPreferredDayItemUi(
-          dayNum = it,
-          name = dayNameFormat.weekdays[it],
-          isActive = it in prefDayNums,
-        )
-      },
-      color = Color(scheduleJoint.task.color),
-    )
+    scheduleJoint.toPreferredDayData()
   }
 
 
@@ -149,6 +149,10 @@ class ScheduleDetailViewModel(
         scheduleLabel.collect {
           println("in viewModel scheduleLabel = $it")
         }
+      }
+
+      collect(headerData) {
+        println("VM.headerData = $it")
       }
     }
   }

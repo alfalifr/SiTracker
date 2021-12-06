@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.ui.model
 
+import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import sidev.app.android.sitracker.core.data.local.model.ScheduleProgress
@@ -67,4 +68,19 @@ data class IconProgressionFloatUiData(
 ): IconProgressionUiData(
   color = color,
   progress = progress,
+)
+
+/**
+ * A lightweight data class that contains icon res id and item id.
+ */
+data class ItemIcon(
+  /**
+   * ID of icon resource.
+   */
+  @DrawableRes
+  val iconResId: Int,
+  /**
+   * ID of item that is represented by this icon.
+   */
+  val itemId: Int,
 )

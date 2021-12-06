@@ -20,8 +20,8 @@ fun HorizontalSlidingTransition(
     //initiallyVisible = false,
     enter = slideInHorizontally(
       initialOffsetX = { fullWidth ->
-        if(slidingDirection == Direction.RIGHT) fullWidth
-        else -fullWidth
+        if(slidingDirection == Direction.RIGHT) -fullWidth
+        else fullWidth
       },
       animationSpec = tween(durationMillis = 800),
     ),

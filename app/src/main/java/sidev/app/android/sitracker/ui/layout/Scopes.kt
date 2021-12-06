@@ -22,6 +22,7 @@ interface MainScaffoldScope: LazyListScope {
       )
     }
   }
+
   fun animatedHorizontalSlidings(
     count: Int,
     slidingDirection: Direction,
@@ -55,8 +56,8 @@ interface MainMenuContentScope: MainScaffoldScope {
         .find { it.completeRoute == prevRouteString }
 
     return if(prevRoute?.let { it.index > index } != false) {
-      Direction.LEFT
-    } else Direction.RIGHT
+      Direction.RIGHT
+    } else Direction.LEFT
   }
 
   fun mainMenuItem(

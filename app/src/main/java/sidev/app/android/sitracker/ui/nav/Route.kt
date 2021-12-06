@@ -23,6 +23,7 @@ import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
 import sidev.app.android.sitracker.ui.page.main_menu.today_schedule.TodaySchedulePage
 import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPage
+import sidev.app.android.sitracker.ui.page.schedule_list.ScheduleListPage
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.model.Direction
@@ -125,22 +126,19 @@ sealed class Route(
   )
 
 
-  object TaskDetailPage: ScaffoldedRoute(
+  object TaskDetailPage: Route(
     "TaskDetailPage",
-    data = ScaffoldedRouteData(),
     arguments = listOf(
       navArgument(Const.taskId) {
         type = NavType.IntType
       }
     ),
-    content = {
-      item {
-        TaskDetailPage(
-          navController = it.navData.navController,
-          taskId = it.navData.navBackStackEntry
-            .arguments!!.getInt(Const.taskId),
-        )
-      }
+    composable = {
+      TaskDetailPage(
+        navController = it.navController,
+        taskId = it.navBackStackEntry
+          .arguments!!.getInt(Const.taskId),
+      )
     },
   ) {
     override val completeRoute: String
@@ -153,6 +151,32 @@ sealed class Route(
       navController.navigate("$route/$taskId")
     }
   }
+
+  object ScheduleListPage: Route(
+    "ScheduleListPage",
+    arguments = listOf(
+      navArgument(Const.taskId) {
+        type = NavType.IntType
+      }
+    ),
+    composable = {
+      ScheduleListPage(
+        taskId = it.navBackStackEntry.arguments!!.getInt(Const.taskId),
+        navController = it.navController,
+      )
+    }
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.taskId}}"
+
+    fun go(
+      navController: NavController,
+      taskId: Int,
+    ) {
+      navController.navigate("$route/$taskId")
+    }
+  }
+
   object ScheduleDetailPage: Route(
     "ScheduleDetailPage",
     arguments = listOf(
@@ -165,6 +189,12 @@ sealed class Route(
         navController = it.navController,
         scheduleId = it.navBackStackEntry
           .arguments!!.getInt(Const.scheduleId),
+        onIconClick = { taskId ->
+          TaskDetailPage.go(
+            it.navController,
+            taskId = taskId,
+          )
+        },
       )
     },
   ) {

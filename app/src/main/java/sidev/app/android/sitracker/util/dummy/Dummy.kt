@@ -31,10 +31,10 @@ object Dummy {
   /**
    * Pair of actual progress and total progress.
    */
-  val scheduleProgressNumber = listOf<Pair<Long, Long>>(
-    100L * secondMillis to 2500L * secondMillis,
-    30L * secondMillis to 88L * secondMillis,
-    10L * secondMillis to 50L * secondMillis,
+  val scheduleProgressNumber = mutableListOf<Triple<Int, Long, Long>>(
+    Triple(0, 100L * secondMillis, 2500L * secondMillis),
+    Triple(1, 30L * secondMillis, 88L * secondMillis),
+    Triple(2, 10L * secondMillis, 50L * secondMillis),
   )
 
   val schedules = tasks.mapIndexed { i, task ->
@@ -44,7 +44,7 @@ object Dummy {
       label = "Label #$i",
       progressTypeId = 0,
       intervalId = 0,
-      totalProgress = scheduleProgressNumber[i].second,
+      totalProgress = scheduleProgressNumber[i].third,
     )
   }
 
@@ -70,11 +70,11 @@ object Dummy {
 
   val scheduleProgress: List<ScheduleProgress>
     get() = _scheduleProgress
-  private val _scheduleProgress = mutableListOf<ScheduleProgress>(
-    ScheduleProgress(0, activeDates[0].scheduleId, activeDates[0].startDate, activeDates[0].endDate ?: (now.time + 100), scheduleProgressNumber[0].first),
-    ScheduleProgress(1, activeDates[1].scheduleId, activeDates[1].startDate, activeDates[1].endDate ?: (now.time + 100), scheduleProgressNumber[1].first),
-    ScheduleProgress(2, activeDates[2].scheduleId, activeDates[2].startDate, activeDates[2].endDate ?: (now.time + 100), scheduleProgressNumber[2].first),
-    ScheduleProgress(3, activeDates[3].scheduleId, activeDates[3].startDate, activeDates[3].endDate ?: (now.time + 100), scheduleProgressNumber[2].first),
+  private val _scheduleProgress get()= mutableListOf<ScheduleProgress>(
+    ScheduleProgress(0, activeDates[0].scheduleId, activeDates[0].startDate, activeDates[0].endDate ?: (now.time + 100), scheduleProgressNumber[0].second),
+    ScheduleProgress(1, activeDates[1].scheduleId, activeDates[1].startDate, activeDates[1].endDate ?: (now.time + 100), scheduleProgressNumber[1].second),
+    ScheduleProgress(2, activeDates[2].scheduleId, activeDates[2].startDate, activeDates[2].endDate ?: (now.time + 100), scheduleProgressNumber[2].second),
+    ScheduleProgress(3, activeDates[3].scheduleId, activeDates[3].startDate, activeDates[3].endDate ?: (now.time + 100), scheduleProgressNumber[2].second),
   )
 
   val preferredTimes = listOf<PreferredTime>(

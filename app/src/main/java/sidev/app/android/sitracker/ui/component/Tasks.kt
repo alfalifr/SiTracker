@@ -331,6 +331,7 @@ fun TaskGroup(
 
   if(disableScroll) {
     Layout(
+      modifier = modifier,
       content = {
         Text(
           text = header,

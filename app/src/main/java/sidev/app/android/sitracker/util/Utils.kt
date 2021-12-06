@@ -443,3 +443,9 @@ fun <T> MutableStateFlow<T>.addSource(
   }
   return this
 }
+
+fun <T> CoroutineScope.collect(flow: Flow<T>, collector: suspend (T) -> Unit) {
+  launch {
+    flow.collect(collector)
+  }
+}

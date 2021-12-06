@@ -1,5 +1,6 @@
 package sidev.app.android.sitracker.ui.layout
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -321,8 +322,10 @@ fun MainScaffold(
 @Composable
 fun TitleIconLayout(
   title: String? = null,
+  @SuppressLint("ModifierParameter") headerModifier: Modifier = Modifier,
   icon: Painter? = null,
   iconColor: Color = MaterialTheme.colors.primary,
+  iconModifier: Modifier = Modifier,
   actionData: List<ActionData> = emptyList(),
   titleMaxLines: Int = 3,
   titleOverflow: TextOverflow = TextOverflow.Ellipsis,
@@ -338,7 +341,7 @@ fun TitleIconLayout(
           fontWeight = FontWeight.Bold,
           maxLines = titleMaxLines,
           overflow = titleOverflow,
-          modifier = Modifier
+          modifier = headerModifier
             .padding(
               top = it,
               start =
@@ -355,7 +358,7 @@ fun TitleIconLayout(
           icon = icon,
           mainColor = iconColor,
           name = null,
-          modifier = Modifier
+          modifier = iconModifier
             .padding(
               top = it,
               start = it,

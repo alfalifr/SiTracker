@@ -126,6 +126,13 @@ interface QueryUseCase {
     scheduleId: Int,
     timestamp: Long,
   ): Flow<ProgressQueryResult>
+
+  /**
+   * Query every data needed to show a list of [Schedule] of [Task]
+   */
+  fun queryTaskScheduleList(
+    taskId: Int,
+  ): Flow<ProgressQueryResult>
 }
 
 
@@ -509,6 +516,54 @@ class QueryUseCaseImpl(
         preferredTimes = emptyList(),
         intervalTypes = emptyList(),
         progressTypes = emptyList(),
+      )
+    }
+  }
+
+  /**
+   * Query every data needed to show a list of [Schedule] of [Task]
+   */
+  override fun queryTaskScheduleList(taskId: Int): Flow<ProgressQueryResult> {
+    val taskFlow = taskDao.getById(taskId).filterNotNull()
+
+    val scheduleListFlow = scheduleDao.getByTaskId(taskId)
+
+    val scheduleIdsFlow = scheduleListFlow.map { schedules ->
+      schedules.map { it.id }.toSet()
+    }
+
+    val prefTimesFlow = scheduleIdsFlow.map {
+      preferredTimeDao.getTimeByScheduleIds(it)
+    }.flattenConcat()
+
+    val prefDayFlow = scheduleIdsFlow.map {
+      preferredDayDao.getDayByScheduleIds(it)
+    }.flattenConcat()
+
+    val intervalTypeFlow = scheduleIdsFlow.map {
+      intervalTypeDao.getByIds(it)
+    }.flattenConcat()
+
+    val progressTypeFlow = scheduleIdsFlow.map {
+      progressTypeDao.getByIds(it)
+    }.flattenConcat()
+
+    return combine(
+      taskFlow, scheduleListFlow,
+      prefTimesFlow, prefDayFlow,
+      intervalTypeFlow, progressTypeFlow
+    ) { list ->
+      //task, schedules, prefTimes, prefDays, intervalType, progressType ->
+      @Suppress(SuppressLiteral.UNCHECKED_CAST)
+      ProgressQueryResult(
+        tasks = listOf(list[0] as Task),
+        schedules = list[1] as List<Schedule>,
+        preferredTimes = list[2] as List<PreferredTime>,
+        preferredDays = list[3] as List<PreferredDay>,
+        intervalTypes = list[4] as List<IntervalType>,
+        progressTypes = list[5] as List<ProgressType>,
+        activeDates = emptyList(),
+        progresses = emptyList(),
       )
     }
   }

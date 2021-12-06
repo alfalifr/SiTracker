@@ -2,6 +2,7 @@ package sidev.app.android.sitracker.util
 
 import android.text.format.Time
 import java.lang.Math.pow
+import java.text.DateFormatSymbols
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.log10
@@ -21,6 +22,10 @@ object Texts {
   const val setCheckpoint = "Set Checkpoint"
 
   const val noPreferredTimes = "No $preferredTimes"
+
+
+  fun seeOther(count: Int): String = "see $count other..."
+
 
   //TODO: implement time formatting algo
   fun formatTimeToShortest(time: Long): String = time.toString()
@@ -53,6 +58,11 @@ object Texts {
 
   fun intervalStr(interval: Pair<String, String?>): String = if(interval.second == null) interval.first
     else "${interval.first} - ${interval.second}"
+
+  fun getDayName(day: Int): String {
+    val dateFormat = DateFormatSymbols.getInstance(Locale.getDefault())
+    return dateFormat.weekdays[day]
+  }
 
   fun iconOf(name: String): String = "Icon of $name"
   fun editItem(name: String): String = "Edit $name"

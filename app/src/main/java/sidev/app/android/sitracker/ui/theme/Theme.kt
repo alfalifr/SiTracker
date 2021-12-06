@@ -15,13 +15,17 @@ import sidev.app.android.sitracker.ui.component.SystemOverlay
 private val DarkColorPalette = darkColors(
   primary = GreenLight,
   primaryVariant = GreenDark,
-  secondary = Yellow
+  secondary = Yellow,
+  background = Color(0xFF2C2C2C),
+  surface = Color.Black,
 )
 
 private val LightColorPalette = lightColors(
   primary = GreenLight,
   primaryVariant = GreenDark,
-  secondary = Yellow
+  secondary = Yellow,
+  background = Color(0xFFDFDFDF),
+  surface = Color.White,
 
   /* Other default colors to override
     background = Color.White,

@@ -55,4 +55,6 @@ object Const {
 
   const val tickerInterval = 1000L //millis
   const val progressAutoSaveCheckpoint = 10L //in secs
+
+  const val progressAutoSaveCheckpointTolerance = 1000L // 1 sec
 }

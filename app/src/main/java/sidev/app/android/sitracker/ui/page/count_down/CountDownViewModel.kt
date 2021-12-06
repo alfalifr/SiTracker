@@ -80,6 +80,7 @@ class CountDownViewModel(
       timestamp = timestamp,
     )
   }.flattenConcat()
+    .distinctUntilChanged()
 
 
   
@@ -138,6 +139,7 @@ class CountDownViewModel(
 
   private val checkpointCountDownProgress = MutableStateFlow<Long?>(null)
   val checkpointCountDownProgressStr: Flow<String?> = checkpointCountDownProgress.map {
+    //println("checkpointCountDownProgressStr = $it initialCountDownProgress = ${initialCountDownProgress.value}")
     if(it == null || it == initialCountDownProgress.value) { null }
     else { Texts.formatTimeToClock(it) }
   }
@@ -153,6 +155,7 @@ class CountDownViewModel(
    */
   val updateStatus: Flow<Boolean> = combine(progressData, actualTimeProgress) {
       progressData, actualTimeProgress ->
+    //println("CountDownVm.updateStatus progressData = $progressData actualTimeProgress = $actualTimeProgress")
     if(actualTimeProgress >= 0) {
       scheduleProgressUseCase.updateProgress(
         progressData.id,
@@ -225,16 +228,37 @@ class CountDownViewModel(
   init {
     scope.launch {
       launch {
+        progress.collect {
+          println("CountDownVm.progress = $it")
+        }
+      }
+      /*
+      launch {
         progressData.collect {
           actualTimeProgress.value = it.actualProgress
         }
       }
+      // */
       ///*
       launch {
         countingTimer.collect {
           // just collect so that logic inside `countingTimer` can run. TODO: Optimize
         }
       }
+      //*
+      //TO DO: It seems that this collect process obstacles the checkpoint string flow
+      /*
+      DONE
+      cause: somehow it updates several time via `autoSave` because false condition (`if`)
+      resolution: check whether value inside `actualProgress` is previously same as computed value in `if`
+      */
+      launch {
+        updateStatus.collect {
+          //println("CountDownVm updateStatus = $it")
+          // just collect so that logic inside `countingTimer` can run. TODO: Optimize
+        }
+      }
+      // */
       // */
       //initTimerStart()
     }
@@ -246,6 +270,17 @@ class CountDownViewModel(
 
   }
    */
+
+  /**
+   * This method will be called when this ViewModel is no longer used and will be destroyed.
+   *
+   *
+   * It is useful when ViewModel observes some data and you need to clear this subscription to
+   * prevent a leak of this ViewModel.
+   */
+  override fun onCleared() {
+    prevTimer.value?.cancel()
+  }
 
   fun loadFromDb(
     scheduleId: Int,
@@ -283,9 +318,14 @@ class CountDownViewModel(
   fun setCheckpoint(
     countDownTimestamp: Long = countDownProgress.value,
     total: Long = totalProgress.value,
+    forceSet: Boolean = false,
   ) {
-    checkpointCountDownProgress.value = countDownTimestamp
-    actualTimeProgress.value = total - countDownTimestamp
+    val newProgress = total - countDownTimestamp
+    if(forceSet || newProgress / Const.progressAutoSaveCheckpointTolerance
+      != actualTimeProgress.value / Const.progressAutoSaveCheckpointTolerance) {
+      checkpointCountDownProgress.value = countDownTimestamp
+      actualTimeProgress.value = newProgress
+    }
   }
 
   /**
@@ -296,7 +336,9 @@ class CountDownViewModel(
     countDownTimestamp: Long = countDownProgress.value,
   ) {
     val total = totalProgress.value
-    if((total - countDownTimestamp / 1000L) %
+    //println("CountDownVm.autoSave() total - countDownTimestamp = ${total - countDownTimestamp}")
+
+    if(((total - countDownTimestamp) / Const.progressAutoSaveCheckpointTolerance) %
       Const.progressAutoSaveCheckpoint == 0L
     ) {
       setCheckpoint(countDownTimestamp, total)
@@ -308,7 +350,7 @@ class CountDownViewModel(
     countDownTimestamp: Long = countDownProgress.value,
   ) {
     val total = totalProgress.value
-    _progress.value = total - countDownTimestamp /
+    _progress.value = (total - countDownTimestamp) /
       total.toFloat()
   }
 

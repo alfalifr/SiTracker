@@ -18,7 +18,9 @@ import sidev.app.android.sitracker.core.domain.usecase.QueryJointUseCase
 import sidev.app.android.sitracker.core.domain.usecase.QueryUseCase
 import sidev.app.android.sitracker.ui.model.CalendarTileUiData
 import sidev.app.android.sitracker.ui.model.TaskItemDataUi
+import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPreferredDayUi
 import sidev.app.android.sitracker.ui.usecase.CalendarUiUseCase
+import sidev.app.android.sitracker.util.DataMapper.toPreferredDayData
 import sidev.app.android.sitracker.util.Texts
 import sidev.app.android.sitracker.util.getDateMillis
 import java.util.*
@@ -69,6 +71,26 @@ class TaskDetailViewModel(
     }
   }
 
+  val schedulePanelData: Flow<TaskSchedulePanelData> = queryJoint.map { joint ->
+    val header = if(joint.scheduleJoints.isEmpty()) {
+      Texts.noSchedule
+    } else {
+      "${joint.scheduleJoints.size} ${
+        Texts.schedule.lowercase(Locale.getDefault())
+      }"
+    }
+
+    val items = joint.scheduleJoints
+      .sortedByDescending { it.activeDates.maxOf { it.startDate } }
+      .map { it.schedule.label }
+
+    val seeOtherString = if(items.size <= 3) null
+      else Texts.seeOther(items.size - 3)
+
+    TaskSchedulePanelData(header, items, seeOtherString)
+  }
+
+  /*
   val scheduleItemTextList: Flow<List<String>> = queryJoint.map { taskJoint ->
     taskJoint.scheduleJoints
       .sortedByDescending { it.activeDates.maxOf { it.startDate } }
@@ -84,15 +106,10 @@ class TaskDetailViewModel(
       ""
     }
   }
+   */
 
-  val preferredDays: Flow<Set<Int>> = queryJoint.map { taskJoint ->
-    val set = mutableSetOf<Int>()
-    taskJoint.scheduleJoints.forEach { scheduleJoint ->
-      scheduleJoint.preferredDays.mapTo(set) {
-        it.dayInWeek
-      }
-    }
-    set
+  val preferredDays: Flow<ScheduleDetailPreferredDayUi> = queryJoint.map { taskJoint ->
+    taskJoint.toPreferredDayData()
   }
 
 
