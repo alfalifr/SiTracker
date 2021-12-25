@@ -1,3 +1,14 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">SiTracker</string>
+
+    <string name="field_invalid_blank_message"><xliff:g name="field_name" example="Field">%s</xliff:g> cannot be blank</string>
+    <string name="field_invalid_non_numeric_message"><xliff:g name="field_name" example="Field">%s</xliff:g> must be numeric</string>
+    <string name="field_invalid_clock_format_message">Wrong clock format</string>
+    <string name="task_name">Task Name</string>
+    <string name="default_priority">Default Priority</string>
+    <string name="task">Task</string>
+    <string name="label">Label</string>
+    <string name="progress_type">Progress Type</string>
+    <string name="interval_type">Interval Type</string>
+
 </resources>

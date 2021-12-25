@@ -294,6 +294,7 @@ class QueryUseCaseImpl(
     }
 
     val scheduleFlow = preferredDayFlow.flatMapLatest { preferredDays ->
+      println("scheduleFlow preferredDays = $preferredDays")
       scheduleDao.getByIds(
         preferredDays.map { it.scheduleId }.toSet()
       )

@@ -53,6 +53,8 @@ object Const {
   const val taskId = "taskId"
   const val scheduleId = "scheduleId"
 
+  const val mainMenuPrevItemIndex = "mainMenuPrevItemIndex"
+
   const val tickerInterval = 1000L //millis
   const val progressAutoSaveCheckpoint = 10L //in secs
 

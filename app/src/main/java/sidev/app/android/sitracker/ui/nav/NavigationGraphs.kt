@@ -1,6 +1,7 @@
 package sidev.app.android.sitracker.ui.nav
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,10 +12,12 @@ import androidx.navigation.compose.rememberNavController
 fun NavGraphComp(
   navRoutes: List<Route>,
   startDestination: String,
+  modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
   parentNavController: NavController? = null,
 ) {
   NavHost(
+    modifier = modifier,
     navController = navController,
     startDestination = startDestination,
   ) {
@@ -60,10 +63,12 @@ fun NavGraphComp(
 
 @Composable
 fun MainMenuNavGraph(
+  modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
   parentNavController: NavController? = null,
 ) {
   NavGraphComp(
+    modifier = modifier,
     navRoutes = Route.getMainMenuContentRoutes(),
     navController = navController,
     parentNavController = parentNavController,
@@ -73,10 +78,12 @@ fun MainMenuNavGraph(
 
 @Composable
 fun AppNavGraph(
+  modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
   parentNavController: NavController? = null,
 ) {
   NavGraphComp(
+    modifier = modifier,
     navRoutes = Route.getAppRoutes(),
     navController = navController,
     parentNavController = parentNavController,

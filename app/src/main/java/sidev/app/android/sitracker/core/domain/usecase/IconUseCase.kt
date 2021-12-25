@@ -1,12 +1,10 @@
 package sidev.app.android.sitracker.core.domain.usecase
 
 import androidx.annotation.DrawableRes
-import sidev.app.android.sitracker.core.domain.model.AppIcon
-import sidev.app.android.sitracker.core.domain.model.IconProgressionPicData
-import sidev.app.android.sitracker.core.domain.model.ProgressJoint
-import sidev.app.android.sitracker.core.domain.model.ScheduleJoint
+import sidev.app.android.sitracker.core.domain.model.*
 
 interface IconUseCase {
+  fun getAllAvailableIcons(): List<AppIcon>
   @DrawableRes
   fun getResId(iconId: Int): Int
   fun getIconProgressionData(progressJoint: ProgressJoint): IconProgressionPicData
@@ -14,7 +12,8 @@ interface IconUseCase {
 }
 
 class IconUseCaseImpl: IconUseCase {
-  override fun getResId(iconId: Int): Int = AppIcon[iconId].resId
+  override fun getAllAvailableIcons(): List<AppIcon> = AppIcons.values().asList()
+  override fun getResId(iconId: Int): Int = AppIcons[iconId].resId
   override fun getIconProgressionData(progressJoint: ProgressJoint): IconProgressionPicData =
     IconProgressionPicData(
       resId = getResId(progressJoint.task.iconId),

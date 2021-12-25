@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -21,8 +22,14 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.*
+import sidev.app.android.sitracker.ui.layout.LazyAnimatedItemScope
+import sidev.app.android.sitracker.ui.nav.ComposableNavData
+import sidev.app.android.sitracker.ui.nav.MainMenuItemNavData
+import sidev.app.android.sitracker.ui.nav.Route
+import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.util.DataMapper.toPicUiData
 import sidev.app.android.sitracker.util.DataMapper.toUiData
+import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.defaultViewModel
 import sidev.app.android.sitracker.util.maxSquareSideLen
 import sidev.app.android.sitracker.util.pagerTransformation
@@ -30,9 +37,13 @@ import sidev.app.android.sitracker.util.pagerTransformation
 
 @Composable
 fun HomePage(
-  navController: NavController = rememberNavController(),
+  //navData: ComposableNavData,
+  navData: MainMenuItemNavData,
+  //index: Int,
+  //prevIndex: Int,
+  //navController: NavController = rememberNavController(),
   viewModel: HomeViewModel = defaultViewModel(),
-  onItemClick: ((scheduleId: Int) -> Unit)? = null, //TODO: pair `HomePage.onItemClick`
+  //onItemClick: ((scheduleId: Int) -> Unit)? = null, //TODO: pair `HomePage.onItemClick`
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500)
@@ -41,18 +52,32 @@ fun HomePage(
   }
 
   //loge("HomePage: induk")
-
-  HomePageMainComp(
-    viewModel,
-    onItemClick,
-  )
+  MainMenuItemLayout(
+    title = "What to do?",
+    navData = navData,
+    ignoreContentPadding = true,
+    modifier = Modifier.fillMaxSize(),
+    //navData = navData,
+  ) {
+    mainMenuItem {
+      HomePageMainComp(
+        //navData.parentNavController!!,
+        navController = navData.navData.parentNavController!!,
+        viewModel = viewModel,
+        scope = this,
+        //onItemClick,
+      )
+    }
+  }
 }
 
 
 @Composable
 private fun HomePageMainComp(
+  navController: NavController,
   viewModel: HomeViewModel = defaultViewModel(),
-  onItemClick: ((scheduleId: Int) -> Unit)? = null,
+  scope: LazyAnimatedItemScope,
+  //onItemClick: ((scheduleId: Int) -> Unit)? = null,
 ) {
 
   val title = viewModel.activeTaskTitle
@@ -73,7 +98,7 @@ private fun HomePageMainComp(
     verticalArrangement = Arrangement.SpaceEvenly,
     modifier = Modifier.fillMaxSize(),
   ) {
-    LoadingPlaceholder(key = title) {
+    EmptyPlacehoder(key = title) {
       Text(
         text = it,
         style = MaterialTheme.typography.h4,
@@ -81,7 +106,12 @@ private fun HomePageMainComp(
     }
     //Spacer(Modifier.height(15.dp))
 
-    LoadingPlaceholder(key = itemData) { itemData ->
+    LoadingPlaceholder(
+      key = itemData,
+      loadingModifier = scope.run {
+        Modifier.fillParentMaxSize()
+      },
+    ) { itemData ->
       BoxWithConstraints {
         val iconLen = maxSquareSideLen * .80f
         val iconPadding = iconLen * .30f
@@ -98,6 +128,9 @@ private fun HomePageMainComp(
           val data = itemData[page]
           val icon = data.first.toUiData()
           //loge("HomePage: HorizontalPage Item currentPage = $currentPage currentPageOffset = $currentPageOffset it = $page this = $this data= $data")
+
+          val ctx = LocalContext.current
+
           IconProgressionPic(
             icon = icon.image,
             mainColor = icon.color,
@@ -107,7 +140,19 @@ private fun HomePageMainComp(
             modifier = Modifier
               .size(iconLen)
               .clickable {
-                onItemClick?.invoke(data.second)
+                val scheduleId = data.second
+
+                println("HomePage onItemClick scheduleId = $scheduleId")
+                DefaultToast(
+                  ctx,
+                  "scheduleId = $scheduleId"
+                )
+                Route.CountDownPage.go(
+                  navController,
+                  scheduleId,
+                )
+
+                //onItemClick?.invoke(data.second)
               }
               //.background(Color.Blue)
               .pagerTransformation(

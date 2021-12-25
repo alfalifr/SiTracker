@@ -3,39 +3,46 @@ package sidev.app.android.sitracker.ui.layout
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
-import sidev.app.android.sitracker.ui.component.HorizontalSlidingTransition
-import sidev.app.android.sitracker.ui.nav.ComposableNavData
-import sidev.app.android.sitracker.ui.nav.Route
+import sidev.app.android.sitracker.ui.component.SlidingTransition
 import sidev.app.android.sitracker.util.model.Direction
 
 interface MainScaffoldScope: LazyListScope {
-  fun animatedHorizontalSliding(
+  fun animatedSliding(
     slidingDirection: Direction,
-    content: @Composable AnimatedVisibilityScope.() -> Unit,
+    content: @Composable LazyAnimatedItemScope.() -> Unit,
   ) {
     item {
-      HorizontalSlidingTransition(
+      SlidingTransition(
         slidingDirection = slidingDirection,
-        content = content,
+        content = {
+           lazyAnimatedItemScope(
+             this@item, this,
+           ).content()
+        },
       )
     }
   }
 
-  fun animatedHorizontalSlidings(
+  fun animatedSlidings(
     count: Int,
     slidingDirection: Direction,
     key: ((Int) -> Unit)? = null,
-    content: @Composable AnimatedVisibilityScope.(Int) -> Unit,
+    content: @Composable LazyAnimatedItemScope.(Int) -> Unit,
   ) {
     items(
       count = count,
       key = key,
     ) { i ->
-      HorizontalSlidingTransition(
+      SlidingTransition(
         slidingDirection = slidingDirection,
-        content = { content(i) },
+        content = {
+          lazyAnimatedItemScope(
+            this@items, this,
+          ).content(i)
+        },
       )
     }
   }
@@ -43,13 +50,23 @@ interface MainScaffoldScope: LazyListScope {
 
 interface MainMenuContentScope: MainScaffoldScope {
   val index: Int
-  val navComposableData: ComposableNavData
+  val prevIndex: Int?
+  //val navComposableData: ComposableNavData
 
   //TODO: Sliding effect from item #2 to item #1 still get left direction (expected is right).
   // perhaps it has something to do with `popUpTo` in BottomNavBar navigation
   fun getSlidingDirection(
-    prevRouteString: String?,
+    //prevRouteString: String?,
+    //prevIndex: Int,
   ): Direction {
+    println("getSlidingDirection prevIndex= $prevIndex index= $index")
+    return if(prevIndex != null) {
+      if(prevIndex!! > index) Direction.RIGHT
+      else Direction.LEFT
+    } else Direction.UP
+  }
+  /*
+  {
     val prevRoute =
       if(prevRouteString == null) null
       else Route.getMainMenuContentRoutes()
@@ -59,14 +76,15 @@ interface MainMenuContentScope: MainScaffoldScope {
       Direction.RIGHT
     } else Direction.LEFT
   }
+   */
 
   fun mainMenuItem(
     //navComposableData: ComposableNavData,
-    content: @Composable AnimatedVisibilityScope.() -> Unit,
+    content: @Composable LazyAnimatedItemScope.() -> Unit,
   ) {
-    animatedHorizontalSliding(
+    animatedSliding(
       slidingDirection = getSlidingDirection(
-        navComposableData.prevNavBackStackEntry?.destination?.route
+        //navComposableData.prevNavBackStackEntry?.destination?.route
       ),
       content = content,
     )
@@ -76,18 +94,21 @@ interface MainMenuContentScope: MainScaffoldScope {
     count: Int,
     //navComposableData: ComposableNavData,
     key: ((Int) -> Unit)? = null,
-    content: @Composable AnimatedVisibilityScope.(Int) -> Unit,
+    content: @Composable LazyAnimatedItemScope.(Int) -> Unit,
   ) {
-    animatedHorizontalSlidings(
+    animatedSlidings(
       count = count,
       key = key,
       slidingDirection = getSlidingDirection(
-        navComposableData.prevNavBackStackEntry?.destination?.route
+        //navComposableData.prevNavBackStackEntry?.destination?.route
       ),
       content = content,
     )
   }
 }
+
+interface LazyAnimatedItemScope: LazyItemScope, AnimatedVisibilityScope
+
 
 private class MainScaffoldScopeImpl(
   private val lazyListScope: LazyListScope,
@@ -95,20 +116,49 @@ private class MainScaffoldScopeImpl(
 
 private class MainMenuContentScopeImpl(
   override val index: Int,
-  override val navComposableData: ComposableNavData,
+  //override val navComposableData: ComposableNavData,
+  override val prevIndex: Int?,
   private val lazyListScope: LazyListScope,
 ): MainMenuContentScope, LazyListScope by lazyListScope
 
 
-fun LazyListScope.toMainScaffoldScope(): MainScaffoldScope =
-  MainScaffoldScopeImpl(this)
+private class LazyAnimatedItemScopeImpl(
+  private val lazyItemScope: LazyItemScope,
+  private val animatedVisibilityScope: AnimatedVisibilityScope,
+): LazyAnimatedItemScope,
+  LazyItemScope by lazyItemScope,
+  AnimatedVisibilityScope by animatedVisibilityScope
 
-fun LazyListScope.toMainMenContentScope(
+
+fun LazyListScope.toMainScaffoldScope(
+): MainScaffoldScope = MainScaffoldScopeImpl(this)
+
+
+/*
+fun MainScaffoldScope.toMainMenuContentScope(
   index: Int,
   navComposableData: ComposableNavData,
+): MainMenuContentScope = toMainMenuContentScope(
+  index = index,
+  navComposableData = navComposableData,
+)
+ */
+
+fun LazyListScope.toMainMenuContentScope(
+  index: Int,
+  prevIndex: Int?,
+  //navComposableData: ComposableNavData,
 ): MainMenuContentScope =
   MainMenuContentScopeImpl(
     index = index,
-    navComposableData = navComposableData,
+    prevIndex = prevIndex,
+    //navComposableData = navComposableData,
     lazyListScope = this,
   )
+
+fun lazyAnimatedItemScope(
+  lazyItemScope: LazyItemScope,
+  animatedVisibilityScope: AnimatedVisibilityScope
+): LazyAnimatedItemScope = LazyAnimatedItemScopeImpl(
+  lazyItemScope, animatedVisibilityScope,
+)

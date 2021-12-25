@@ -11,20 +11,47 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import sidev.app.android.sitracker.ui.layout.*
+import sidev.app.android.sitracker.ui.nav.ComposableNavData
+import sidev.app.android.sitracker.ui.nav.MainMenuItemNavData
 
-//TODO: Extract logic to common function
+
+@Composable
+fun MainMenuItemLayout(
+  title: String?,
+  navData: MainMenuItemNavData,
+  modifier: Modifier = Modifier,
+  //navData: ComposableNavData,
+  ignoreContentPadding: Boolean = false,
+  content: MainMenuContentScope.(contentPadding: Dp) -> Unit,
+) = MainMenuItemLayout(
+  title = title,
+  index = navData.index,
+  modifier = modifier,
+  prevIndex = navData.prevIndex,
+  ignoreContentPadding = ignoreContentPadding,
+  content = content,
+)
+
 @Composable
 fun MainMenuItemLayout(
   title: String?,
   index: Int,
+  prevIndex: Int?,
+  modifier: Modifier = Modifier,
+  //navData: ComposableNavData,
   ignoreContentPadding: Boolean = false,
-  content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
+  content: MainMenuContentScope.(contentPadding: Dp) -> Unit,
 ) {
   TitleIconLayout(
+    modifier = modifier,
     title = title,
     ignoreContentPadding = ignoreContentPadding,
     content = {
-      toMainScaffoldScope().content(it)
+      toMainMenuContentScope(
+        index = index,
+        prevIndex = prevIndex,
+        //navComposableData = navData,
+      ).content(it)
     },
   )
   /*

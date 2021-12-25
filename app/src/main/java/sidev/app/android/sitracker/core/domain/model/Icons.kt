@@ -3,11 +3,16 @@ package sidev.app.android.sitracker.core.domain.model
 import androidx.annotation.DrawableRes
 import sidev.app.android.sitracker.R
 
-enum class AppIcon(
-  val id: Int,
+interface AppIcon {
+  val id: Int
+  val resId: Int
+}
+
+enum class AppIcons(
+  override val id: Int,
   @DrawableRes
-  val resId: Int,
-) {
+  override val resId: Int,
+): AppIcon {
   Coding(0, R.drawable.ic_coding),
   Clip(1, R.drawable.ic_clip),
   Bin(2, R.drawable.ic_bin),

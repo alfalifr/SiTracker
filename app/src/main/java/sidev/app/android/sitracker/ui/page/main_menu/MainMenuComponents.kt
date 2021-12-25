@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.ui.theme.FollowingDark
 import sidev.app.android.sitracker.ui.theme.OppositeDark
 import sidev.app.android.sitracker.ui.theme.TransOppositeDarkColor2
@@ -23,18 +24,18 @@ import sidev.app.android.sitracker.ui.theme.TransOppositeDarkColor2
 @Composable
 @Preview
 private fun BottomNavBar_preview() {
-  BottomNavBar(
+  MainMenuBottomNavBar(
     navItems = listOf(
-      NavItem.Home,
-      NavItem.TodaySchedule,
-      NavItem.Calendar,
+      MainMenuNavItem.Home,
+      MainMenuNavItem.TodaySchedule,
+      MainMenuNavItem.Calendar,
     )
   )
 }
 
 @Composable
-fun BottomNavBar(
-  navItems: List<NavItem>,
+fun MainMenuBottomNavBar(
+  navItems: List<MainMenuNavItem>,
   navController: NavController = rememberNavController(),
 ) {
   BottomNavigation(
@@ -80,8 +81,20 @@ fun BottomNavBar(
         },
         selectedContentColor = MaterialTheme.colors.primary,
         unselectedContentColor = TransOppositeDarkColor2,
-        selected = isSelected,//currentRoute == item.route,
+        selected = isSelected, //currentRoute == item.route,
         onClick = {
+          val prevRoute = navController.currentBackStackEntry?.destination?.route
+          val prevIndex = if(prevRoute != null) {
+            Route.getMainMenuContentRoutes()
+              .find { it.completeRoute == prevRoute }?.index
+              ?: -1
+          } else -1
+
+          println("prevRoute = $prevRoute prevIndex = $prevIndex")
+
+          item.onNavigate(navController, prevIndex)
+
+          /*
           navController.navigate(item.route) {
             val start = navController.graph.startDestinationRoute
             if(start != null) {
@@ -92,6 +105,7 @@ fun BottomNavBar(
             launchSingleTop = true
             restoreState = true
           }
+           */
         }
       )
     }

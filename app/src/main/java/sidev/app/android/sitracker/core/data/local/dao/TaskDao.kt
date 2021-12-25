@@ -23,7 +23,7 @@ interface TaskDao {
 
   @Query("""
     SELECT * FROM tasks
-    ORDER BY priority DESC
+    ORDER BY priority ASC
     LIMIT :limit
   """)
   fun getOrderedByPriority(
@@ -33,7 +33,7 @@ interface TaskDao {
   @Query("""
     SELECT * FROM tasks
     WHERE id NOT IN (:excludedIds)
-    ORDER BY priority DESC
+    ORDER BY priority ASC
     LIMIT :limit
   """)
   fun getNotInIdsOrderedByPriority(

@@ -1,7 +1,7 @@
 package sidev.app.android.sitracker.util.dummy
 
 import sidev.app.android.sitracker.core.data.local.model.*
-import sidev.app.android.sitracker.core.domain.model.AppIcon
+import sidev.app.android.sitracker.core.domain.model.AppIcons
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -23,9 +23,9 @@ object Dummy {
 
 
   val tasks = listOf(
-    Task(0, "Code 20 Lines", 1, "This is desc 1", AppIcon.Coding.id, "#0e9612"),
-    Task(1, "Read Life", 2, "This is desc 2", AppIcon.Bin.id, "#17ebeb"),
-    Task(2, "Runaway", 3, "This is desc 3", AppIcon.Clip.id, "#eb1726"),
+    Task(0, "Code 20 Lines", 1, "This is desc 1", AppIcons.Coding.id, "#0e9612"),
+    Task(1, "Read Life", 2, "This is desc 2", AppIcons.Bin.id, "#17ebeb"),
+    Task(2, "Runaway", 3, "This is desc 3", AppIcons.Clip.id, "#eb1726"),
   )
 
   /**
@@ -91,25 +91,28 @@ object Dummy {
 
     PreferredDay(6, schedules[1].id),
     PreferredDay(6, schedules[2].id),
+    PreferredDay(7, schedules[2].id),
     // Code 20 Lines
     ///*
-    PreferredDay(0, schedules[0].id),
+    //PreferredDay(0, schedules[0].id),
     PreferredDay(1, schedules[0].id),
     PreferredDay(2, schedules[0].id),
     PreferredDay(3, schedules[0].id),
     PreferredDay(4, schedules[0].id),
     PreferredDay(5, schedules[0].id),
     PreferredDay(6, schedules[0].id),
+    PreferredDay(7, schedules[0].id),
      // */
     // Runaway
     ///*
-    PreferredDay(0, schedules[2].id),
+    //PreferredDay(0, schedules[2].id),
     PreferredDay(1, schedules[2].id),
     PreferredDay(2, schedules[2].id),
     PreferredDay(3, schedules[2].id),
     PreferredDay(4, schedules[2].id),
     PreferredDay(5, schedules[2].id),
     PreferredDay(6, schedules[2].id),
+    PreferredDay(7, schedules[2].id),
      // */
   )
 

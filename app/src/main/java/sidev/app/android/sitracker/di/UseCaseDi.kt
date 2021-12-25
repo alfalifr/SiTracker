@@ -12,6 +12,7 @@ interface UseCaseDi {
   fun timeUseCase(): TimeUseCase
   fun calendarUseCase(): CalendarUseCase
   fun dbEnumUseCase(): DbEnumUseCase
+  fun formValidationUseCase(): FormValidationUseCase
 }
 
 class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
@@ -46,4 +47,6 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
   )
 
   override fun dbEnumUseCase(): DbEnumUseCase = DbEnumUseCaseImpl()
+
+  override fun formValidationUseCase(): FormValidationUseCase = FormValidationUseCaseImpl
 }

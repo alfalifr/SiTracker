@@ -1,38 +1,24 @@
 package sidev.app.android.sitracker.ui.layout
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.semantics.CustomAccessibilityAction
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.customActions
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import sidev.app.android.sitracker.ui.component.DefaultText
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
-import sidev.app.android.sitracker.ui.component.Placeholder
-import sidev.app.android.sitracker.ui.component.measurePrefixPostfixComponents
 import sidev.app.android.sitracker.ui.model.ActionData
 import sidev.app.android.sitracker.util.*
 import sidev.app.android.sitracker.util.Const.contentPaddingDp
@@ -51,6 +37,7 @@ import sidev.app.android.sitracker.util.model.sizeToDp
  */
 @Composable
 fun MainScaffold(
+  modifier: Modifier = Modifier,
   header: @Composable ((contentPadding: Dp) -> Unit)? = null,
   icon: @Composable ((contentPadding: Dp) -> Unit)? = null,
   actions: @Composable ((contentPadding: Dp) -> Unit)? = null,
@@ -90,7 +77,9 @@ fun MainScaffold(
    */
 
 
-  BoxWithConstraints {
+  BoxWithConstraints(
+    modifier = modifier,
+  ) {
     //val screenWidth = maxWidth
     //var headerContentMaxWidth by remember { mutableStateOf(maxWidth) }
     var actionSize by remember { mutableStateOf<DpSize?>(null) }
@@ -119,12 +108,8 @@ fun MainScaffold(
           ),
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          icon?.apply {
-            invoke(passedContentPadding)
-          }
-          header?.apply {
-            invoke(passedContentPadding)
-          }
+          icon?.invoke(passedContentPadding)
+          header?.invoke(passedContentPadding)
         }
       }
       lazyListScope.content(passedContentPadding)
@@ -321,6 +306,7 @@ fun MainScaffold(
 
 @Composable
 fun TitleIconLayout(
+  modifier: Modifier = Modifier,
   title: String? = null,
   @SuppressLint("ModifierParameter") headerModifier: Modifier = Modifier,
   icon: Painter? = null,
@@ -333,6 +319,7 @@ fun TitleIconLayout(
   content: MainScaffoldScope.(contentPadding: Dp) -> Unit,
 ) {
   MainScaffold(
+    modifier = modifier,
     header = if(title != null) {
       {
         Text(

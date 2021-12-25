@@ -13,7 +13,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +20,7 @@ import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.*
 import sidev.app.android.sitracker.ui.layout.TitleIconLayout
+import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.Texts
 import sidev.app.android.sitracker.util.defaultViewModel
@@ -33,7 +33,7 @@ fun ScheduleDetailPage(
   scheduleId: Int,
   viewModel: ScheduleDetailViewModel = defaultViewModel(),
   navController: NavController = rememberNavController(),
-  onIconClick: ((taskId: Int) -> Unit)? = null,
+  //onIconClick: ((taskId: Int) -> Unit)? = null,
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500) // I don't know why but without delay, this side effect doesn't have effect.
@@ -62,24 +62,28 @@ fun ScheduleDetailPage(
       title = title,
       icon = painterResource(id = iconData.iconResId),
       iconModifier = Modifier.clickable {
-        onIconClick?.invoke(iconData.itemId)
+        Route.TaskDetailPage.go(
+          navController,
+          taskId = iconData.itemId,
+        )
+        //onIconClick?.invoke(iconData.itemId)
       },
     ) {
-      animatedHorizontalSliding(Direction.LEFT) {
+      animatedSliding(Direction.LEFT) {
         println("headerData = $headerData")
         HeaderPanel(data = headerData)
       }
 
       item { Spacer(Modifier.height(15.dp)) }
 
-      animatedHorizontalSliding(Direction.LEFT) {
+      animatedSliding(Direction.LEFT) {
         PreferredTimePanel(data = preferredTimes)
         Spacer(Modifier.height(15.dp))
       }
 
       item { Spacer(Modifier.height(15.dp)) }
 
-      animatedHorizontalSliding(Direction.LEFT) {
+      animatedSliding(Direction.LEFT) {
         PreferredDayPanel(data = preferredDays)
       }
     }

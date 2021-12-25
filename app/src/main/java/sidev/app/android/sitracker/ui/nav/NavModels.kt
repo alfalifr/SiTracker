@@ -15,6 +15,12 @@ data class ComposableNavData(
   val parentNavController: NavController?,
 )
 
+data class MainMenuItemNavData(
+  val navData: ComposableNavData,
+  val index: Int,
+  val prevIndex: Int?,
+)
+
 data class ScaffoldedComposableNavData(
   val navData: ComposableNavData,
   val routeData: ScaffoldedRouteData,

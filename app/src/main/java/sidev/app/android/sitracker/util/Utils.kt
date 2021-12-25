@@ -1,9 +1,11 @@
 package sidev.app.android.sitracker.util
 
 import android.util.Log
+import androidx.annotation.ColorInt
 import androidx.compose.foundation.layout.BoxWithConstraintsScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.colorspace.ColorSpace
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
@@ -188,9 +190,45 @@ fun getScoreColor(
 )
 
 //Source: https://stackoverflow.com/a/6540378
-fun getHexString(colorValue: Int) =
+fun getHexString(@ColorInt colorValue: Int) =
   "#" + Integer.toHexString(colorValue)
   //String.format("#%08X", (0xFFFFFFFF and colorValue))
+
+val Color.colorInt: Int
+  get() {
+    /**
+     * [componentIndex] 0 to 3 which respectively are R, G, B, A
+     */
+    fun getIntComp(
+      componentIndex: Int,
+      colorSpace: ColorSpace = this.colorSpace,
+    ): Int {
+      val min = colorSpace.getMinValue(componentIndex)
+      val max = colorSpace.getMaxValue(componentIndex)
+      val colorComp = when(componentIndex) {
+        0 -> red
+        1 -> green
+        2 -> blue
+        3 -> alpha
+        else -> throw IllegalArgumentException("No such `componentIndex` of '$componentIndex'")
+      }
+
+      val range = max - min
+      val rgbModeFloat = colorComp / range - min
+
+      val normalCompIndex = (componentIndex + 1) % 4
+      return (rgbModeFloat * 255f + .5f)
+        .toInt()
+        .shl(3 - normalCompIndex)
+    }
+
+    return android.graphics.Color.argb(
+      getIntComp(3),
+      getIntComp(0),
+      getIntComp(1),
+      getIntComp(2),
+    )
+  }
 
 
 fun <T, R> Iterator<T>.map(transform: (T) -> R): List<R> {

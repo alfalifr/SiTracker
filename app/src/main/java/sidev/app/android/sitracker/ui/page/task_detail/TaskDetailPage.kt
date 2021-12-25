@@ -5,8 +5,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -16,31 +14,25 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.*
 import sidev.app.android.sitracker.ui.layout.MainScaffold
-import sidev.app.android.sitracker.ui.layout.MainScaffoldScope
 import sidev.app.android.sitracker.ui.model.TaskItemDataUi
 import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.ui.theme.OppositeDark
 import sidev.app.android.sitracker.ui.theme.TransOppositeDarkColor3
 import sidev.app.android.sitracker.util.*
 import sidev.app.android.sitracker.util.model.Direction
-import kotlin.math.min
 
 @Composable
 fun TaskDetailPage(
@@ -68,7 +60,7 @@ fun TaskDetailPage(
   }
 
   MainScaffold {
-    animatedHorizontalSliding(Direction.LEFT) {
+    animatedSliding(Direction.LEFT) {
       Placeholder(
         key = taskPanelData,
         placeholder = {
@@ -95,7 +87,7 @@ fun TaskDetailPage(
 
     item { Spacer(Modifier.height(15.dp)) }
 
-    animatedHorizontalSliding(Direction.LEFT) {
+    animatedSliding(Direction.LEFT) {
       LargeSurface {
         LoadingPlaceholder(key = schedulePanelData) {
           ScheduleListPanel(
@@ -108,7 +100,7 @@ fun TaskDetailPage(
 
     item { Spacer(Modifier.height(15.dp)) }
 
-    animatedHorizontalSliding(Direction.LEFT) {
+    animatedSliding(Direction.LEFT) {
       PreferredDayPanel(data = preferredDays)
     }
   }

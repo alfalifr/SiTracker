@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalAnimationApi::class)
 package sidev.app.android.sitracker.ui.nav
 
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -12,12 +11,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
-import sidev.app.android.sitracker.ui.component.DefaultText
-import sidev.app.android.sitracker.ui.component.HorizontalSlidingTransition
 import sidev.app.android.sitracker.ui.layout.*
 import sidev.app.android.sitracker.ui.page.count_down.CountDownPage
 import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailPage
-import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
 import sidev.app.android.sitracker.ui.page.main_menu.calendar.CalendarPage
 import sidev.app.android.sitracker.ui.page.main_menu.home.HomePage
@@ -26,7 +22,6 @@ import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPage
 import sidev.app.android.sitracker.ui.page.schedule_list.ScheduleListPage
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.DefaultToast
-import sidev.app.android.sitracker.util.model.Direction
 
 sealed class Route(
   val route: String,
@@ -72,56 +67,57 @@ sealed class Route(
   object HomePage: MainMenuItemRoute(
     "HomePage",
     0,
-    "What to do?",
-    ignoreContentPadding = true,
+    //"What to do?",
+    //ignoreContentPadding = true,
     content = {
-      mainMenuItem {
-        val ctx = LocalContext.current
-        HomePage(
-          navController = it.navData.navController,
-          onItemClick = { scheduleId ->
-            println("HomePage onItemClick scheduleId = $scheduleId")
-            DefaultToast(ctx, "scheduleId = $scheduleId")
-            CountDownPage.go(
-              it.navData.parentNavController!!,
-              scheduleId,
-            )
-          }
-        )
-      }
+      //val ctx = LocalContext.current
+      HomePage(
+        navData = it,
+        //navController = it.parentNavController!!,
+        /*
+        onItemClick = { scheduleId ->
+          println("HomePage onItemClick scheduleId = $scheduleId")
+          DefaultToast(ctx, "scheduleId = $scheduleId")
+          CountDownPage.go(
+            it.parentNavController!!,
+            scheduleId,
+          )
+        }
+         */
+      )
     },
   )
   object TodaySchedulePage: MainMenuItemRoute(
     "TodaySchedulePage",
     1,
-    "Today's schedule",
+    //"Today's schedule",
     content = {
-      val mainScaffoldScope = this
-      mainMenuItem {
-        val ctx = LocalContext.current
-        TodaySchedulePage(
-          navController = it.navData.navController,
-          mainScaffoldScope = mainScaffoldScope,
-          onItemClick = { scheduleId ->
-            DefaultToast(ctx, "scheduleId = $scheduleId")
-            ScheduleDetailPage.go(
-              it.navData.parentNavController!!,
-              scheduleId = scheduleId,
-            )
-            //TODO("Implement `Routes.TodaySchedulePage.onItemClick`")
-          }
-        )
-      }
+      //val mainScaffoldScope = this
+
+      val ctx = LocalContext.current
+      TodaySchedulePage(
+        navData = it,
+        //navController = it.navController,
+        //mainScaffoldScope = mainScaffoldScope,
+        onItemClick = { scheduleId ->
+          DefaultToast(ctx, "scheduleId = $scheduleId")
+          ScheduleDetailPage.go(
+            it.navData.parentNavController!!,
+            scheduleId = scheduleId,
+          )
+          //TODO("Implement `Routes.TodaySchedulePage.onItemClick`")
+        }
+      )
+      //mainMenuItem {}
     },
   )
   object CalendarPage: MainMenuItemRoute(
     "CalendarPage",
     2,
-    "Your calendar",
+    //"Your calendar",
     content = {
-      mainMenuItem {
-        CalendarPage(navController = it.navData.navController)
-      }
+      CalendarPage(navData = it)
+      //mainMenuItem {}
     },
   )
 
@@ -189,12 +185,14 @@ sealed class Route(
         navController = it.navController,
         scheduleId = it.navBackStackEntry
           .arguments!!.getInt(Const.scheduleId),
+        /*
         onIconClick = { taskId ->
           TaskDetailPage.go(
             it.navController,
             taskId = taskId,
           )
         },
+         */
       )
     },
   ) {
@@ -237,7 +235,7 @@ sealed class Route(
 }
 
 
-
+/*
 sealed class ScaffoldedRoute(
   route: String,
   val data: ScaffoldedRouteData = ScaffoldedRouteData(),
@@ -277,9 +275,66 @@ sealed class ScaffoldedRoute(
   override val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit =
     { scaffoldBuilder(content, data, it) }
 }
+ */
 
 
+/**
+ * Route that specializes for Main Menu item.
+ * It has [index] that matters for sliding transition direction.
+ */
+sealed class MainMenuItemRoute(
+  route: String,
+  val index: Int,
+  //title: String,
+  //ignoreContentPadding: Boolean = false,
+  //content: MainMenuContentScope.(ScaffoldedComposableNavData) -> Unit,
+  private val content: @Composable NavGraphBuilder.(MainMenuItemNavData) -> Unit,
+  arguments: List<NamedNavArgument> = emptyList(),
+): Route(
+  route = route,
+  arguments = listOf(
+    navArgument(Const.mainMenuPrevItemIndex) {
+      type = NavType.IntType
+      defaultValue = -1
+    }
+  ) + arguments,
+  composable = {},
+) {
+  override val completeRoute: String
+    get() = "$route/{${Const.mainMenuPrevItemIndex}}"
 
+  override val composable: @Composable NavGraphBuilder.(ComposableNavData) -> Unit = { navData ->
+    val prevIndex = navData.navBackStackEntry.arguments!!.getInt(Const.mainMenuPrevItemIndex, -1)
+      .let { if(it >= 0) it else null }
+    println("MainMenuItemRoute route = $route prevIndex = $prevIndex index = $index")
+    content(
+      MainMenuItemNavData(
+        navData, index, prevIndex,
+      )
+    )
+  }
+
+  fun go(
+    navController: NavController,
+    prevIndex: Int,
+  ) {
+    navController.navigate("$route/$prevIndex") {
+      ///*
+      val start = navController.graph.startDestinationRoute
+      if(start != null) {
+        popUpTo(start) {
+          //saveState = true
+        }
+      }
+      // */
+      launchSingleTop = true
+      //restoreState = true
+    }
+  }
+}
+
+
+/*
 sealed class MainMenuItemRoute(
   route: String,
   val index: Int,
@@ -293,7 +348,7 @@ sealed class MainMenuItemRoute(
     title = title,
     ignoreContentPadding = ignoreContentPadding,
   ),
-  content = { this.toMainMenContentScope(index, it.navData).content(it) },
+  content = { toMainMenuContentScope(index, it.navData).content(it) },
   scaffoldBuilder = { _, _, _ -> },
   arguments = arguments,
 ) {
@@ -338,6 +393,7 @@ sealed class MainMenuItemRoute(
       }
     }
 
+  /*
   @Composable
   private fun AnimatedEnter(
     navComposableData: ComposableNavData,
@@ -365,4 +421,6 @@ sealed class MainMenuItemRoute(
       Direction.LEFT
     } else Direction.RIGHT
   }
+   */
 }
+ */

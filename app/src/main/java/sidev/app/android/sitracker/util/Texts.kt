@@ -1,6 +1,9 @@
 package sidev.app.android.sitracker.util
 
+import android.content.Context
 import android.text.format.Time
+import androidx.annotation.StringRes
+import sidev.app.android.sitracker.R
 import java.lang.Math.pow
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
@@ -107,4 +110,25 @@ object Texts {
   fun numStrLen(num: Number): Int =
     if(num.toDouble().compareTo(0) == 0) 1
     else log10(num.toFloat()).toInt() +1
+
+
+  fun getNamedFieldErrorMsg(
+    context: Context,
+    @StringRes errorMsgStrId: Int,
+    @StringRes fieldNameStrId: Int,
+  ): String {
+    val fieldNameStr = context.getString(fieldNameStrId)
+    return context.getString(errorMsgStrId, fieldNameStr)
+  }
+
+  fun getBlankFieldErrorMsg(
+    context: Context, @StringRes fieldNameStrId: Int,
+  ): String = getNamedFieldErrorMsg(
+    context, R.string.field_invalid_blank_message, fieldNameStrId,
+  )
+  fun getNonNumericFieldErrorMsg(
+    context: Context, @StringRes fieldNameStrId: Int,
+  ): String = getNamedFieldErrorMsg(
+    context, R.string.field_invalid_non_numeric_message, fieldNameStrId,
+  )
 }
