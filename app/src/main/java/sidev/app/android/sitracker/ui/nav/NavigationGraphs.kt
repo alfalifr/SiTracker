@@ -60,6 +60,20 @@ fun NavGraphComp(
 }
 
 
+@Composable
+fun AppNavGraph(
+  modifier: Modifier = Modifier,
+  navController: NavHostController = rememberNavController(),
+  parentNavController: NavController? = null,
+) {
+  NavGraphComp(
+    modifier = modifier,
+    navRoutes = Route.getAppRoutes(),
+    navController = navController,
+    parentNavController = parentNavController,
+    startDestination = Route.MainMenuPage.completeRoute,
+  )
+}
 
 @Composable
 fun MainMenuNavGraph(
@@ -77,16 +91,17 @@ fun MainMenuNavGraph(
 }
 
 @Composable
-fun AppNavGraph(
+fun AddEditTaskScheduleNavGraph(
   modifier: Modifier = Modifier,
   navController: NavHostController = rememberNavController(),
   parentNavController: NavController? = null,
 ) {
   NavGraphComp(
     modifier = modifier,
-    navRoutes = Route.getAppRoutes(),
+    navRoutes = Route.getAddEditTaskScheduleRoutes(),
     navController = navController,
     parentNavController = parentNavController,
-    startDestination = Route.MainMenuPage.completeRoute,
+    startDestination = Route.AddEditTaskInfoPage.completeRoute,
   )
 }
+

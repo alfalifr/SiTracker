@@ -11,7 +11,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.NamedNavArgument
 import androidx.navigation.compose.navArgument
+import androidx.navigation.navOptions
 import sidev.app.android.sitracker.ui.layout.*
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskSchedulePage
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.schedule_info.AddEditScheduleInfoPage
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info.AddEditTaskInfoPage
 import sidev.app.android.sitracker.ui.page.count_down.CountDownPage
 import sidev.app.android.sitracker.ui.page.task_detail.TaskDetailPage
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuPage
@@ -44,10 +48,15 @@ sealed class Route(
   // ===============
   companion object {
     fun getAppRoutes(): List<Route> = listOf(
-      MainMenuPage, ScheduleListPage, ScheduleDetailPage, TaskDetailPage, CountDownPage,
+      MainMenuPage, ScheduleListPage,
+      ScheduleDetailPage, TaskDetailPage, CountDownPage,
+      AddEditTaskSchedulePage,
     )
     fun getMainMenuContentRoutes(): List<MainMenuItemRoute> = listOf(
       HomePage, TodaySchedulePage, CalendarPage,
+    )
+    fun getAddEditTaskScheduleRoutes(): List<Route> = listOf(
+      AddEditTaskInfoPage, AddEditScheduleInfoPage
     )
   }
 
@@ -230,6 +239,100 @@ sealed class Route(
       scheduleId: Int,
     ) {
       navController.navigate("$route/$scheduleId")
+    }
+  }
+
+  object AddEditTaskSchedulePage: Route(
+    route = "AddEditTaskSchedulePage",
+    composable = {
+      AddEditTaskSchedulePage(
+        scheduleId = it.navBackStackEntry.arguments
+          ?.getInt(Const.scheduleId, -1)
+          ?.let { id ->
+            if(id >= 0) id else null
+          },
+        navController = it.navController,
+      )
+    },
+    arguments = listOf(
+      navArgument(Const.scheduleId) {
+        type = NavType.IntType
+        defaultValue = -1
+      }
+    ),
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.scheduleId}}"
+
+    fun go(
+      navController: NavController,
+      scheduleId: Int?
+    ) {
+      navController.navigate(
+        "$route/${scheduleId ?: -1}"
+      )
+    }
+  }
+  object AddEditTaskInfoPage: Route(
+    route = "AddEditTaskInfoPage",
+    composable = {
+      AddEditTaskInfoPage(
+        taskId = it.navBackStackEntry.arguments
+          ?.getInt(Const.taskId, -1)
+          ?.let { id ->
+            if(id >= 0) id else null
+          },
+        navController = it.navController,
+      )
+    },
+    arguments = listOf(
+      navArgument(Const.taskId) {
+        type = NavType.IntType
+        defaultValue = -1
+      }
+    ),
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.taskId}}"
+
+    fun go(
+      navController: NavController,
+      taskId: Int?,
+    ) {
+      navController.navigate(
+        "$route/${taskId ?: -1}"
+      )
+    }
+  }
+  object AddEditScheduleInfoPage: Route(
+    "AddEditScheduleInfoPage",
+    composable = {
+      AddEditScheduleInfoPage(
+        scheduleId = it.navBackStackEntry.arguments
+          ?.getInt(Const.scheduleId)
+          ?.let { id ->
+            if(id >= 0) id else null
+          },
+        navController = it.navController,
+      )
+    },
+    arguments = listOf(
+      navArgument(Const.scheduleId) {
+        type = NavType.IntType
+        defaultValue = -1
+      }
+    ),
+  ) {
+    override val completeRoute: String
+      get() = "$route/{${Const.scheduleId}}"
+
+    fun go(
+      navController: NavController,
+      scheduleId: Int?
+    ) {
+      navController.navigate(
+        "$route/${scheduleId ?: -1}"
+      )
     }
   }
 }
