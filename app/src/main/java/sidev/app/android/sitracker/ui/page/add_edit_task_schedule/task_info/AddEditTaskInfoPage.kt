@@ -12,15 +12,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import sidev.app.android.sitracker.core.domain.model.AppIcon
 import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.ui.component.AppOutlinedTextField
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
-import sidev.app.android.sitracker.ui.model.IconPicUiData
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
 import sidev.app.android.sitracker.ui.theme.OppositeDark
@@ -61,20 +58,24 @@ fun AddEditTaskInfoPage(
     ) {
       println("AddEditTaskInfoPage column redraw")
 
+      val blankStringMsg = "Length must be at least 3"
+
       AppOutlinedTextField(
         label = "Task Name *",
         value = viewModel.taskName,
-        validityFlow = viewModel.taskNameValid,
+        validity = viewModel.taskNameValid,
+        errorMessage = blankStringMsg,
       )
       AppOutlinedTextField(
         label = "Default Priority",
         value = viewModel.defaultPriority,
-        validityFlow = viewModel.defaultPriorityValid,
+        validity = viewModel.defaultPriorityValid,
+        errorMessage = blankStringMsg,
       )
       AppOutlinedTextField(
         label = "Description",
         value = viewModel.description,
-        validityFlow = viewModel.descriptionValid,
+        validity = viewModel.descriptionValid,
       )
       /*
       OutlinedTextField(
