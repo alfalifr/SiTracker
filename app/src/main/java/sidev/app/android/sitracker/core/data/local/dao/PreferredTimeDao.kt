@@ -2,6 +2,7 @@ package sidev.app.android.sitracker.core.data.local.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 import sidev.app.android.sitracker.core.data.local.model.PreferredTime
@@ -37,4 +38,9 @@ interface PreferredTimeDao {
     nowTimeInDay: Long,
     scheduleIds: Set<Int>,
   ): Flow<List<PreferredTime>>
+
+  @Insert
+  fun insertAll(
+    preferredTimes: List<PreferredTime>,
+  ): Flow<LongArray>
 }

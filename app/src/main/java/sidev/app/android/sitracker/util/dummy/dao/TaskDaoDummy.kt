@@ -34,7 +34,11 @@ object TaskDaoDummy: TaskDao {
       .take(limit)
   }
 
-  override fun insert(task: Task): Flow<Int> = flow { emit(1) }
+  override fun insert(task: Task): Flow<Int> = flow {
+    emit(
+      Dummy.addTask(task).toInt()
+    )
+  }
 
   override fun delete(task: Task): Flow<Int> = flow { emit(1) }
 

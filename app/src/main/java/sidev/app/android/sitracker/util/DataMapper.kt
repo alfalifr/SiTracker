@@ -10,6 +10,8 @@ import sidev.app.android.sitracker.ui.model.*
 import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPreferredDayItemUi
 import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPreferredDayUi
 import sidev.app.android.sitracker.ui.theme.GreenLight
+import java.text.SimpleDateFormat
+import java.util.*
 
 object DataMapper {
   @Composable
@@ -130,6 +132,12 @@ object DataMapper {
     return getPrefDayPanelData(prefDayNums, task.color)
   }
 
+  fun parseDateStr(dateStr: String): Date =
+    Formats.simpleDateFormat
+      .parse(dateStr)
+      ?: throw IllegalArgumentException(
+        "`dateStr` doesn't comply with format of '${Formats.dateFormat}'"
+      )
 /*
   fun ScheduleJoint.toTaskItemSchedule(
     iconUseCase: IconUseCase,

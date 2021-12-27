@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -482,8 +483,83 @@ fun <T> MutableStateFlow<T>.addSource(
   return this
 }
 
-fun <T> CoroutineScope.collect(flow: Flow<T>, collector: suspend (T) -> Unit) {
-  launch {
-    flow.collect(collector)
+fun <T> CoroutineScope.collect(
+  flow: Flow<T>,
+  collector: suspend (T) -> Unit,
+): Job = launch {
+  flow.collect(collector)
+}
+
+
+/**
+ * Accepted [str] format:
+ *  - HH:mm
+ *  - HH:mm:ss
+ *
+ * Note: ':' (as delimiter) can be replaced by '.'
+ */
+fun convertClockStringToMillis(str: String): Long {
+  if(str.isBlank()) {
+    throw IllegalArgumentException(
+      "`str` can't be blank"
+    )
   }
+
+  val delimiter = Texts.getClockStrDelimiter(str)
+    ?: throw IllegalArgumentException(
+      "`str` doesn't contain one of these allowed delimiter: ':', '.'"
+    )
+
+  val nums = str.split(delimiter)
+  if(nums.size == 1) {
+    throw IllegalArgumentException(
+      "Allowed clock format for `str` is 'HH:mm' or 'HH:mm:ss'"
+    )
+  }
+
+  val hour = nums[0].toLong()
+  val minute = nums[1].toLong()
+
+  //val second = nums.getOrNull(2)?.toInt() ?: 0
+
+  var millis = TimeUnit.HOURS.toMillis(hour) +
+    TimeUnit.MINUTES.toMillis(minute)
+
+  if(nums.size >= 2) {
+    val second = nums[2].toLong()
+    millis += TimeUnit.SECONDS.toMillis(second)
+  }
+
+  return millis
+}
+
+/**
+ * Breaks down [millis] into list of 4 longs:
+ *  - list[0] -> hour
+ *  - list[1] -> minute
+ *  - list[2] -> second
+ *  - list[3] -> millisecond
+ */
+fun breakTimeMillisToClockComponent(millis: Long): List<Long> {
+  val millisInSec = 1000L //TimeUnit.SECONDS.toMillis(1)
+  val millisInMin = millisInSec * 60 //TimeUnit.MINUTES.toMillis(1)
+  val millisInHour = millisInMin * 60 //TimeUnit.HOURS.toMillis(1)
+
+  var decreasingTime = millis
+
+  /**
+   * [millisInUnit] has domain of `millisInSec`, `millisInMin`, `millisInHour`
+   */
+  fun calculateUnit(millisInUnit: Long) = (decreasingTime / millisInUnit).also {
+    decreasingTime -= it * millisInUnit
+  }
+
+  val hour = calculateUnit(millisInHour) //(decreasingTime / millisInHour).also { decreasingTime -= it * millisInHour }
+  val min = calculateUnit(millisInMin) //(decreasingTime / millisInMin).also { decreasingTime -= it * millisInMin }
+  val sec = calculateUnit(millisInSec) //decreasingTime / millisInSec.also { decreasingTime -= it * millisInSec }
+
+  //val secStr = if(withSecond) ":" +lenSpecifiedNumStr(sec, 2) else ""
+  return listOf(
+    hour, min, sec, decreasingTime
+  )
 }

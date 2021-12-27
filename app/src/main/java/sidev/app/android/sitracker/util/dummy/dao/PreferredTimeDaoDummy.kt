@@ -7,6 +7,12 @@ import sidev.app.android.sitracker.core.data.local.model.PreferredTime
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object PreferredTimeDaoDummy: PreferredTimeDao {
+  override fun insertAll(preferredTimes: List<PreferredTime>): Flow<LongArray> = flow {
+    emit(
+      Dummy.addPreferredTimes(preferredTimes)
+    )
+  }
+
   override fun getTimeBySchedule(scheduleId: Int): Flow<List<PreferredTime>> = flow {
     emit(
       Dummy.preferredTimes.filter { it.scheduleId == scheduleId }

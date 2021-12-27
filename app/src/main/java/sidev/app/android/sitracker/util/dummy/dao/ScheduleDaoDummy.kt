@@ -32,7 +32,11 @@ object ScheduleDaoDummy: ScheduleDao {
     )
   }
 
-  override fun insert(schedule: Schedule): Flow<Int> = flow { emit(1) }
+  override fun insert(schedule: Schedule): Flow<Int> = flow {
+    emit(
+      Dummy.addSchedule(schedule).toInt()
+    )
+  }
 
   override fun update(newSchedule: Schedule) {}
 

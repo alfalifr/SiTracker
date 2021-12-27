@@ -5,6 +5,7 @@ import sidev.app.android.sitracker.core.domain.usecase.*
 interface UseCaseDi {
   fun queryUseCase(): QueryUseCase
   fun queryJointUseCase(): QueryJointUseCase
+  fun dataWriteUseCase(): DataWriteUseCase
   fun iconUseCase(): IconUseCase
   fun recommendationUseCase(): RecommendationUseCase
   fun scheduleItemUseCase(): ScheduleItemUseCase
@@ -28,6 +29,17 @@ class UseCaseDiImpl(private val daoDi: DaoDi): UseCaseDi {
   )
 
   override fun queryJointUseCase(): QueryJointUseCase = QueryJointUseCaseImpl()
+
+  override fun dataWriteUseCase(): DataWriteUseCase = daoDi.run {
+    DataWriteUseCaseImpl(
+      taskDao = taskDao(),
+      scheduleDao = scheduleDao(),
+      preferredTimeDao = preferredTimeDao(),
+      preferredDayDao = preferredDayDao(),
+      activeDateDao = activeDateDao(),
+    )
+  }
+
   override fun iconUseCase(): IconUseCase = IconUseCaseImpl()
   override fun recommendationUseCase(): RecommendationUseCase = RecommendationUseCaseImpl()
   override fun scheduleItemUseCase(): ScheduleItemUseCase = ScheduleItemUseCaseImpl(

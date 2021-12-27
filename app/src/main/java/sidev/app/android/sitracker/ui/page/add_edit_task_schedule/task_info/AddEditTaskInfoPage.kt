@@ -2,9 +2,10 @@ package sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -12,13 +13,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import sidev.app.android.sitracker.ui.component.AppOutlinedTextField
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.util.defaultViewModel
 
 @Composable
 fun AddEditTaskInfoPage(
   taskId: Int?,
   navController: NavController = rememberNavController(),
-  viewModel: AddEditTaskInfoViewModel = defaultViewModel(),
+  viewModel: AddEditTaskScheduleViewModel = defaultViewModel(),
 ) {
 
   Column(
@@ -36,27 +39,58 @@ fun AddEditTaskInfoPage(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      TextField(
+      println("AddEditTaskInfoPage column redraw")
+
+      AppOutlinedTextField(
+        label = "Task Name *",
+        value = viewModel.taskName,
+        validityFlow = viewModel.taskNameValid,
+      )
+      AppOutlinedTextField(
+        label = "Default Priority",
+        value = viewModel.defaultPriority,
+        validityFlow = viewModel.defaultPriorityValid,
+      )
+      AppOutlinedTextField(
+        label = "Description",
+        value = viewModel.description,
+        validityFlow = viewModel.descriptionValid,
+      )
+      /*
+      OutlinedTextField(
         label = {
            Text("Task Name *")
         },
-        value = "",
-        onValueChange = { s: String -> },
+        value = viewModel.taskName
+          .collectAsState("").value ?: "",
+        onValueChange = {
+          println("TaskName onChange it = $it")
+          viewModel.taskName.value = it
+        },
+        isError = viewModel.taskNameValid
+          .collectAsState(initial = false)
+          .value
+          .not()
       )
-      TextField(
+      OutlinedTextField(
         label = {
            Text("Default Priority")
         },
-        value = "",
-        onValueChange = { s: String -> },
+        value = viewModel.defaultPriority.value ?: "",
+        onValueChange = {
+          viewModel.defaultPriority.value = it
+        },
       )
-      TextField(
+      OutlinedTextField(
         label = {
            Text("Description")
         },
-        value = "",
-        onValueChange = { s: String -> },
+        value = viewModel.description.value ?: "",
+        onValueChange = {
+          viewModel.description.value = it
+        },
       )
+       */
     }
   }
 }

@@ -35,7 +35,7 @@ object Texts {
   fun formatTimeToShortest(time: Long): String = time.toString()
 
   fun formatTimeToDate(time: Long): String {
-    val format = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val format = Formats.simpleDateFormat
     return format.format(Date(time))
   }
 
@@ -47,21 +47,13 @@ object Texts {
     time: Long,
     withSecond: Boolean = true,
   ): String {
-    val millisInSec = 1000L //TimeUnit.SECONDS.toMillis(1)
-    val millisInMin = millisInSec * 60 //TimeUnit.MINUTES.toMillis(1)
-    val millisInHour = millisInMin * 60 //TimeUnit.HOURS.toMillis(1)
+    val units = breakTimeMillisToClockComponent(time)
 
-    var decreasingTime = time
-    val hour = (decreasingTime / millisInHour).also { decreasingTime -= it * millisInHour }
-    val min = (decreasingTime / millisInMin).also { decreasingTime -= it * millisInMin }
-
-    //val secStr = if(withSecond) ":" +lenSpecifiedNumStr(sec, 2) else ""
-
-    var str = "${lenSpecifiedNumStr(hour, 2)}:${lenSpecifiedNumStr(min, 2)}"
+    var str = "${lenSpecifiedNumStr(units[0], 2)}:${lenSpecifiedNumStr(units[1], 2)}"
     if(withSecond) {
-      val sec = decreasingTime / millisInSec
-      str += ":${lenSpecifiedNumStr(sec, 2)}"
+      str += ":${lenSpecifiedNumStr(units[2], 2)}"
     }
+
     return str
   }
 
@@ -131,4 +123,13 @@ object Texts {
   ): String = getNamedFieldErrorMsg(
     context, R.string.field_invalid_non_numeric_message, fieldNameStrId,
   )
+
+  fun getClockStrDelimiter(
+    clockStr: String,
+    elseBlock: (() -> Char?)? = null
+  ): Char? = when {
+    ':' in clockStr -> ':'
+    '.' in clockStr -> '.'
+    else -> elseBlock?.invoke()
+  }
 }

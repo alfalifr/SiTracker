@@ -7,6 +7,12 @@ import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object ActiveDateDaoDummy: ActiveDateDao {
+  override fun insertAll(activeDates: List<ActiveDate>): Flow<LongArray> = flow {
+    emit(
+      Dummy.addActiveDates(activeDates)
+    )
+  }
+
   override fun getRecentByScheduleId(scheduleId: Int): Flow<List<ActiveDate>> = flow {
     emit(
       Dummy.activeDates

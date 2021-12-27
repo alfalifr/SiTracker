@@ -84,7 +84,16 @@ open class VmDiImpl(
     coroutineScope = coroutineScope,
   )
 
-  override fun addEditTaskScheduleViewModel(): AddEditTaskScheduleViewModel = AddEditTaskScheduleViewModel()
+  override fun addEditTaskScheduleViewModel(): AddEditTaskScheduleViewModel = useCaseDi.run {
+    AddEditTaskScheduleViewModel(
+      formValidationUseCase = formValidationUseCase(),
+      iconUseCase = iconUseCase(),
+      queryUseCase = queryUseCase(),
+      queryJointUseCase = queryJointUseCase(),
+      dataWriteUseCase = dataWriteUseCase(),
+      coroutineScope = coroutineScope,
+    )
+  }
 
   override fun addEditTaskInfoViewModel(): AddEditTaskInfoViewModel = AddEditTaskInfoViewModel(
     formValidationUseCase = useCaseDi.formValidationUseCase(),

@@ -41,6 +41,9 @@ interface TaskDao {
     limit: Int = 10
   ): Flow<List<Task>>
 
+  /**
+   * Returns row id of newly inserted data (starts at 1).
+   */
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   fun insert(task: Task): Flow<Int>
 

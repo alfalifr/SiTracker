@@ -80,6 +80,11 @@ object ScheduleProgressDaoDummy: ScheduleProgressDao {
    * Returns the affected row count.
    */
   override fun updateProgress(progress: ScheduleProgressUpdate): Flow<Int> = flow {
+    emit(
+      if(Dummy.updateProgress(progress)) 1
+      else 0
+    )
+    /*
     val i = Dummy.scheduleProgress.indexOfFirst { it.id == progress.id }
     var result = 0
     if(i >= 0) {
@@ -88,6 +93,7 @@ object ScheduleProgressDaoDummy: ScheduleProgressDao {
     }
     println("ScheduleProgressDao i = $i result = $result progress = ${progress.progress}")
     emit(result)
+     */
   }
 
   /**

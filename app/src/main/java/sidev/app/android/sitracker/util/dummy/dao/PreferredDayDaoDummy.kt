@@ -8,6 +8,12 @@ import sidev.app.android.sitracker.util.Formats
 import sidev.app.android.sitracker.util.dummy.Dummy
 
 object PreferredDayDaoDummy: PreferredDayDao {
+  override fun insertAll(preferredDays: List<PreferredDay>): Flow<LongArray> = flow {
+    emit(
+      Dummy.addPreferredDays(preferredDays)
+    )
+  }
+
   override fun getDayBySchedule(scheduleId: Int): Flow<List<PreferredDay>> = flow {
     emit(
       Dummy.preferredDay

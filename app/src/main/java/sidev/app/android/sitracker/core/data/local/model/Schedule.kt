@@ -28,8 +28,8 @@ import androidx.room.PrimaryKey
   ],
 )
 data class Schedule(
-  @PrimaryKey
-  val id: Int,
+  @PrimaryKey(autoGenerate = true)
+  val id: Int = 0,
   val label: String,
   val taskId: Int,
   val progressTypeId: Int,

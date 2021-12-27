@@ -1,9 +1,7 @@
 package sidev.app.android.sitracker.core.domain.usecase
 
-import android.content.Context
-import androidx.annotation.StringRes
 import androidx.core.text.isDigitsOnly
-import sidev.app.android.sitracker.R
+import sidev.app.android.sitracker.util.Texts
 
 
 /**
@@ -48,10 +46,14 @@ interface FormValidationUseCase {
   fun validateStrLen(
     input: String?,
     min: Int? = 0,
-    max: Int = input?.length ?: Int.MAX_VALUE,
+    max: Int = Int.MAX_VALUE,
   ): Boolean
 
   fun validateNumeric(
+    input: String?,
+  ): Boolean
+
+  fun validateInt(
     input: String?,
   ): Boolean
 
@@ -80,10 +82,14 @@ object FormValidationUseCaseImpl: FormValidationUseCase {
       throw IllegalArgumentException("`min` can't be more than `max`")
     }
 
-    return input!!.length in min!!..max
+    return input!!.trim().length in min!!..max
   }
 
   override fun validateNumeric(input: String?): Boolean = input?.run {
+    isNotBlank() && toDoubleOrNull() != null
+  } ?: false
+
+  override fun validateInt(input: String?): Boolean = input?.run {
     isNotBlank() && isDigitsOnly()
   } ?: false
 
@@ -92,7 +98,9 @@ object FormValidationUseCaseImpl: FormValidationUseCase {
       return false
     }
 
-    val nums = input.split(":")
+    val delimiter = Texts.getClockStrDelimiter(input)
+      ?: return false
+    val nums = input.split(delimiter)
     if(nums.size == 1) {
       return false
     }

@@ -112,6 +112,13 @@ interface QueryUseCase {
   ): Flow<ProgressQueryResult>
 
   /**
+   * Query simple [Task] by [taskId]
+   */
+  fun queryTask(
+    taskId: Int,
+  ): Flow<Task?>
+
+  /**
    * Query every data related to a [Schedule] with [scheduleId].
    */
   fun queryScheduleDetail(
@@ -133,6 +140,10 @@ interface QueryUseCase {
   fun queryTaskScheduleList(
     taskId: Int,
   ): Flow<ProgressQueryResult>
+
+
+  fun queryAllProgressTypes(): Flow<List<ProgressType>>
+  fun queryAllIntervalTypes(): Flow<List<IntervalType>>
 }
 
 
@@ -414,6 +425,11 @@ class QueryUseCaseImpl(
   }
 
   /**
+   * Query simple [Task] by [taskId]
+   */
+  override fun queryTask(taskId: Int): Flow<Task?> = taskDao.getById(taskId)
+
+  /**
    * Query every data related to a [Schedule] with [scheduleId].
    */
   override fun queryScheduleDetail(scheduleId: Int): Flow<ProgressQueryResult> {
@@ -568,6 +584,9 @@ class QueryUseCaseImpl(
       )
     }
   }
+
+  override fun queryAllProgressTypes(): Flow<List<ProgressType>> = progressTypeDao.getAll()
+  override fun queryAllIntervalTypes(): Flow<List<IntervalType>> = intervalTypeDao.getAll()
 
   private fun calculateNecessaryRandomScheduleCount(prevScheduleCount: Int): Int = when {
     prevScheduleCount >= 8 -> 0 //max item 10
