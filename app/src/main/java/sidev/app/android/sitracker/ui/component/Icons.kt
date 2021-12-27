@@ -218,7 +218,7 @@ private fun IconItem_preview() {
       progress = progress,
       progressStrokeWidth = progressWidth,
     )
-
+///*
     IconProgressionPic(
       modifier = modifier,
       icon = rememberVectorPainter(Icons.Rounded.Star),
@@ -240,6 +240,19 @@ private fun IconItem_preview() {
       progress = progress,
       progressStrokeWidth = progressWidth,
     )
+// */
+/*
+    IconProgressionPic(
+      modifier = Modifier.size(2780.dp), //modifier,
+      icon = rememberVectorPainter(Icons.Rounded.Star), //ColorPainter(Color.Blue),
+      //iconSize = iconSize,
+      mainColor = Color.Green,
+      name = "Star boy",
+      iconMode = IconColorMode.COLORED_ICON,
+      //progress = progress,
+      progressStrokeWidth = progressWidth,
+    )
+ */
   }
 }
 

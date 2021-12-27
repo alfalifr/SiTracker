@@ -1,20 +1,31 @@
 package sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import sidev.app.android.sitracker.core.domain.model.AppIcon
+import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.ui.component.AppOutlinedTextField
+import sidev.app.android.sitracker.ui.component.IconProgressionPic
+import sidev.app.android.sitracker.ui.model.IconPicUiData
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
+import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
+import sidev.app.android.sitracker.ui.theme.OppositeDark
+import sidev.app.android.sitracker.util.Color
+import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.defaultViewModel
 
 @Composable
@@ -34,6 +45,15 @@ fun AddEditTaskInfoPage(
       style = MaterialTheme.typography.h6,
       fontWeight = FontWeight.Bold,
     )
+
+    val iconData = viewModel.taskIconData
+      .collectAsState(initial = null)
+      .value
+    val taskName = viewModel.taskName
+      .collectAsState(initial = null)
+      .value
+    IconDisplay(iconData, taskName)
+
     Column(
       Modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -92,5 +112,84 @@ fun AddEditTaskInfoPage(
       )
        */
     }
+  }
+}
+
+@Composable
+private fun IconDisplay(
+  iconData: IconPicData?,
+  taskName: String?,
+) {
+  Row(
+    horizontalArrangement = Arrangement.spacedBy(15.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    IconProgressionPic(
+      icon = iconData?.resId?.let { painterResource(id = it) }
+        ?: ColorPainter(Color.Transparent),
+      mainColor = iconData?.color?.let { Color(it) }
+        ?: OppositeDark,
+      name = taskName,
+      modifier = Modifier.size(Const.iconSizeDp * 1.9f),
+    )
+    Column(
+      verticalArrangement = Arrangement.spacedBy(10.dp),
+      horizontalAlignment = Alignment.Start,
+    ) {
+      IconItemField(
+        text = "Icon",
+        cardColor = OppositeDark,
+        contentDescription = null,
+        iconResId = iconData?.resId,
+      )
+      IconItemField(
+        text = "Color",
+        cardColor = iconData?.color?.let { Color(it) }
+          ?: OppositeDark,
+        contentDescription = null,
+        cardStrokeColor = OppositeDark,
+      )
+    }
+  }
+}
+
+@Composable
+private fun IconItemField(
+  text: String,
+  cardColor: Color,
+  contentDescription: String?,
+  cardStrokeColor: Color? = null,
+  iconColor: Color? = null,
+  @DrawableRes iconResId: Int? = null,
+) {
+  Row(
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    val cardSize = 30.dp
+    Card(
+      shape = RoundedCornerShape(10.dp),
+      modifier = Modifier.size(cardSize),
+      backgroundColor = cardColor,
+      border = cardStrokeColor?.let {
+        BorderStroke(
+          width = 10.dp,
+          color = it
+        )
+      },
+    ) {
+      if(iconResId != null) {
+        Icon(
+          painter = painterResource(id = iconResId),
+          contentDescription = contentDescription,
+          tint = iconColor ?: OppositeBrightnessColor(cardColor),
+          modifier = Modifier.size(cardSize - 10.dp),
+        )
+      }
+    }
+    Spacer(Modifier.width(10.dp))
+    Text(
+      text,
+      fontWeight = FontWeight.Bold,
+    )
   }
 }

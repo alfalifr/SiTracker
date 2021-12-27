@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import sidev.app.android.sitracker.core.data.local.model.*
 import sidev.app.android.sitracker.core.domain.model.AppIcon
+import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.core.domain.usecase.*
 import sidev.app.android.sitracker.util.*
 import java.util.concurrent.TimeUnit
@@ -70,6 +71,18 @@ Task Page Section - Edit or add data related
   private val _taskColorStr = taskColorStr.filterNotNull()
   val taskColorValid: Flow<Boolean> = taskColorStr.map {
     it != null
+  }
+
+  val taskIconData: Flow<IconPicData?> = combine(selectedIcon, taskColorStr) {
+      icon, color ->
+    if(icon == null || color == null) null
+    else {
+      IconPicData(
+        resId = icon.resId,
+        color = color,
+        desc = null,
+      )
+    }
   }
 
   val taskName = MutableStateFlow<String?>(null)

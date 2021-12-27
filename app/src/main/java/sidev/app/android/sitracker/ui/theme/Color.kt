@@ -167,7 +167,6 @@ fun TransFollowingDarkColor5(isDark: Boolean): Color =
 
 
 //*
-//TODO: make `OppositeBrightnessColor` fun
 fun OppositeBrightnessColor(color: Color): Color {
   /*
   val sum = with(color) {
