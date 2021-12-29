@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.Const.textIconSizeStd
 import sidev.app.android.sitracker.util.SuppressLiteral
@@ -144,7 +145,7 @@ private fun IconBackground(
 fun IconProgression(
   mainColor: Color,
   modifier: Modifier = Modifier.size(Const.iconSizeDp),
-  monoColor: Color = Color.White,
+  monoColor: Color = OppositeBrightnessColor(mainColor),
   contentPadding: PaddingValues? = null,
   iconMode: IconColorMode = IconColorMode.COLORED_BG,
   bgShape: Shape = CircleShape,
@@ -269,7 +270,7 @@ fun IconProgressionPic(
   icon: Painter,
   mainColor: Color,
   modifier: Modifier = Modifier.size(Const.iconSizeDp),
-  monoColor: Color = Color.White,
+  monoColor: Color = OppositeBrightnessColor(mainColor),
   name: String?,
   iconPadding: PaddingValues? = null,
   iconMode: IconColorMode = IconColorMode.COLORED_BG,
@@ -348,7 +349,7 @@ fun IconProgressionText(
   text: String,
   mainColor: Color,
   modifier: Modifier = Modifier.size(Const.iconSizeDp),
-  monoColor: Color = Color.White,
+  monoColor: Color = OppositeBrightnessColor(mainColor),
   textSize: TextUnit = TextUnit.Unspecified,
   textPadding: PaddingValues? = null,
   iconMode: IconColorMode = IconColorMode.COLORED_BG,
@@ -387,7 +388,7 @@ fun IconProgressionAdapt(
   mainColor: Color,
   modifier: Modifier = Modifier.size(Const.iconSizeDp),
   textSize: TextUnit = TextUnit.Unspecified,
-  monoColor: Color = Color.White,
+  monoColor: Color = OppositeBrightnessColor(mainColor),
   contentPadding: PaddingValues? = null,
   iconMode: IconColorMode = IconColorMode.COLORED_BG,
   bgShape: Shape = CircleShape,

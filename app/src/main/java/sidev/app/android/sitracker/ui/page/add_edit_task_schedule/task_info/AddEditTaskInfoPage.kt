@@ -2,6 +2,8 @@ package sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -15,8 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.ui.component.AppOutlinedTextField
+import sidev.app.android.sitracker.ui.component.IconColorMode
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
@@ -25,12 +29,17 @@ import sidev.app.android.sitracker.util.Color
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.defaultViewModel
 
+@ExperimentalFoundationApi
 @Composable
 fun AddEditTaskInfoPage(
   taskId: Int?,
   navController: NavController = rememberNavController(),
   viewModel: AddEditTaskScheduleViewModel = defaultViewModel(),
 ) {
+  LaunchedEffect(key1 = Unit) {
+    delay(500)
+    viewModel.randomTaskColor()
+  }
 
   Column(
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -49,7 +58,32 @@ fun AddEditTaskInfoPage(
     val taskName = viewModel.taskName
       .collectAsState(initial = null)
       .value
-    IconDisplay(iconData, taskName)
+
+    var isIconDialogShown by remember { mutableStateOf(false) }
+    println("isIconDialogShown = $isIconDialogShown iconData = $iconData")
+
+    if(isIconDialogShown) {
+      val allIcon = viewModel.allAvailableIcons
+        .collectAsState(initial = null)
+        .value
+      IconSelectionDialog(
+        icons = allIcon,
+        onItemSelected = {
+          viewModel.selectedIcon.value = it
+          isIconDialogShown = false
+        },
+        onDismiss = {
+          isIconDialogShown = false
+        },
+      )
+    }
+
+    IconDisplay(
+      iconData, taskName,
+      onIconItemClick = {
+        isIconDialogShown = true
+      },
+    )
 
     Column(
       Modifier.fillMaxWidth(),
@@ -120,6 +154,8 @@ fun AddEditTaskInfoPage(
 private fun IconDisplay(
   iconData: IconPicData?,
   taskName: String?,
+  onIconItemClick: (() -> Unit)? = null,
+  onColorItemClick: (() -> Unit)? = null,
 ) {
   Row(
     horizontalArrangement = Arrangement.spacedBy(15.dp),
@@ -131,7 +167,13 @@ private fun IconDisplay(
       mainColor = iconData?.color?.let { Color(it) }
         ?: OppositeDark,
       name = taskName,
-      modifier = Modifier.size(Const.iconSizeDp * 1.9f),
+      iconMode = IconColorMode.COLORED_BG,
+      modifier = Modifier
+        .size(Const.iconSizeDp * 1.9f).let {
+          if(onIconItemClick != null) it.clickable {
+            onIconItemClick()
+          } else it
+        },
     )
     Column(
       verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -142,6 +184,7 @@ private fun IconDisplay(
         cardColor = OppositeDark,
         contentDescription = null,
         iconResId = iconData?.resId,
+        onClick = onIconItemClick,
       )
       IconItemField(
         text = "Color",
@@ -149,6 +192,7 @@ private fun IconDisplay(
           ?: OppositeDark,
         contentDescription = null,
         cardStrokeColor = OppositeDark,
+        onClick = onColorItemClick,
       )
     }
   }
@@ -162,9 +206,14 @@ private fun IconItemField(
   cardStrokeColor: Color? = null,
   iconColor: Color? = null,
   @DrawableRes iconResId: Int? = null,
+  onClick: (() -> Unit)? = null,
 ) {
   Row(
     verticalAlignment = Alignment.CenterVertically,
+    modifier = Modifier.let {
+      if(onClick != null) it.clickable(onClick = onClick)
+      else it
+    },
   ) {
     val cardSize = 30.dp
     Card(
@@ -173,7 +222,7 @@ private fun IconItemField(
       backgroundColor = cardColor,
       border = cardStrokeColor?.let {
         BorderStroke(
-          width = 10.dp,
+          width = 3.dp,
           color = it
         )
       },
@@ -183,7 +232,9 @@ private fun IconItemField(
           painter = painterResource(id = iconResId),
           contentDescription = contentDescription,
           tint = iconColor ?: OppositeBrightnessColor(cardColor),
-          modifier = Modifier.size(cardSize - 10.dp),
+          modifier = Modifier
+            .size(cardSize - 20.dp)
+            .padding(5.dp),
         )
       }
     }

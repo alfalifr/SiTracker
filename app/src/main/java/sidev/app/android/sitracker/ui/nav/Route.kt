@@ -1,7 +1,11 @@
-@file:OptIn(ExperimentalAnimationApi::class)
+@file:OptIn(
+  ExperimentalAnimationApi::class,
+  ExperimentalFoundationApi::class,
+)
 package sidev.app.android.sitracker.ui.nav
 
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
@@ -273,6 +277,7 @@ sealed class Route(
       )
     }
   }
+  //@ExperimentalFoundationApi
   object AddEditTaskInfoPage: Route(
     route = "AddEditTaskInfoPage",
     composable = {

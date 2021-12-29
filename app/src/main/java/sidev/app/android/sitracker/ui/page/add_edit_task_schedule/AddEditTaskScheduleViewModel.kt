@@ -232,6 +232,15 @@ Task Page Section - Read data related
     }
   }
 
+  fun randomTaskColor() {
+    fun randomValue(): Int = (0..255).random()
+    taskColor.value = Color(
+      red = randomValue(),
+      green = randomValue(),
+      blue = randomValue(),
+    )
+  }
+
 /*
   init {
     scope.apply {
