@@ -20,6 +20,8 @@ buildscript {
     java_faker_version = "1.0.2"
 
     mockito_version = "4.0.0"
+
+    godaddy_color_picker_version = "0.2.1"
   }
   repositories {
     google()

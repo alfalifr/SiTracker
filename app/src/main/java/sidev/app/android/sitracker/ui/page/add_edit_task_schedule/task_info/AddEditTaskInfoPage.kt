@@ -1,5 +1,9 @@
+@file:OptIn(
+  ExperimentalGraphicsApi::class,
+)
 package sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info
 
+import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,6 +15,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ExperimentalGraphicsApi
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +43,7 @@ fun AddEditTaskInfoPage(
 ) {
   LaunchedEffect(key1 = Unit) {
     delay(500)
+    //println("AddEditTaskInfoPage LaunchedEffect")
     viewModel.randomTaskColor()
   }
 
@@ -60,6 +66,7 @@ fun AddEditTaskInfoPage(
       .value
 
     var isIconDialogShown by remember { mutableStateOf(false) }
+    var isColorPickerDialogShown by remember { mutableStateOf(false) }
     println("isIconDialogShown = $isIconDialogShown iconData = $iconData")
 
     if(isIconDialogShown) {
@@ -67,7 +74,9 @@ fun AddEditTaskInfoPage(
         .collectAsState(initial = null)
         .value
       IconSelectionDialog(
+        modifier = Modifier.fillMaxSize(.8f),
         icons = allIcon,
+        initIcon = viewModel.selectedIcon.collectAsState().value,
         onItemSelected = {
           viewModel.selectedIcon.value = it
           isIconDialogShown = false
@@ -77,11 +86,27 @@ fun AddEditTaskInfoPage(
         },
       )
     }
+    if(isColorPickerDialogShown) {
+      //@SuppressLint("StateFlowValueCalledInComposition")
+      ColorPickerDialog(
+        modifier = Modifier.fillMaxSize(.8f),
+        initColor = viewModel.taskColor.collectAsState().value,
+        onDismiss = {
+          isColorPickerDialogShown = false
+        },
+        onColorSelected = {
+          viewModel.taskColor.value = it
+        },
+      )
+    }
 
     IconDisplay(
       iconData, taskName,
       onIconItemClick = {
         isIconDialogShown = true
+      },
+      onColorItemClick = {
+        isColorPickerDialogShown = true
       },
     )
 
@@ -90,21 +115,19 @@ fun AddEditTaskInfoPage(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
-      println("AddEditTaskInfoPage column redraw")
-
-      val blankStringMsg = "Length must be at least 3"
+      //println("AddEditTaskInfoPage column redraw")
 
       AppOutlinedTextField(
         label = "Task Name *",
         value = viewModel.taskName,
         validity = viewModel.taskNameValid,
-        errorMessage = blankStringMsg,
+        errorMessage = "Length must be at least 3",
       )
       AppOutlinedTextField(
         label = "Default Priority",
         value = viewModel.defaultPriority,
         validity = viewModel.defaultPriorityValid,
-        errorMessage = blankStringMsg,
+        errorMessage = "Must be integer",
       )
       AppOutlinedTextField(
         label = "Description",

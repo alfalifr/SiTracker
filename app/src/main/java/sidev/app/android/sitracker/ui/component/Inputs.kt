@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.drop
 
 
 /**
@@ -28,7 +29,9 @@ fun AppOutlinedTextField(
 ) {
   Column {
     val isValid = validity?.let {
-      it.collectAsState(initial = false).value
+      it.drop(1)
+        .collectAsState(initial = true)
+        .value
     } ?: true
 
     OutlinedTextField(

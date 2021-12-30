@@ -91,4 +91,6 @@ dependencies {
 
   // https://mvnrepository.com/artifact/org.mockito/mockito-core
   testImplementation "org.mockito:mockito-core:$mockito_version"
+
+  implementation "com.godaddy.android.colorpicker:compose-color-picker:$godaddy_color_picker_version"
 }

@@ -27,17 +27,19 @@ import sidev.app.android.sitracker.util.Const
 @Composable
 fun IconSelectionDialog(
   icons: List<AppIcon>?,
+  modifier: Modifier = Modifier,
+  initIcon: AppIcon? = null,
   color: Color = OppositeDark,
   onItemSelected: ((AppIcon) -> Unit)? = null,
   onDismiss: () -> Unit,
 ) {
   AlertDialog(
-    modifier = Modifier.fillMaxSize(.75f),
+    modifier = modifier,
     onDismissRequest = onDismiss,
     title = {
       Text(
         "Pick an Icon",
-        style = MaterialTheme.typography.h5,
+        style = MaterialTheme.typography.h6,
         fontWeight = FontWeight.Bold,
         //color = MaterialTheme.,
       )
@@ -52,16 +54,19 @@ fun IconSelectionDialog(
             .padding(top = 30.dp),
         ) {
           items(icons.size) { i ->
+            val icon = icons[i]
             IconProgressionPic(
-              icon = painterResource(id = icons[i].resId),
+              icon = painterResource(id = icon.resId),
               mainColor = color,
               name = null, //TODO: localize string
               iconMode = IconColorMode.COLORED_BG,
+              progress = if(icon.id == initIcon?.id) 1f else 0f,
+              progressStrokeColor = MaterialTheme.colors.primary,
               modifier = Modifier
                 .size(Const.iconSizeDp)
                 .let {
                   if(onItemSelected != null) it.clickable {
-                    onItemSelected(icons[i])
+                    onItemSelected(icon)
                   } else it
                 }
             )

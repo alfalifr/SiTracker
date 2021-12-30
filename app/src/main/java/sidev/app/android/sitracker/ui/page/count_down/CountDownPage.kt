@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.ui.component.*
 import sidev.app.android.sitracker.ui.theme.FollowingDark
+import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
 import sidev.app.android.sitracker.util.Color
 import sidev.app.android.sitracker.util.Texts
 import sidev.app.android.sitracker.util.defaultViewModel
@@ -49,6 +50,9 @@ fun CountDownPage(
         mainColor = Color(it.color),
         name = it.desc,
         progress = progress,
+        progressStrokeColor = OppositeBrightnessColor(
+          MaterialTheme.colors.background
+        ),
         modifier = Modifier.size(60.dp) //TODO: Set responsiveness
       )
     }

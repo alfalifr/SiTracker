@@ -16,6 +16,7 @@ enum class AppIcons(
   Coding(0, R.drawable.ic_coding),
   Clip(1, R.drawable.ic_clip),
   Bin(2, R.drawable.ic_bin),
+  Edit(3, R.drawable.ic_edit),
 
   ;
 

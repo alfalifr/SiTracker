@@ -173,7 +173,6 @@ fun OppositeBrightnessColor(color: Color): Color {
     red + green + blue
   }
    */
-
   val contrast = colorContrast(
     rgb1 = Triple(0,0,0), //black
     rgb2 = Triple(

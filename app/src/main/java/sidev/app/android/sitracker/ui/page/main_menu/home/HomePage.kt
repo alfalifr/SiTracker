@@ -27,6 +27,7 @@ import sidev.app.android.sitracker.ui.nav.ComposableNavData
 import sidev.app.android.sitracker.ui.nav.MainMenuItemNavData
 import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
+import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
 import sidev.app.android.sitracker.util.DataMapper.toPicUiData
 import sidev.app.android.sitracker.util.DataMapper.toUiData
 import sidev.app.android.sitracker.util.DefaultToast
@@ -137,6 +138,9 @@ private fun HomePageMainComp(
             name = title,
             progress = icon.progress,
             progressStrokeWidth = 7.dp,
+            progressStrokeColor = OppositeBrightnessColor(
+              MaterialTheme.colors.background
+            ),
             modifier = Modifier
               .size(iconLen)
               .clickable {

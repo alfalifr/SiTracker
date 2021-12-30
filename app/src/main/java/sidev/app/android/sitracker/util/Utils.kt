@@ -442,7 +442,7 @@ fun CalendarEvent.merge(
 
 fun colorLuminance(r: Int, g: Int, b: Int): Double {
   fun factor(colorComp: Int): Double =
-    (colorComp / 255).let {
+    (colorComp / 255.0).let {
       if(it <= 0.03928) it / 12.92
       else ((it + 0.055) / 1.055).pow(2.4)
     }
