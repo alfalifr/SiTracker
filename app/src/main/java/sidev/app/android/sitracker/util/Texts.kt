@@ -24,6 +24,9 @@ object Texts {
   const val reset = "Reset"
   const val play = "Play"
   const val setCheckpoint = "Set Checkpoint"
+  const val next = "Next"
+  const val previous = "Previous"
+  const val finish = "Finish"
 
   const val noPreferredTimes = "No $preferredTimes"
 

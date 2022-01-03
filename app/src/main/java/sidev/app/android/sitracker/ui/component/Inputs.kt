@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.flow
 
 
 /**
@@ -21,11 +22,13 @@ import kotlinx.coroutines.flow.drop
  */
 @Composable
 fun AppOutlinedTextField(
-  value: MutableStateFlow<String?>,
+  value: Flow<String?>,
   modifier: Modifier = Modifier,
   validity: Flow<Boolean>? = null,
   errorMessage: String? = null,
-  label: (@Composable () -> Unit)? = null,
+  label: @Composable (() -> Unit)? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
 ) {
   Column {
     val isValid = validity?.let {
@@ -39,9 +42,14 @@ fun AppOutlinedTextField(
       label = label,
       value = value.collectAsState("").value ?: "",
       onValueChange = {
-        value.value = it
+        if(value is MutableStateFlow) {
+          value.value = it
+        }
       },
       isError = !isValid,
+      trailingIcon = trailingIcon,
+      leadingIcon = leadingIcon,
+      enabled = value is MutableStateFlow
     )
     if(!isValid && errorMessage != null) {
       Text(
@@ -60,11 +68,13 @@ fun AppOutlinedTextField(
 
 @Composable
 fun AppOutlinedTextField(
-  value: MutableStateFlow<String?>,
+  value: Flow<String?>,
+  label: String,
   modifier: Modifier = Modifier,
   validity: Flow<Boolean>? = null,
   errorMessage: String? = null,
-  label: String,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
 ) = AppOutlinedTextField(
   value = value,
   validity = validity,
@@ -73,4 +83,44 @@ fun AppOutlinedTextField(
     Text(label)
   },
   modifier = modifier,
+  leadingIcon = leadingIcon,
+  trailingIcon = trailingIcon,
+)
+
+@Composable
+fun AppOutlinedTextField(
+  value: String,
+  label: @Composable () -> Unit,
+  modifier: Modifier = Modifier,
+  validity: Flow<Boolean>? = null,
+  errorMessage: String? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+) = AppOutlinedTextField(
+  value = flow { emit(value) },
+  validity = validity,
+  errorMessage = errorMessage,
+  label = label,
+  modifier = modifier,
+  leadingIcon = leadingIcon,
+  trailingIcon = trailingIcon,
+)
+
+@Composable
+fun AppOutlinedTextField(
+  value: String,
+  label: String,
+  modifier: Modifier = Modifier,
+  validity: Flow<Boolean>? = null,
+  errorMessage: String? = null,
+  leadingIcon: @Composable (() -> Unit)? = null,
+  trailingIcon: @Composable (() -> Unit)? = null,
+) = AppOutlinedTextField(
+  value = value,
+  validity = validity,
+  errorMessage = errorMessage,
+  label = { Text(label) },
+  modifier = modifier,
+  leadingIcon = leadingIcon,
+  trailingIcon = trailingIcon,
 )

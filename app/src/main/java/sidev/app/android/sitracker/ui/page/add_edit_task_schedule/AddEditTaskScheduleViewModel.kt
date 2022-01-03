@@ -41,11 +41,35 @@ class AddEditTaskScheduleViewModel(
     const val READ_ICONS = "read_icons"
 
     const val EXISTING_ICON_ID_MAPPING = "existing_icon_id_mapping"
+
+    const val TASK_INFO_MASK = 1
+    const val SCHEDULE_INFO_MASK = TASK_INFO_MASK shl 1
   }
 
   private val scope: AppCoroutineScope
     get() = (coroutineScope ?: viewModelScope).toAppScope()
   private val jobManager = CoroutineJobManager()
+
+
+  private val _isEdit = MutableSharedFlow<Boolean>()
+  val isEdit: Flow<Boolean>
+    get() = _isEdit
+
+  private val _pagesMask = MutableStateFlow(0)
+  val pagesMask: StateFlow<Int>
+    get() = _pagesMask
+
+  init {
+    scope.launch {
+      pagesMask.collect {
+        println("AddEditTaskScheduleViewModel pagesMask = $it")
+      }
+    }
+  }
+
+  fun setPagesMask(mask: Int) {
+    _pagesMask.value = mask
+  }
 
 /*
 =================================
@@ -232,13 +256,15 @@ Task Page Section - Read data related
     }
   }
 
-  fun randomTaskColor() {
-    fun randomValue(): Int = (0..255).random()
-    taskColor.value = Color(
-      red = randomValue(),
-      green = randomValue(),
-      blue = randomValue(),
-    )
+  fun randomTaskColor(forceReload: Boolean = false) {
+    if(taskColor.value == null || forceReload) {
+      fun randomValue(): Int = (0..255).random()
+      taskColor.value = Color(
+        red = randomValue(),
+        green = randomValue(),
+        blue = randomValue(),
+      )
+    }
   }
 
 /*

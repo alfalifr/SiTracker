@@ -52,6 +52,7 @@ object Const {
   const val id = "id"
   const val taskId = "taskId"
   const val scheduleId = "scheduleId"
+  const val pagesMask = "pagesMask"
 
   const val mainMenuPrevItemIndex = "mainMenuPrevItemIndex"
 

@@ -18,6 +18,7 @@ import androidx.navigation.compose.navArgument
 import androidx.navigation.navOptions
 import sidev.app.android.sitracker.ui.layout.*
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskSchedulePage
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.schedule_info.AddEditScheduleInfoPage
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info.AddEditTaskInfoPage
 import sidev.app.android.sitracker.ui.page.count_down.CountDownPage
@@ -30,6 +31,8 @@ import sidev.app.android.sitracker.ui.page.schedule_detail.ScheduleDetailPage
 import sidev.app.android.sitracker.ui.page.schedule_list.ScheduleListPage
 import sidev.app.android.sitracker.util.Const
 import sidev.app.android.sitracker.util.DefaultToast
+import sidev.app.android.sitracker.util.defaultViewModel
+import sidev.app.android.sitracker.util.viewModel
 
 sealed class Route(
   val route: String,
@@ -256,24 +259,32 @@ sealed class Route(
             if(id >= 0) id else null
           },
         navController = it.navController,
+        pagesMask = it.navBackStackEntry.arguments
+          ?.getInt(Const.pagesMask, 0)
+          ?: 0,
       )
     },
     arguments = listOf(
       navArgument(Const.scheduleId) {
         type = NavType.IntType
         defaultValue = -1
+      },
+      navArgument(Const.pagesMask) {
+        type = NavType.IntType
+        defaultValue = 0
       }
     ),
   ) {
     override val completeRoute: String
-      get() = "$route/{${Const.scheduleId}}"
+      get() = "$route/{${Const.pagesMask}}/{${Const.scheduleId}}"
 
     fun go(
       navController: NavController,
-      scheduleId: Int?
+      pagesMask: Int,
+      scheduleId: Int?,
     ) {
       navController.navigate(
-        "$route/${scheduleId ?: -1}"
+        "$route/$pagesMask/${scheduleId ?: -1}"
       )
     }
   }
@@ -288,6 +299,7 @@ sealed class Route(
             if(id >= 0) id else null
           },
         navController = it.navController,
+        viewModel = it.viewModel(),
       )
     },
     arguments = listOf(
@@ -303,10 +315,16 @@ sealed class Route(
     fun go(
       navController: NavController,
       taskId: Int?,
+      singleTop: Boolean = true,
     ) {
       navController.navigate(
         "$route/${taskId ?: -1}"
-      )
+      ) {
+        if(singleTop) {
+          launchSingleTop = true
+          popUpTo(completeRoute)
+        }
+      }
     }
   }
   object AddEditScheduleInfoPage: Route(
@@ -319,6 +337,7 @@ sealed class Route(
             if(id >= 0) id else null
           },
         navController = it.navController,
+        viewModel = it.viewModel(),
       )
     },
     arguments = listOf(
@@ -333,11 +352,17 @@ sealed class Route(
 
     fun go(
       navController: NavController,
-      scheduleId: Int?
+      scheduleId: Int?,
+      singleTop: Boolean = true,
     ) {
       navController.navigate(
         "$route/${scheduleId ?: -1}"
-      )
+      ) {
+        if(singleTop) {
+          launchSingleTop = true
+          popUpTo(AddEditTaskInfoPage.completeRoute)
+        }
+      }
     }
   }
 }

@@ -20,6 +20,7 @@ import sidev.app.android.sitracker.core.data.local.model.ActiveDate
 import sidev.app.android.sitracker.core.domain.model.CalendarEvent
 import sidev.app.android.sitracker.core.domain.model.CalendarMark
 import sidev.app.android.sitracker.di.DiCenter
+import sidev.app.android.sitracker.ui.nav.ComposableNavData
 import sidev.app.android.sitracker.ui.theme.GreenLight
 import sidev.app.android.sitracker.ui.theme.Red
 import sidev.app.android.sitracker.util.model.UnclosedLongRange
@@ -40,6 +41,15 @@ fun loge(
 @Composable
 inline fun <reified T: ViewModel> defaultViewModel(): T =
   viewModel(factory = DiCenter.diGraph.vmDi())
+
+@Composable
+inline fun <reified T: ViewModel> ComposableNavData.viewModel(): T =
+  try {
+    viewModelFactory?.create(T::class.java)
+  } catch(e: Exception) {
+    Log.e("ViewModel", "ComposableNavData.viewModel() failed for `T` = '${T::class}'", e)
+    null
+  } ?: defaultViewModel()
 
 val BoxWithConstraintsScope.maxSquareSideLen: Dp
   get() = if(maxWidth <= maxHeight) maxWidth else maxHeight
@@ -89,9 +99,16 @@ fun getDateMillis(cal: Calendar): Long {
   return cal.timeInMillis - timeInDay
 }
 
-
+/**
+ * Checks whether [other] is contained in [this] mask.
+ */
 infix fun Int.hasMask(other: Int): Boolean = (this and other) == other
 infix fun Int.notHasMask(other: Int): Boolean = !hasMask(other)
+
+/**
+ * Checks whether [this] mask has other element mask other than [elementMask].
+ */
+infix fun Int.hasOtherMaskThan(elementMask: Int): Boolean = (this xor elementMask) != 0
 
 fun Int.hasMask(vararg other: Int): Boolean = other.all { this hasMask it }
 //fun Int.notHasMask(vararg other: Int): Boolean = !hasMask(*other)

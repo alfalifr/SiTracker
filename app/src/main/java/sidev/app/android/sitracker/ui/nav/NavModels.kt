@@ -3,6 +3,7 @@ package sidev.app.android.sitracker.ui.nav
 import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import sidev.app.android.sitracker.ui.model.ActionData
@@ -13,6 +14,7 @@ data class ComposableNavData(
   val prevNavBackStackEntry: NavBackStackEntry?,
   val navController: NavController,
   val parentNavController: NavController?,
+  val viewModelFactory: ViewModelProvider.Factory?,
 )
 
 data class MainMenuItemNavData(

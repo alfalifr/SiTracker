@@ -28,6 +28,7 @@ import sidev.app.android.sitracker.ui.layout.MainMenuContentScope
 import sidev.app.android.sitracker.ui.model.ScheduleItemGroupUi
 import sidev.app.android.sitracker.ui.nav.MainMenuItemNavData
 import sidev.app.android.sitracker.ui.nav.Route
+import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.ui.page.main_menu.MainMenuItemLayout
 import sidev.app.android.sitracker.util.DefaultToast
 import sidev.app.android.sitracker.util.defaultViewModel
@@ -90,6 +91,8 @@ fun TodaySchedulePage(
       onClick = {
         Route.AddEditTaskSchedulePage.go(
           navData.navData.parentNavController!!,
+          AddEditTaskScheduleViewModel.TASK_INFO_MASK or
+            AddEditTaskScheduleViewModel.SCHEDULE_INFO_MASK,
           null,
         )
         DefaultToast(ctx, "FAB clicked")

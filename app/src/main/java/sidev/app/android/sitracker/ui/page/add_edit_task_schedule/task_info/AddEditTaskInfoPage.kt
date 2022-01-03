@@ -3,7 +3,6 @@
 )
 package sidev.app.android.sitracker.ui.page.add_edit_task_schedule.task_info
 
-import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -23,16 +22,16 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
+import sidev.app.android.sitracker.R
 import sidev.app.android.sitracker.core.domain.model.IconPicData
 import sidev.app.android.sitracker.ui.component.AppOutlinedTextField
 import sidev.app.android.sitracker.ui.component.IconColorMode
 import sidev.app.android.sitracker.ui.component.IconProgressionPic
+import sidev.app.android.sitracker.ui.nav.Route
 import sidev.app.android.sitracker.ui.page.add_edit_task_schedule.AddEditTaskScheduleViewModel
 import sidev.app.android.sitracker.ui.theme.OppositeBrightnessColor
 import sidev.app.android.sitracker.ui.theme.OppositeDark
-import sidev.app.android.sitracker.util.Color
-import sidev.app.android.sitracker.util.Const
-import sidev.app.android.sitracker.util.defaultViewModel
+import sidev.app.android.sitracker.util.*
 
 @ExperimentalFoundationApi
 @Composable
@@ -45,6 +44,9 @@ fun AddEditTaskInfoPage(
     delay(500)
     //println("AddEditTaskInfoPage LaunchedEffect")
     viewModel.randomTaskColor()
+    if(taskId != null) {
+      viewModel.readExistingTask(taskId)
+    }
   }
 
   Column(
@@ -169,6 +171,39 @@ fun AddEditTaskInfoPage(
         },
       )
        */
+    }
+
+    val pagesMask = viewModel.pagesMask
+      .collectAsState()
+      .value
+
+    println("AddEditTaskInfoPage pagesMask = $pagesMask")
+
+    if(pagesMask.hasOtherMaskThan(AddEditTaskScheduleViewModel.TASK_INFO_MASK)) {
+      val scheduleId = viewModel.scheduleId
+        .collectAsState(initial = null)
+        .value
+      Box(Modifier.fillMaxWidth()) {
+        Row(
+          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier
+            .align(Alignment.CenterEnd)
+            .padding(10.dp)
+            .clickable {
+              Route.AddEditScheduleInfoPage.go(
+                navController, scheduleId,
+              )
+            }
+        ) {
+          Text(Texts.next)
+          Spacer(Modifier.width(10.dp))
+          Icon(
+            painter = painterResource(id = R.drawable.ic_arrow_right),
+            contentDescription = null,
+            tint = OppositeDark,
+          )
+        }
+      }
     }
   }
 }
